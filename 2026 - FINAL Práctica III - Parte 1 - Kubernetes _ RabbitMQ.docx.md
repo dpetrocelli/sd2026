@@ -61,7 +61,7 @@
 
 ### Hit #0 — Patrones de Mensajería con RabbitMQ
 
-Antes de comenzar con el procesamiento distribuido de imágenes, es fundamental comprender los patrones de mensajería que van a usar a lo largo de este TP y del TP Integrador. **RabbitMQ** [RMQ] va a ser su broker de mensajes, y necesitan entender cómo funciona y qué patrones soporta.
+Antes de comenzar con el procesamiento distribuido de imágenes, es fundamental comprender los **patrones de mensajería** [HOH03] que van a usar a lo largo de este TP y del TP Integrador. **RabbitMQ** [RMQ] —que implementa el protocolo **AMQP 0-9-1** [AMQP]— va a ser su broker de mensajes, y necesitan entender cómo funciona y qué patrones soporta. La referencia clásica de Tanenbaum & Van Steen [TAN17] cubre los fundamentos teóricos de comunicación asincrónica entre procesos distribuidos.
 
 Implementen los siguientes **4 ejemplos simples utilizando RabbitMQ**. Cada ejemplo es un programa funcional independiente con su código en una subcarpeta dedicada del repositorio (`TP3/queue/exN/`), e incluye los manifiestos de Kubernetes para desplegarlo.
 
@@ -77,7 +77,7 @@ Un productor envía mensajes a una cola y **un solo consumidor** los recibe. Cad
 
 Un productor publica eventos en un *exchange* de tipo `fanout` y **todos los consumidores** suscritos reciben una copia del mensaje. Implementen un publicador que emita eventos de "nuevo bloque minado" y 3 suscriptores que representen nodos de la red que deben recibir la notificación. Verifiquen que los 3 reciben el mismo mensaje.
 
-En la industria, este patrón lo implementan servicios como AWS EventBridge, Google Pub/Sub y Apache Kafka.
+En la industria, este patrón lo implementan servicios como AWS EventBridge, Google Pub/Sub y **Apache Kafka** [KREP11] —diseñado originalmente en LinkedIn para procesamiento de logs distribuidos a escala masiva.
 
 ![Patrón 3 — Dead Letter Queue][image3]
 
@@ -117,7 +117,7 @@ El operador de Sobel [SOB68] es una máscara que, aplicada a una imagen, permite
 
 **Etapa 1 — Centralizado.** Desarrollen un proceso *centralizado* que tome una imagen, aplique la máscara y genere un nuevo archivo con el resultado. Ámbito: una sola laptop / equipo.
 
-**Etapa 2 — Distribuido.** Desarrollen el mismo proceso *de manera distribuida*: dividan la imagen en N pedazos y asignen la tarea de aplicar la máscara a N procesos distribuidos (workers). Después unifiquen los resultados. Ámbito: Docker.
+**Etapa 2 — Distribuido.** Desarrollen el mismo proceso *de manera distribuida*: dividan la imagen en N pedazos y asignen la tarea de aplicar la máscara a N procesos distribuidos (workers). Después unifiquen los resultados. Este es exactamente el patrón **Master-Worker** (también llamado *Granja de Trabajadores*) que Foster [FOS95] caracteriza como uno de los esquemas algorítmicos paralelos fundamentales. Ámbito: Docker.
 
 **Etapa 3 — Tolerante a fallos.** Mejoren la aplicación de la Etapa 2 para que, en caso de que un *worker* (proceso distribuido al que se le asignó parte de la imagen a procesar) se caiga y no responda, el proceso principal detecte la situación y reasigne el cálculo a otro worker.
 
@@ -125,9 +125,22 @@ El operador de Sobel [SOB68] es una máscara que, aplicada a una imagen, permite
 
 ## Referencias y Bibliografía
 
+### Libros y papers fundacionales
+
 * **[BUR18]** Burns, B. (2018). *Designing Distributed Systems: Patterns and Paradigms for Scalable, Reliable Services*. O'Reilly Media.
-* **[GITLEAKS]** Gitleaks — Protect and discover secrets. [github.com/gitleaks/gitleaks](https://github.com/gitleaks/gitleaks)
+* **[FOS95]** Foster, I. (1995). *Designing and Building Parallel Programs: Concepts and Tools for Parallel Software Engineering*. Addison-Wesley. — Cap. 2: Master-Worker y Granja de Trabajadores. Disponible online: [mcs.anl.gov/~itf/dbpp](https://www.mcs.anl.gov/~itf/dbpp/)
+* **[HOH03]** Hohpe, G. & Woolf, B. (2003). *Enterprise Integration Patterns: Designing, Building, and Deploying Messaging Solutions*. Addison-Wesley. — Referencia canónica de patrones de mensajería (Message Queue, Pub/Sub, DLQ, Retry).
+* **[KREP11]** Kreps, J., Narkhede, N. & Rao, J. (2011). "Kafka: a Distributed Messaging System for Log Processing". *Proceedings of the NetDB Workshop*. [PDF](https://notes.stephenholiday.com/Kafka.pdf)
+* **[SOB68]** Sobel, I. & Feldman, G. (1968). "A 3x3 Isotropic Gradient Operator for Image Processing". Stanford AI Project.
+* **[TAN17]** Tanenbaum, A.S. & Van Steen, M. (2017). *Distributed Systems: Principles and Paradigms* (3rd ed.). Pearson. — Caps. 4 y 7: comunicación y consistencia.
+
+### Especificaciones y documentación técnica
+
+* **[AMQP]** OASIS (2014). *AMQP 0-9-1 Protocol Specification*. [rabbitmq.com/amqp-0-9-1-reference](https://www.rabbitmq.com/amqp-0-9-1-reference.html)
 * **[K8S]** Kubernetes Documentation. [kubernetes.io/docs](https://kubernetes.io/docs/)
 * **[RMQ]** RabbitMQ Documentation — Tutorials y patrones de mensajería. [rabbitmq.com/tutorials](https://www.rabbitmq.com/tutorials)
-* **[SOB68]** Sobel, I. & Feldman, G. (1968). "A 3x3 Isotropic Gradient Operator for Image Processing". Stanford AI Project.
+
+### Herramientas
+
+* **[GITLEAKS]** Gitleaks — Protect and discover secrets. [github.com/gitleaks/gitleaks](https://github.com/gitleaks/gitleaks)
 

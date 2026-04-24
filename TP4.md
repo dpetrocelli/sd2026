@@ -32,17 +32,19 @@
 
 ## Práctica
 
-La programación paralela es la respuesta a la necesidad de tener escalabilidad vertical. Es inherente a la existencia de la programación paralela la existencia de 1 único nodo. En el núcleo de un sistema distribuido se encuentra el procesamiento sincrónico. El core de un procesamiento en paralelo es la sincronización. El eje central de este procesamiento es la gestión de recursos compartidos.
+La programación paralela es la respuesta a la necesidad de tener **escalabilidad vertical**. A diferencia de un sistema distribuido (que requiere múltiples nodos coordinándose asincrónicamente), la programación paralela vive sobre un único nodo y su eje central es la **sincronización** y la **gestión de recursos compartidos**.
+
+La caracterización clásica de las arquitecturas paralelas es la **taxonomía de Flynn** [FLY72] —SISD, SIMD, MISD, MIMD—; las GPUs modernas operan bajo el modelo **SIMT** (Single Instruction, Multiple Thread), una variante de SIMD propia de NVIDIA descrita en el paper original de CUDA [NIC08]. Para un tratamiento sistemático del modelo de programación masivamente paralelo, el textbook de referencia es Kirk & Hwu [KIR16]; para una panorámica del estado del arte de GPU computing, ver el survey de Owens et al. [OWE08].
 
 ![Pipeline de Renderizado GPU](img/tp4_pipeline.png)
 
 ### Comencemos con lo básico
 
-Imaginemos un **proceso A** que debe realizar un cómputo paralelo. Este cálculo normalmente se realiza en GPU, ya que la misma ofrece un elevado número de núcleos de bajo rendimiento individual, mientras que la CPU ofrece muy pocos núcleos de alto rendimiento.
+Imaginemos un **proceso A** que debe realizar un cómputo paralelo. Este cálculo normalmente se realiza en GPU, ya que la misma ofrece un **elevado número de núcleos de bajo rendimiento individual** (miles, optimizados para *throughput*), mientras que la CPU ofrece muy pocos núcleos de alto rendimiento (optimizados para *latencia*).
 
-El procesamiento de una tarea en paralelo tiene algunas implicancias que se deben tener en cuenta ya que su funcionamiento es sustancialmente diferente al que estamos acostumbrados en CPU.
+El procesamiento de una tarea en paralelo tiene implicancias que se deben tener en cuenta porque su funcionamiento es sustancialmente diferente al que estamos acostumbrados en CPU.
 
-La forma más "visible" de entender estas diferencias es mediante el procesamiento de gráficos, más concretamente del vídeo en tiempo real.
+La forma más "visible" de entender estas diferencias es mediante el procesamiento de gráficos —más concretamente, video en tiempo real—. La referencia académica de cabecera para entender el pipeline de renderizado en tiempo real es Akenine-Möller, Haines & Hoffman [AKE18].
 
 - **Podemos pensar que un pixel** es un vector de 4 unsigned byte: el primero representa el rojo, el segundo el verde, el tercero el azul y el cuarto la transparencia.
 - **Podemos pensar que una línea horizontal de píxeles** es un vector de X píxeles, donde X es el ancho de la línea.
@@ -168,7 +170,7 @@ Modifiquen el programa para aplicar un filtro de **escala de grises** [GRAY] (lu
 
 ### De Pixel Shaders a CUDA: el puente conceptual
 
-Todo lo que programaron en ShaderToy ejecuta en la GPU: cada píxel es procesado por un núcleo independiente en paralelo. Este es exactamente el mismo principio que van a usar en el **TP Integrador con CUDA** [CUDA], pero aplicado a otro dominio. La correspondencia es directa:
+Todo lo que programaron en ShaderToy ejecuta en la GPU: cada píxel es procesado por un núcleo independiente en paralelo. Este es exactamente el mismo principio que van a usar en el **TP Integrador con CUDA** [CUDA, NIC08], pero aplicado a otro dominio. Para profundizar en el modelo CUDA con ejemplos prácticos antes del TPI, recomiendo Sanders & Kandrot [SAN10] —*CUDA by Example*, todavía la introducción más accesible al tema— y el textbook de Kirk & Hwu [KIR16] para el tratamiento formal. La correspondencia entre shaders y CUDA es directa:
 
 | Concepto en Shaders | Equivalente en CUDA |
 |---|---|
@@ -183,13 +185,27 @@ En el TP Integrador, en lugar de procesar píxeles, cada hilo CUDA calculará ha
 
 ## Referencias y Bibliografía
 
-- **[CUDA]** NVIDIA. *CUDA C++ Programming Guide*. <https://docs.nvidia.com/cuda/cuda-c-programming-guide/>
-- **[GON18]** Gonzalez, R. C. & Woods, R. E. (2018). *Digital Image Processing* (4th ed.). Pearson. — Cap. 3: Transformaciones de intensidad y filtrado espacial.
-- **[GRAY]** Wikipedia — Grayscale: luminancia y conversión de color. <https://en.wikipedia.org/wiki/Grayscale>
-- **[POSTPR]** Wikipedia — Video post-processing. <https://en.wikipedia.org/wiki/Video_post-processing>
-- **[QUI13]** Quilez, I. (2013). "Painting a Landscape with Maths" [Video]. <https://www.youtube.com/watch?v=0ifChJ0nJfM>
-- **[ROS09]** Rost, R. J. et al. (2009). *OpenGL Shading Language* (3rd ed.). Addison-Wesley.
-- **[SHADER]** Wikipedia — Shader: Pixel Shaders. <https://en.wikipedia.org/wiki/Shader#Pixel_shaders>
-- **[STOY]** ShaderToy — Plataforma interactiva de shaders. <https://www.shadertoy.com>
-- **[STOYH]** ShaderToy — How To. <https://www.shadertoy.com/howto>
-- **[WEBGL]** WebGL Fundamentals. <https://webglfundamentals.org/>
+### Computación paralela y GPU — papers fundacionales
+
+- **[FLY72]** Flynn, M.J. (1972). "Some Computer Organizations and Their Effectiveness". *IEEE Transactions on Computers*, C-21(9), 948–960. — Origen de la taxonomía SISD/SIMD/MISD/MIMD.
+- **[NIC08]** Nickolls, J., Buck, I., Garland, M. & Skadron, K. (2008). "Scalable Parallel Programming with CUDA". *ACM Queue*, 6(2), 40–53. — Paper original de CUDA, escrito por su equipo de diseño en NVIDIA. [PDF](https://www.eecs.umich.edu/courses/eecs570/hw/parprog.pdf)
+- **[OWE08]** Owens, J.D., Houston, M., Luebke, D., Green, S., Stone, J.E. & Phillips, J.C. (2008). "GPU Computing". *Proceedings of the IEEE*, 96(5), 879–899. — Survey clásico de GPGPU.
+
+### Libros de texto
+
+- **[AKE18]** Akenine-Möller, T., Haines, E. & Hoffman, N. (2018). *Real-Time Rendering* (4th ed.). CRC Press. — Referencia canónica del pipeline de renderizado en tiempo real.
+- **[GON18]** Gonzalez, R.C. & Woods, R.E. (2018). *Digital Image Processing* (4th ed.). Pearson. — Cap. 3: transformaciones de intensidad y filtrado espacial.
+- **[KIR16]** Kirk, D.B. & Hwu, W.W. (2016). *Programming Massively Parallel Processors: A Hands-on Approach* (3rd ed.). Morgan Kaufmann. — Textbook de referencia para CUDA.
+- **[ROS09]** Rost, R.J., Licea-Kane, B., Ginsburg, D., Kessenich, J.M., Lichtenbelt, B., Malan, H. & Weiblen, M. (2009). *OpenGL Shading Language* (3rd ed.). Addison-Wesley.
+- **[SAN10]** Sanders, J. & Kandrot, E. (2010). *CUDA by Example: An Introduction to General-Purpose GPU Programming*. Addison-Wesley. — La introducción práctica más accesible a CUDA.
+
+### Documentación y recursos web
+
+- **[CUDA]** NVIDIA. *CUDA C++ Programming Guide*. [docs.nvidia.com/cuda/cuda-c-programming-guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)
+- **[GRAY]** Wikipedia — *Grayscale*: luminancia y conversión de color. [en.wikipedia.org/wiki/Grayscale](https://en.wikipedia.org/wiki/Grayscale)
+- **[POSTPR]** Wikipedia — *Video post-processing*. [en.wikipedia.org/wiki/Video_post-processing](https://en.wikipedia.org/wiki/Video_post-processing)
+- **[QUI13]** Quilez, I. (2013). "Painting a Landscape with Maths" [Video]. [youtu.be/0ifChJ0nJfM](https://www.youtube.com/watch?v=0ifChJ0nJfM)
+- **[SHADER]** Wikipedia — *Shader: Pixel Shaders*. [en.wikipedia.org/wiki/Shader#Pixel_shaders](https://en.wikipedia.org/wiki/Shader#Pixel_shaders)
+- **[STOY]** ShaderToy — Plataforma interactiva de shaders. [shadertoy.com](https://www.shadertoy.com)
+- **[STOYH]** ShaderToy — How To. [shadertoy.com/howto](https://www.shadertoy.com/howto)
+- **[WEBGL]** WebGL Fundamentals. [webglfundamentals.org](https://webglfundamentals.org/)

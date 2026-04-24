@@ -10,12 +10,16 @@
 
 ## Práctica
 
-En la nube tenemos dos patrones de trabajo:
+La definición canónica del **NIST** [NIST800-145] establece cinco características esenciales del Cloud Computing: *on-demand self-service*, *broad network access*, *resource pooling*, *rapid elasticity* y *measured service*. El paper de Berkeley de Armbrust et al. [ARMBRUST10] —"A View of Cloud Computing"— sigue siendo la referencia académica más citada para entender el modelo y sus tradeoffs económicos.
+
+Sobre esa base, en la práctica tenemos dos patrones de trabajo:
 
 * **Cloud Native:** la aplicación corre 100% en la nube.
 * **Híbrido (On-premise + Cloud):** parte de la aplicación corre en equipos locales y otra parte en la nube.
 
 Pensemos la nube como una *extensión* de la capacidad de cómputo de los equipos locales. Aplicando este enfoque podemos implementar el patrón de **Cloud-Bursting** [CBURST]: cuando la demanda local satura la capacidad propia, "se desborda" hacia la nube.
+
+> **Nota sobre tradeoffs distribuidos.** Antes de diseñar componentes que se sincronizan en la nube, conviene tener presente el **teorema CAP** de Brewer [BREWER00]: en presencia de particiones de red, hay que elegir entre consistencia y disponibilidad. RabbitMQ y Redis adoptan posiciones distintas en ese espacio — investiguen cuál es la elección de cada uno y por qué importa para su arquitectura.
 
 En esta segunda parte vamos a hacer que todo lo que en la Parte 1 se corrió "distribuido" (pero centralizado en la propia computadora) **escale realmente**.
 
@@ -50,7 +54,7 @@ El objetivo es construir una arquitectura **híbrida** escalable (tipo 1, inicia
 
 ### Hit #3 — Sobel contenerizado, asincrónico y escalable (base del TP Integrador)
 
-A diferencia del esquema híbrido del Hit #2, ahora la idea es construir una infraestructura **100% en la nube** pero con un enfoque diferente: orquestada con Kubernetes [K8S].
+A diferencia del esquema híbrido del Hit #2, ahora la idea es construir una infraestructura **100% en la nube** pero con un enfoque diferente: orquestada con Kubernetes [K8S]. El paper de Burns et al. [BURNS16] —"Borg, Omega, and Kubernetes"— traza el linaje conceptual de K8s desde los sistemas de orquestación internos de Google y explica por qué se diseñó como está.
 
 #### 1. Desplegar con Terraform un cluster de Kubernetes (GKE)
 
@@ -95,7 +99,7 @@ El objetivo es entender cómo la plataforma responde al modificar estas variable
 
 ### Hit #4 — Observabilidad (Prometheus + Grafana)
 
-Desplieguen Prometheus [PROM] y Grafana [GRAF] en el cluster de Kubernetes para monitorear la plataforma:
+La observabilidad es un pilar de las prácticas modernas de **Site Reliability Engineering** [BEYER16]: sin métricas, logs y trazas no se pueden definir SLOs ni razonar sobre la salud del sistema en producción. Desplieguen Prometheus [PROM, BRAZIL18] y Grafana [GRAF] en el cluster de Kubernetes para monitorear la plataforma:
 
 1. **Instalación:** instalar Prometheus y Grafana en el nodegroup de infraestructura. Pueden usar el Helm chart oficial `prometheus-community/kube-prometheus-stack`.
 2. **Instrumentación:** instrumentar los servicios (backend, workers, split, joiner) para que exporten métricas custom: tareas procesadas, tareas en cola, tiempo de procesamiento por tarea y errores.
@@ -110,15 +114,32 @@ Desplieguen Prometheus [PROM] y Grafana [GRAF] en el cluster de Kubernetes para 
 
 ## Referencias y Bibliografía
 
-* **[BUR18]** Burns, B. (2018). *Designing Distributed Systems: Patterns and Paradigms for Scalable, Reliable Services*. O'Reilly Media.
-* **[CBURST]** Cloud-bursting — Atlassian. [atlassian.com/.../cloud-bursting](https://www.atlassian.com/es/continuous-delivery/principles/cloud-bursting)
-* **[GRAF]** Grafana Documentation. [grafana.com/docs/grafana](https://grafana.com/docs/grafana/)
-* **[K6]** k6 — Load testing for engineering teams. [k6.io](https://k6.io)
-* **[K8S]** Kubernetes Documentation. [kubernetes.io/docs](https://kubernetes.io/docs/)
+### Cloud Computing — papers fundacionales
+
+* **[ARMBRUST10]** Armbrust, M., Fox, A., Griffith, R., Joseph, A.D., Katz, R., Konwinski, A., Lee, G., Patterson, D., Rabkin, A., Stoica, I. & Zaharia, M. (2010). "A View of Cloud Computing". *Communications of the ACM*, 53(4), 50–58. [PDF](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2009/EECS-2009-28.pdf)
+* **[BREWER00]** Brewer, E. (2000). "Towards Robust Distributed Systems". PODC Keynote — origen del **Teorema CAP**. [PDF](https://people.eecs.berkeley.edu/~brewer/cs262b-2004/PODC-keynote.pdf)
 * **[KUM10]** Kumar, K. & Lu, Y. (2010). "Cloud Computing for Mobile Users: Can Offloading Computation Save Energy?". Purdue University. [PDF](https://www.cs.purdue.edu/homes/bb/mobile-cloud-survey.pdf)
-* **[LOCUST]** Locust — Open source load testing tool. [locust.io](https://locust.io)
+* **[NIST800-145]** Mell, P. & Grance, T. (2011). *The NIST Definition of Cloud Computing*. NIST Special Publication 800-145. [PDF](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-145.pdf)
+
+### Kubernetes y orquestación
+
+* **[BURNS16]** Burns, B., Grant, B., Oppenheimer, D., Brewer, E. & Wilkes, J. (2016). "Borg, Omega, and Kubernetes". *Communications of the ACM*, 59(5), 50–57. [ACM](https://queue.acm.org/detail.cfm?id=2898444)
+* **[BUR18]** Burns, B. (2018). *Designing Distributed Systems: Patterns and Paradigms for Scalable, Reliable Services*. O'Reilly Media.
+* **[K8S]** Kubernetes Documentation. [kubernetes.io/docs](https://kubernetes.io/docs/)
+
+### Observabilidad y SRE
+
+* **[BEYER16]** Beyer, B., Jones, C., Petoff, J. & Murphy, N.R. (2016). *Site Reliability Engineering: How Google Runs Production Systems*. O'Reilly. — Caps. 4–6: SLIs/SLOs y monitoreo. [Free online](https://sre.google/sre-book/table-of-contents/)
+* **[BRAZIL18]** Brazil, B. (2018). *Prometheus: Up & Running — Infrastructure and Application Performance Monitoring*. O'Reilly.
+* **[GRAF]** Grafana Documentation. [grafana.com/docs/grafana](https://grafana.com/docs/grafana/)
 * **[PROM]** Prometheus — Monitoring system & time series database. [prometheus.io/docs](https://prometheus.io/docs/)
-* **[RMQ]** RabbitMQ Documentation — Tutorials y patrones de mensajería. [rabbitmq.com/tutorials](https://www.rabbitmq.com/tutorials)
+
+### IaC, Load Testing y otras herramientas
+
+* **[CBURST]** Cloud-bursting — Atlassian. [atlassian.com/.../cloud-bursting](https://www.atlassian.com/es/continuous-delivery/principles/cloud-bursting)
+* **[K6]** k6 — Load testing for engineering teams. [k6.io](https://k6.io)
+* **[LOCUST]** Locust — Open source load testing tool. [locust.io](https://locust.io)
+* **[RMQ]** RabbitMQ Documentation. [rabbitmq.com/tutorials](https://www.rabbitmq.com/tutorials)
 * **[SOB68]** Sobel, I. & Feldman, G. (1968). "A 3x3 Isotropic Gradient Operator for Image Processing". Stanford AI Project.
 * **[TF]** Terraform by HashiCorp — Documentation. [developer.hashicorp.com/terraform/docs](https://developer.hashicorp.com/terraform/docs)
 

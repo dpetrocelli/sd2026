@@ -52,8 +52,17 @@ DCB</title>
     de Sobel (“un equipo”)</a></li>
     </ul></li>
     <li><a href="#referencias-y-bibliografía"
-    id="toc-referencias-y-bibliografía">Referencias y
-    Bibliografía</a></li>
+    id="toc-referencias-y-bibliografía">Referencias y Bibliografía</a>
+    <ul>
+    <li><a href="#libros-y-papers-fundacionales"
+    id="toc-libros-y-papers-fundacionales">Libros y papers
+    fundacionales</a></li>
+    <li><a href="#especificaciones-y-documentación-técnica"
+    id="toc-especificaciones-y-documentación-técnica">Especificaciones y
+    documentación técnica</a></li>
+    <li><a href="#herramientas"
+    id="toc-herramientas">Herramientas</a></li>
+    </ul></li>
     </ul></li>
     </ul>
     <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
@@ -158,10 +167,13 @@ similar). El despliegue en la nube es el alcance de la Parte 2.</p>
 <h3 id="hit-0--patrones-de-mensajería-con-rabbitmq">Hit #0 — Patrones de
 Mensajería con RabbitMQ</h3>
 <p>Antes de comenzar con el procesamiento distribuido de imágenes, es
-fundamental comprender los patrones de mensajería que van a usar a lo
-largo de este TP y del TP Integrador. <strong>RabbitMQ</strong> [RMQ] va
-a ser su broker de mensajes, y necesitan entender cómo funciona y qué
-patrones soporta.</p>
+fundamental comprender los <strong>patrones de mensajería</strong>
+[HOH03] que van a usar a lo largo de este TP y del TP Integrador.
+<strong>RabbitMQ</strong> [RMQ] —que implementa el protocolo
+<strong>AMQP 0-9-1</strong> [AMQP]— va a ser su broker de mensajes, y
+necesitan entender cómo funciona y qué patrones soporta. La referencia
+clásica de Tanenbaum &amp; Van Steen [TAN17] cubre los fundamentos
+teóricos de comunicación asincrónica entre procesos distribuidos.</p>
 <p>Implementen los siguientes <strong>4 ejemplos simples utilizando
 RabbitMQ</strong>. Cada ejemplo es un programa funcional independiente
 con su código en una subcarpeta dedicada del repositorio
@@ -188,7 +200,9 @@ eventos de “nuevo bloque minado” y 3 suscriptores que representen nodos
 de la red que deben recibir la notificación. Verifiquen que los 3
 reciben el mismo mensaje.</p>
 <p>En la industria, este patrón lo implementan servicios como AWS
-EventBridge, Google Pub/Sub y Apache Kafka.</p>
+EventBridge, Google Pub/Sub y <strong>Apache Kafka</strong> [KREP11]
+—diseñado originalmente en LinkedIn para procesamiento de logs
+distribuidos a escala masiva.</p>
 <p><img src="assets/images/tp3_hit0_dlq.png"
 alt="Patrón 3 — Dead Letter Queue" /></p>
 <h4 id="ejemplo-3--dead-letter-queue-dlq">Ejemplo 3 — Dead Letter Queue
@@ -251,7 +265,10 @@ un nuevo archivo con el resultado. Ámbito: una sola laptop / equipo.</p>
 <p><strong>Etapa 2 — Distribuido.</strong> Desarrollen el mismo proceso
 <em>de manera distribuida</em>: dividan la imagen en N pedazos y asignen
 la tarea de aplicar la máscara a N procesos distribuidos (workers).
-Después unifiquen los resultados. Ámbito: Docker.</p>
+Después unifiquen los resultados. Este es exactamente el patrón
+<strong>Master-Worker</strong> (también llamado <em>Granja de
+Trabajadores</em>) que Foster [FOS95] caracteriza como uno de los
+esquemas algorítmicos paralelos fundamentales. Ámbito: Docker.</p>
 <p><strong>Etapa 3 — Tolerante a fallos.</strong> Mejoren la aplicación
 de la Etapa 2 para que, en caso de que un <em>worker</em> (proceso
 distribuido al que se le asignó parte de la imagen a procesar) se caiga
@@ -260,21 +277,49 @@ cálculo a otro worker.</p>
 <p><img src="assets/images/tp3_hit1.png"
 alt="Hit #1 — Sobel Distribuido con Workers Docker" /></p>
 <h2 id="referencias-y-bibliografía">Referencias y Bibliografía</h2>
+<h3 id="libros-y-papers-fundacionales">Libros y papers
+fundacionales</h3>
 <ul>
 <li><strong>[BUR18]</strong> Burns, B. (2018). <em>Designing Distributed
 Systems: Patterns and Paradigms for Scalable, Reliable Services</em>.
 O’Reilly Media.</li>
-<li><strong>[GITLEAKS]</strong> Gitleaks — Protect and discover secrets.
-<a
-href="https://github.com/gitleaks/gitleaks">github.com/gitleaks/gitleaks</a></li>
+<li><strong>[FOS95]</strong> Foster, I. (1995). <em>Designing and
+Building Parallel Programs: Concepts and Tools for Parallel Software
+Engineering</em>. Addison-Wesley. — Cap. 2: Master-Worker y Granja de
+Trabajadores. Disponible online: <a
+href="https://www.mcs.anl.gov/~itf/dbpp/">mcs.anl.gov/~itf/dbpp</a></li>
+<li><strong>[HOH03]</strong> Hohpe, G. &amp; Woolf, B. (2003).
+<em>Enterprise Integration Patterns: Designing, Building, and Deploying
+Messaging Solutions</em>. Addison-Wesley. — Referencia canónica de
+patrones de mensajería (Message Queue, Pub/Sub, DLQ, Retry).</li>
+<li><strong>[KREP11]</strong> Kreps, J., Narkhede, N. &amp; Rao, J.
+(2011). “Kafka: a Distributed Messaging System for Log Processing”.
+<em>Proceedings of the NetDB Workshop</em>. <a
+href="https://notes.stephenholiday.com/Kafka.pdf">PDF</a></li>
+<li><strong>[SOB68]</strong> Sobel, I. &amp; Feldman, G. (1968). “A 3x3
+Isotropic Gradient Operator for Image Processing”. Stanford AI
+Project.</li>
+<li><strong>[TAN17]</strong> Tanenbaum, A.S. &amp; Van Steen, M. (2017).
+<em>Distributed Systems: Principles and Paradigms</em> (3rd ed.).
+Pearson. — Caps. 4 y 7: comunicación y consistencia.</li>
+</ul>
+<h3 id="especificaciones-y-documentación-técnica">Especificaciones y
+documentación técnica</h3>
+<ul>
+<li><strong>[AMQP]</strong> OASIS (2014). <em>AMQP 0-9-1 Protocol
+Specification</em>. <a
+href="https://www.rabbitmq.com/amqp-0-9-1-reference.html">rabbitmq.com/amqp-0-9-1-reference</a></li>
 <li><strong>[K8S]</strong> Kubernetes Documentation. <a
 href="https://kubernetes.io/docs/">kubernetes.io/docs</a></li>
 <li><strong>[RMQ]</strong> RabbitMQ Documentation — Tutorials y patrones
 de mensajería. <a
 href="https://www.rabbitmq.com/tutorials">rabbitmq.com/tutorials</a></li>
-<li><strong>[SOB68]</strong> Sobel, I. &amp; Feldman, G. (1968). “A 3x3
-Isotropic Gradient Operator for Image Processing”. Stanford AI
-Project.</li>
+</ul>
+<h3 id="herramientas">Herramientas</h3>
+<ul>
+<li><strong>[GITLEAKS]</strong> Gitleaks — Protect and discover secrets.
+<a
+href="https://github.com/gitleaks/gitleaks">github.com/gitleaks/gitleaks</a></li>
 </ul>
   </main>
 </div>

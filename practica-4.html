@@ -128,8 +128,17 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
     Shaders a CUDA: el puente conceptual</a></li>
     </ul></li>
     <li><a href="#referencias-y-bibliografía"
-    id="toc-referencias-y-bibliografía">Referencias y
-    Bibliografía</a></li>
+    id="toc-referencias-y-bibliografía">Referencias y Bibliografía</a>
+    <ul>
+    <li><a href="#computación-paralela-y-gpu--papers-fundacionales"
+    id="toc-computación-paralela-y-gpu--papers-fundacionales">Computación
+    paralela y GPU — papers fundacionales</a></li>
+    <li><a href="#libros-de-texto" id="toc-libros-de-texto">Libros de
+    texto</a></li>
+    <li><a href="#documentación-y-recursos-web"
+    id="toc-documentación-y-recursos-web">Documentación y recursos
+    web</a></li>
+    </ul></li>
     </ul></li>
     </ul>
     <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
@@ -197,24 +206,36 @@ computación de propósito general en GPU.</li>
 <hr />
 <h2 id="práctica">Práctica</h2>
 <p>La programación paralela es la respuesta a la necesidad de tener
-escalabilidad vertical. Es inherente a la existencia de la programación
-paralela la existencia de 1 único nodo. En el núcleo de un sistema
-distribuido se encuentra el procesamiento sincrónico. El core de un
-procesamiento en paralelo es la sincronización. El eje central de este
-procesamiento es la gestión de recursos compartidos.</p>
+<strong>escalabilidad vertical</strong>. A diferencia de un sistema
+distribuido (que requiere múltiples nodos coordinándose
+asincrónicamente), la programación paralela vive sobre un único nodo y
+su eje central es la <strong>sincronización</strong> y la
+<strong>gestión de recursos compartidos</strong>.</p>
+<p>La caracterización clásica de las arquitecturas paralelas es la
+<strong>taxonomía de Flynn</strong> [FLY72] —SISD, SIMD, MISD, MIMD—;
+las GPUs modernas operan bajo el modelo <strong>SIMT</strong> (Single
+Instruction, Multiple Thread), una variante de SIMD propia de NVIDIA
+descrita en el paper original de CUDA [NIC08]. Para un tratamiento
+sistemático del modelo de programación masivamente paralelo, el textbook
+de referencia es Kirk &amp; Hwu [KIR16]; para una panorámica del estado
+del arte de GPU computing, ver el survey de Owens et al. [OWE08].</p>
 <p><img src="assets/images/tp4_pipeline.png"
 alt="Pipeline de Renderizado GPU" /></p>
 <h3 id="comencemos-con-lo-básico">Comencemos con lo básico</h3>
 <p>Imaginemos un <strong>proceso A</strong> que debe realizar un cómputo
 paralelo. Este cálculo normalmente se realiza en GPU, ya que la misma
-ofrece un elevado número de núcleos de bajo rendimiento individual,
-mientras que la CPU ofrece muy pocos núcleos de alto rendimiento.</p>
-<p>El procesamiento de una tarea en paralelo tiene algunas implicancias
-que se deben tener en cuenta ya que su funcionamiento es sustancialmente
+ofrece un <strong>elevado número de núcleos de bajo rendimiento
+individual</strong> (miles, optimizados para <em>throughput</em>),
+mientras que la CPU ofrece muy pocos núcleos de alto rendimiento
+(optimizados para <em>latencia</em>).</p>
+<p>El procesamiento de una tarea en paralelo tiene implicancias que se
+deben tener en cuenta porque su funcionamiento es sustancialmente
 diferente al que estamos acostumbrados en CPU.</p>
 <p>La forma más “visible” de entender estas diferencias es mediante el
-procesamiento de gráficos, más concretamente del vídeo en tiempo
-real.</p>
+procesamiento de gráficos —más concretamente, video en tiempo real—. La
+referencia académica de cabecera para entender el pipeline de
+renderizado en tiempo real es Akenine-Möller, Haines &amp; Hoffman
+[AKE18].</p>
 <ul>
 <li><strong>Podemos pensar que un pixel</strong> es un vector de 4
 unsigned byte: el primero representa el rojo, el segundo el verde, el
@@ -383,8 +404,12 @@ CUDA: el puente conceptual</h3>
 <p>Todo lo que programaron en ShaderToy ejecuta en la GPU: cada píxel es
 procesado por un núcleo independiente en paralelo. Este es exactamente
 el mismo principio que van a usar en el <strong>TP Integrador con
-CUDA</strong> [CUDA], pero aplicado a otro dominio. La correspondencia
-es directa:</p>
+CUDA</strong> [CUDA, NIC08], pero aplicado a otro dominio. Para
+profundizar en el modelo CUDA con ejemplos prácticos antes del TPI,
+recomiendo Sanders &amp; Kandrot [SAN10] —<em>CUDA by Example</em>,
+todavía la introducción más accesible al tema— y el textbook de Kirk
+&amp; Hwu [KIR16] para el tratamiento formal. La correspondencia entre
+shaders y CUDA es directa:</p>
 <table>
 <thead>
 <tr>
@@ -422,32 +447,65 @@ paralelo en la GPU. Lo que cambió fue el dominio (gráficos -&gt;
 criptografía), no el paradigma.</p>
 <hr />
 <h2 id="referencias-y-bibliografía">Referencias y Bibliografía</h2>
+<h3 id="computación-paralela-y-gpu--papers-fundacionales">Computación
+paralela y GPU — papers fundacionales</h3>
+<ul>
+<li><strong>[FLY72]</strong> Flynn, M.J. (1972). “Some Computer
+Organizations and Their Effectiveness”. <em>IEEE Transactions on
+Computers</em>, C-21(9), 948–960. — Origen de la taxonomía
+SISD/SIMD/MISD/MIMD.</li>
+<li><strong>[NIC08]</strong> Nickolls, J., Buck, I., Garland, M. &amp;
+Skadron, K. (2008). “Scalable Parallel Programming with CUDA”. <em>ACM
+Queue</em>, 6(2), 40–53. — Paper original de CUDA, escrito por su equipo
+de diseño en NVIDIA. <a
+href="https://www.eecs.umich.edu/courses/eecs570/hw/parprog.pdf">PDF</a></li>
+<li><strong>[OWE08]</strong> Owens, J.D., Houston, M., Luebke, D.,
+Green, S., Stone, J.E. &amp; Phillips, J.C. (2008). “GPU Computing”.
+<em>Proceedings of the IEEE</em>, 96(5), 879–899. — Survey clásico de
+GPGPU.</li>
+</ul>
+<h3 id="libros-de-texto">Libros de texto</h3>
+<ul>
+<li><strong>[AKE18]</strong> Akenine-Möller, T., Haines, E. &amp;
+Hoffman, N. (2018). <em>Real-Time Rendering</em> (4th ed.). CRC Press. —
+Referencia canónica del pipeline de renderizado en tiempo real.</li>
+<li><strong>[GON18]</strong> Gonzalez, R.C. &amp; Woods, R.E. (2018).
+<em>Digital Image Processing</em> (4th ed.). Pearson. — Cap. 3:
+transformaciones de intensidad y filtrado espacial.</li>
+<li><strong>[KIR16]</strong> Kirk, D.B. &amp; Hwu, W.W. (2016).
+<em>Programming Massively Parallel Processors: A Hands-on Approach</em>
+(3rd ed.). Morgan Kaufmann. — Textbook de referencia para CUDA.</li>
+<li><strong>[ROS09]</strong> Rost, R.J., Licea-Kane, B., Ginsburg, D.,
+Kessenich, J.M., Lichtenbelt, B., Malan, H. &amp; Weiblen, M. (2009).
+<em>OpenGL Shading Language</em> (3rd ed.). Addison-Wesley.</li>
+<li><strong>[SAN10]</strong> Sanders, J. &amp; Kandrot, E. (2010).
+<em>CUDA by Example: An Introduction to General-Purpose GPU
+Programming</em>. Addison-Wesley. — La introducción práctica más
+accesible a CUDA.</li>
+</ul>
+<h3 id="documentación-y-recursos-web">Documentación y recursos web</h3>
 <ul>
 <li><strong>[CUDA]</strong> NVIDIA. <em>CUDA C++ Programming Guide</em>.
 <a
-href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">https://docs.nvidia.com/cuda/cuda-c-programming-guide/</a></li>
-<li><strong>[GON18]</strong> Gonzalez, R. C. &amp; Woods, R. E. (2018).
-<em>Digital Image Processing</em> (4th ed.). Pearson. — Cap. 3:
-Transformaciones de intensidad y filtrado espacial.</li>
-<li><strong>[GRAY]</strong> Wikipedia — Grayscale: luminancia y
+href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">docs.nvidia.com/cuda/cuda-c-programming-guide</a></li>
+<li><strong>[GRAY]</strong> Wikipedia — <em>Grayscale</em>: luminancia y
 conversión de color. <a
-href="https://en.wikipedia.org/wiki/Grayscale">https://en.wikipedia.org/wiki/Grayscale</a></li>
-<li><strong>[POSTPR]</strong> Wikipedia — Video post-processing. <a
-href="https://en.wikipedia.org/wiki/Video_post-processing">https://en.wikipedia.org/wiki/Video_post-processing</a></li>
+href="https://en.wikipedia.org/wiki/Grayscale">en.wikipedia.org/wiki/Grayscale</a></li>
+<li><strong>[POSTPR]</strong> Wikipedia — <em>Video
+post-processing</em>. <a
+href="https://en.wikipedia.org/wiki/Video_post-processing">en.wikipedia.org/wiki/Video_post-processing</a></li>
 <li><strong>[QUI13]</strong> Quilez, I. (2013). “Painting a Landscape
 with Maths” [Video]. <a
-href="https://www.youtube.com/watch?v=0ifChJ0nJfM">https://www.youtube.com/watch?v=0ifChJ0nJfM</a></li>
-<li><strong>[ROS09]</strong> Rost, R. J. et al. (2009). <em>OpenGL
-Shading Language</em> (3rd ed.). Addison-Wesley.</li>
-<li><strong>[SHADER]</strong> Wikipedia — Shader: Pixel Shaders. <a
-href="https://en.wikipedia.org/wiki/Shader#Pixel_shaders">https://en.wikipedia.org/wiki/Shader#Pixel_shaders</a></li>
+href="https://www.youtube.com/watch?v=0ifChJ0nJfM">youtu.be/0ifChJ0nJfM</a></li>
+<li><strong>[SHADER]</strong> Wikipedia — <em>Shader: Pixel
+Shaders</em>. <a
+href="https://en.wikipedia.org/wiki/Shader#Pixel_shaders">en.wikipedia.org/wiki/Shader#Pixel_shaders</a></li>
 <li><strong>[STOY]</strong> ShaderToy — Plataforma interactiva de
-shaders. <a
-href="https://www.shadertoy.com">https://www.shadertoy.com</a></li>
+shaders. <a href="https://www.shadertoy.com">shadertoy.com</a></li>
 <li><strong>[STOYH]</strong> ShaderToy — How To. <a
-href="https://www.shadertoy.com/howto">https://www.shadertoy.com/howto</a></li>
+href="https://www.shadertoy.com/howto">shadertoy.com/howto</a></li>
 <li><strong>[WEBGL]</strong> WebGL Fundamentals. <a
-href="https://webglfundamentals.org/">https://webglfundamentals.org/</a></li>
+href="https://webglfundamentals.org/">webglfundamentals.org</a></li>
 </ul>
   </main>
 </div>
