@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+  <meta name="generator" content="pandoc + UNLu/DCB template">
+  <title>Práctica IV — Programación Paralela (Shaders) — UNLu
+DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+
+<header class="unlu-header">
+  <div class="brand">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </div>
+  <div class="course-bar">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="toc-sidebar">
+    <div class="toc-title">Contenidos</div>
+    <ul>
+    <li><a href="#trabajo-práctico-nº-4"
+    id="toc-trabajo-práctico-nº-4">Trabajo Práctico Nº 4</a>
+    <ul>
+    <li><a href="#programación-paralela-shaders"
+    id="toc-programación-paralela-shaders">Programación Paralela
+    (Shaders)</a></li>
+    <li><a href="#requisitos-consideraciones-y-formato-de-entrega"
+    id="toc-requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+    consideraciones y formato de entrega</a></li>
+    <li><a href="#contenidos-del-programa-relacionados"
+    id="toc-contenidos-del-programa-relacionados">Contenidos del
+    programa relacionados</a></li>
+    <li><a href="#práctica" id="toc-práctica">Práctica</a>
+    <ul>
+    <li><a href="#comencemos-con-lo-básico"
+    id="toc-comencemos-con-lo-básico">Comencemos con lo básico</a></li>
+    <li><a href="#hit-1--pixel-shaders-y-pipeline-de-renderizado"
+    id="toc-hit-1--pixel-shaders-y-pipeline-de-renderizado">Hit #1 —
+    Pixel shaders y pipeline de renderizado</a></li>
+    <li><a href="#hit-2--pintando-con-código"
+    id="toc-hit-2--pintando-con-código">Hit #2 — Pintando con
+    código</a></li>
+    <li><a href="#hit-3" id="toc-hit-3">Hit #3</a></li>
+    <li><a href="#hit-4" id="toc-hit-4">Hit #4</a></li>
+    <li><a href="#hit-5" id="toc-hit-5">Hit #5</a></li>
+    <li><a href="#hit-6--filtro-escala-de-grises"
+    id="toc-hit-6--filtro-escala-de-grises">Hit #6 — Filtro escala de
+    grises</a></li>
+    <li><a href="#de-pixel-shaders-a-cuda-el-puente-conceptual"
+    id="toc-de-pixel-shaders-a-cuda-el-puente-conceptual">De Pixel
+    Shaders a CUDA: el puente conceptual</a></li>
+    </ul></li>
+    <li><a href="#referencias-y-bibliografía"
+    id="toc-referencias-y-bibliografía">Referencias y
+    Bibliografía</a></li>
+    </ul></li>
+    </ul>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
+      <a href="index.html" style="color:var(--gray);">← Volver al índice</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">TP
+4</div>
+
+<h1 id="trabajo-práctico-nº-4">Trabajo Práctico Nº 4</h1>
+<h2 id="programación-paralela-shaders">Programación Paralela
+(Shaders)</h2>
+<p><strong>Fecha de entrega:</strong> 15/05/2026</p>
+<hr />
+<h2 id="requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+consideraciones y formato de entrega</h2>
+<ul>
+<li><strong>Integrar herramientas de IA en su ciclo de vida de
+desarrollo</strong> (Cursor, ChatGPT/Codex, Claude, GitHub Copilot,
+etc.). Se espera que las utilicen como asistentes para codificar,
+depurar y documentar. En el informe, mencionen qué herramientas usaron y
+cómo les ayudaron.</li>
+<li>Generar un <strong>informe detallado</strong> que incluya respuestas
+a consultas, capturas de pantalla, diagramas y conclusiones.</li>
+<li>Mantener un <strong>repositorio público</strong> en un servicio de
+control de versiones como GitHub, Bitbucket o GitLab. Cada ejercicio
+(HIT #) debe contar con una carpeta y un README.md explicativo.
+<ul>
+<li>El README.md de cada Hit debe incluir como mínimo: instrucciones,
+capturas de pantalla de los resultados, y explicaciones de las
+decisiones tomadas.</li>
+</ul></li>
+<li><strong>Seguridad:</strong>
+<ul>
+<li>No commitear <code>.env</code>, credenciales ni secrets al
+repositorio. Configurar <code>.gitignore</code> apropiado.</li>
+<li>Gestionar credenciales por ambiente de forma segura (GitHub Secrets,
+Secret Manager / Parameter Store). <strong>Zero static keys</strong>:
+autenticarse contra cloud providers vía Workload Identity / OIDC.</li>
+<li>Para registros Docker: usar image pull secrets o Workload Identity
+en lugar de enviar credenciales en payloads.</li>
+<li>Incluir <strong>gitleaks</strong> [GITLEAKS] en el pipeline de CI —
+si detecta un secret hardcodeado, el pipeline debe fallar.</li>
+<li>Si expusieron un secret accidentalmente, revóquenlo de inmediato y
+generen uno nuevo: queda en el historial de Git aunque después lo
+eliminen.</li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="contenidos-del-programa-relacionados">Contenidos del programa
+relacionados</h2>
+<ul>
+<li><strong>U6.1</strong> Fundamentos de máquinas paralelas:
+limitaciones de computadoras secuenciales.</li>
+<li><strong>U6.5</strong> GPGPU: procesadores gráficos de propósito
+general.</li>
+<li><strong>U7.6</strong> Programación con Shaders: Pixel Shaders,
+Vertex Shaders, pipeline de renderizado GPU, WebGL/GLSL,
+post-procesamiento.</li>
+<li><strong>U7.7</strong> CUDA: puente conceptual entre shaders y
+computación de propósito general en GPU.</li>
+</ul>
+<hr />
+<h2 id="práctica">Práctica</h2>
+<p>La programación paralela es la respuesta a la necesidad de tener
+escalabilidad vertical. Es inherente a la existencia de la programación
+paralela la existencia de 1 único nodo. En el núcleo de un sistema
+distribuido se encuentra el procesamiento sincrónico. El core de un
+procesamiento en paralelo es la sincronización. El eje central de este
+procesamiento es la gestión de recursos compartidos.</p>
+<p><img src="assets/images/tp4_pipeline.png"
+alt="Pipeline de Renderizado GPU" /></p>
+<h3 id="comencemos-con-lo-básico">Comencemos con lo básico</h3>
+<p>Imaginemos un <strong>proceso A</strong> que debe realizar un cómputo
+paralelo. Este cálculo normalmente se realiza en GPU, ya que la misma
+ofrece un elevado número de núcleos de bajo rendimiento individual,
+mientras que la CPU ofrece muy pocos núcleos de alto rendimiento.</p>
+<p>El procesamiento de una tarea en paralelo tiene algunas implicancias
+que se deben tener en cuenta ya que su funcionamiento es sustancialmente
+diferente al que estamos acostumbrados en CPU.</p>
+<p>La forma más “visible” de entender estas diferencias es mediante el
+procesamiento de gráficos, más concretamente del vídeo en tiempo
+real.</p>
+<ul>
+<li><strong>Podemos pensar que un pixel</strong> es un vector de 4
+unsigned byte: el primero representa el rojo, el segundo el verde, el
+tercero el azul y el cuarto la transparencia.</li>
+<li><strong>Podemos pensar que una línea horizontal de píxeles</strong>
+es un vector de X píxeles, donde X es el ancho de la línea.</li>
+<li><strong>Podemos pensar que una imagen</strong> es un vector de Y
+líneas horizontales, donde Y es el alto de la imagen.</li>
+<li><strong>Podemos pensar que un video</strong> es un vector de F
+imágenes, donde F es la cantidad de fotogramas del video.</li>
+</ul>
+<p>En conclusión, procesar un video aplicando una operación como un
+filtro de escala de grises a cada píxel <strong>requiere F * Y * X
+operaciones</strong>. Si esto lo hiciéramos en CPU con un único núcleo,
+tendríamos que hacer 3 for anidados y sería costoso en tiempo
+computacional.</p>
+<p>Cabe aclarar que el procesamiento paralelo no se limita a
+procesamiento gráfico; comenzaremos esta guía con este enfoque ya que es
+la forma más divertida y didáctica de realizar una introducción.</p>
+<hr />
+<h3 id="hit-1--pixel-shaders-y-pipeline-de-renderizado">Hit #1 — Pixel
+shaders y pipeline de renderizado</h3>
+<p>Visiten el artículo de Wikipedia sobre <em>Shaders</em> [SHADER] y
+lean los apartados sobre <em>Pixel Shaders</em> (en inglés). Empiecen a
+elaborar un informe documentando someramente los tipos de shaders. En
+esta práctica nos enfocamos en los <strong>Pixel Shaders</strong> que
+operan en 2D — el referente clásico del lenguaje GLSL es Rost et al.
+[ROS09].</p>
+<blockquote>
+<p><strong>Consideración:</strong> corto y conciso.</p>
+</blockquote>
+<p>Visiten <em>WebGL Fundamentals</em> [WEBGL] y agreguen al informe la
+descripción del <strong>pipeline de renderizado</strong>, relacionándolo
+con el artículo anterior.</p>
+<blockquote>
+<p><strong>Consideración:</strong> corto y conciso.</p>
+</blockquote>
+<p>Dividan los 6 pasos del pipeline en aquellos que corresponden al
+procesamiento 3D y los que corresponden al 2D.</p>
+<p>Visiten el artículo de Wikipedia sobre <em>Video post-processing</em>
+[POSTPR] y agreguen al informe los conceptos básicos. ¿En qué etapa del
+pipeline se ejecutan?</p>
+<blockquote>
+<p><strong>Consideración:</strong> corto y conciso.</p>
+</blockquote>
+<p>Diríjanse a <strong>ShaderToy</strong> [STOY], plataforma que permite
+programar shaders gráficos interactivos sobre GPU vía WebGL. Hagan clic
+en “Nuevo” arriba a la derecha, expandan las “Entradas del shader” y
+agreguen al informe un listado de las entradas posibles indicando tipo,
+nombre y descripción breve de qué representa cada una.</p>
+<p>Diríjanse al <em>howto</em> de ShaderToy [STOYH] y agreguen al
+informe un listado de las salidas posibles de los Pixel Shaders, su tipo
+y una breve descripción de qué representa cada una.</p>
+<p>Cuando crea un nuevo ShaderToy, el código de ejemplo que le sugiere
+la web es el siguiente:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="fu">mainImage</span><span class="op">(</span> <span class="dt">out</span> <span class="dt">vec4</span> fragColor<span class="op">,</span> <span class="dt">in</span> <span class="dt">vec2</span> fragCoord <span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Normalized pixel coordinates (from 0 to 1)</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">vec2</span> uv <span class="op">=</span> fragCoord<span class="op">/</span>iResolution<span class="op">.</span><span class="fu">xy</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Time varying pixel color</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="dt">vec3</span> col <span class="op">=</span> <span class="fl">0.5</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">*</span><span class="bu">cos</span><span class="op">(</span>iTime<span class="op">+</span>uv<span class="op">.</span><span class="fu">xyx</span><span class="op">+</span><span class="dt">vec3</span><span class="op">(</span><span class="dv">0</span><span class="op">,</span><span class="dv">2</span><span class="op">,</span><span class="dv">4</span><span class="op">));</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Output to screen</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    fragColor <span class="op">=</span> <span class="dt">vec4</span><span class="op">(</span>col<span class="op">,</span><span class="fl">1.0</span><span class="op">);</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Con apoyo de internet o lo que considere, explique en profundidad
+cada parte de este shader “hello world”. Debe explicar como mínimo:</p>
+<ul>
+<li>Qué representa <code>uv</code>.</li>
+<li>Por qué es necesario trabajar en UV y no en XY.</li>
+<li>Cómo se logra que el resultado sea una animación siendo que las
+entradas son estáticas.</li>
+<li>Cómo es posible que <code>col</code> sea de tipo <code>vec3</code>
+siendo que está igualado a una operación aritmética a priori entre
+flotantes.</li>
+<li>Cuáles son los constructores posibles para <code>vec4</code>, qué
+representan los componentes de <code>fragColor</code>, <code>uv</code>
+se presenta como <code>vec2</code> pero se utiliza su propiedad
+<code>xyx</code>, ¿qué es eso? ¿Qué otras propiedades tiene
+<code>vec2</code>? ¿Y <code>vec3</code>? ¿Y <code>vec4</code>?</li>
+</ul>
+<hr />
+<h3 id="hit-2--pintando-con-código">Hit #2 — Pintando con código</h3>
+<p>Vean el video de Inigo Quilez “Painting a Landscape with Maths”
+[QUI13], donde usando matemáticas, trigonometría, shaders y mucha
+creatividad pinta un paisaje completo usando solamente código (funciones
+matemáticas aplicadas píxel a píxel).</p>
+<p>Documenten el video de forma somera. ¿Qué conclusiones sacan al
+respecto?</p>
+<blockquote>
+<p><strong>Consideración:</strong> corto y conciso.</p>
+</blockquote>
+<hr />
+<h3 id="hit-3">Hit #3</h3>
+<p>Hora de ensuciarse las manos. Utilizando ShaderToy, seleccione en
+<code>iChannel0</code> una fuente de textura para poder continuar esta
+guía. Puede ser una imagen de ejemplo, un video de ejemplo o, para
+hacerlo más entretenido, su cámara web.</p>
+<p>El siguiente shader muestra de forma trivial cómo copiar los píxeles
+desde el <code>iChannel0</code> a la salida:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode glsl"><code class="sourceCode glsl"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">void</span> <span class="fu">mainImage</span><span class="op">(</span> <span class="dt">out</span> <span class="dt">vec4</span> fragColor<span class="op">,</span> <span class="dt">in</span> <span class="dt">vec2</span> fragCoord <span class="op">)</span> <span class="op">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">vec2</span> uv <span class="op">=</span> <span class="op">(</span>fragCoord<span class="op">.</span><span class="fu">xy</span> <span class="op">/</span> iResolution<span class="op">.</span><span class="fu">xy</span><span class="op">);</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    fragColor <span class="op">=</span> <span class="bu">texture</span><span class="op">(</span>iChannel0<span class="op">,</span> uv<span class="op">);</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<hr />
+<h3 id="hit-4">Hit #4</h3>
+<p>Utilizando como punto de partida el Hit #3 y sin perder de vista lo
+que documentó en los hits anteriores, <strong>modifique el código para
+poner la imagen cabeza abajo</strong>, es decir, aplicar lo que
+comúnmente se llama un efecto de FLIP-Y o voltear vertical. Luego haga
+el FLIP-X o voltee horizontal (también llamado espejo).</p>
+<p>Si no lo había hecho previamente, amplíe su informe sobre la
+potencialidad de UV.</p>
+<p><img src="assets/images/tp4_uv.png"
+alt="Hit #4 - Coordenadas UV y Flip" /></p>
+<blockquote>
+<p><strong>Consideración: Corto y conciso.</strong></p>
+</blockquote>
+<hr />
+<h3 id="hit-5">Hit #5</h3>
+<p>Tomando como base el ejemplo anterior, en <code>iChannel1</code>
+agregue una fuente de textura de video (puede usar el de ejemplo de
+Britney Spears). Quite los efectos flips y muestre la nueva textura en
+lugar de la de <code>iChannel0</code>.</p>
+<p>Va a implementar ahora un <strong>filtro chroma básico</strong>: su
+objetivo es cambiar el color de los píxeles verdes del fondo por el
+video proveniente de <code>iChannel0</code> (su webcam) para poder
+bailar como malocorista detrás de Britney Spears (el baile es opcional
+pero altamente recomendable).</p>
+<p>Para implementar un filtro chroma primero necesitará recordar algunos
+conceptos matemáticos, en particular el que proviene de la geometría: la
+distancia pitagórica en N dimensiones.</p>
+<p>Vamos pasito a pasito como decía Mostaza Merlo hasta poder unir todas
+las piezas (<a
+href="https://www.youtube.com/watch?v=cGBvmbtpLcE">https://www.youtube.com/watch?v=cGBvmbtpLcE</a>).</p>
+<ol type="1">
+<li>En primer lugar tiene que definir el color del chroma dentro de un
+<code>vec4</code>.</li>
+<li>Luego tiene que definir un umbral de chroma dentro de un
+<code>float</code>.</li>
+<li>Luego tiene que calcular la distancia entre el color del
+<code>iChannel1</code> y el color del chroma con el teorema de distancia
+pitagórica en N dimensiones, siendo N=3.</li>
+<li>Finalmente elegir si mostrar la textura de un canal u otro en
+función de si la distancia supera o no el umbral establecido.</li>
+</ol>
+<p>Modifique el umbral a diferentes valores. Analice los resultados.
+Documente la experiencia. Haga screenshots bailando como malocorista con
+el efecto chroma (opcional).</p>
+<p><img src="assets/images/tp4_chroma.png"
+alt="Hit #5 - Filtro Chroma Key" /></p>
+<hr />
+<h3 id="hit-6--filtro-escala-de-grises">Hit #6 — Filtro escala de
+grises</h3>
+<p>Modifiquen el programa para aplicar un filtro de <strong>escala de
+grises</strong> [GRAY] (luminancia perceptual) y luego documenten los
+cambios realizados. Para profundizar en los fundamentos teóricos del
+procesamiento digital de imágenes, ver Gonzalez &amp; Woods [GON18].</p>
+<hr />
+<p><img src="assets/images/tp4_cuda_bridge.png"
+alt="De Pixel Shaders a CUDA" /></p>
+<h3 id="de-pixel-shaders-a-cuda-el-puente-conceptual">De Pixel Shaders a
+CUDA: el puente conceptual</h3>
+<p>Todo lo que programaron en ShaderToy ejecuta en la GPU: cada píxel es
+procesado por un núcleo independiente en paralelo. Este es exactamente
+el mismo principio que van a usar en el <strong>TP Integrador con
+CUDA</strong> [CUDA], pero aplicado a otro dominio. La correspondencia
+es directa:</p>
+<table>
+<thead>
+<tr>
+<th>Concepto en Shaders</th>
+<th>Equivalente en CUDA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pixel Shader (fragmento)</td>
+<td>CUDA Kernel: una función que se ejecuta miles/millones de veces en
+paralelo, una instancia por elemento (píxel o dato).</td>
+</tr>
+<tr>
+<td><code>fragCoord</code> (coordenada del píxel)</td>
+<td><code>threadIdx</code> + <code>blockIdx</code> (identificador del
+hilo en CUDA): cada instancia sabe cuál es su elemento a procesar.</td>
+</tr>
+<tr>
+<td><code>iChannel</code> (textura de entrada)</td>
+<td>Memoria global de GPU (arrays en device memory): los datos de
+entrada que cada hilo lee.</td>
+</tr>
+<tr>
+<td><code>fragColor</code> (salida del píxel)</td>
+<td>Escritura en memoria global: el resultado que cada hilo
+produce.</td>
+</tr>
+</tbody>
+</table>
+<p>En el TP Integrador, en lugar de procesar píxeles, cada hilo CUDA
+calculará hashes (MD5) para el proof-of-work de una blockchain. El
+concepto es el mismo: miles de cálculos independientes ejecutándose en
+paralelo en la GPU. Lo que cambió fue el dominio (gráficos -&gt;
+criptografía), no el paradigma.</p>
+<hr />
+<h2 id="referencias-y-bibliografía">Referencias y Bibliografía</h2>
+<ul>
+<li><strong>[CUDA]</strong> NVIDIA. <em>CUDA C++ Programming Guide</em>.
+<a
+href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">https://docs.nvidia.com/cuda/cuda-c-programming-guide/</a></li>
+<li><strong>[GON18]</strong> Gonzalez, R. C. &amp; Woods, R. E. (2018).
+<em>Digital Image Processing</em> (4th ed.). Pearson. — Cap. 3:
+Transformaciones de intensidad y filtrado espacial.</li>
+<li><strong>[GRAY]</strong> Wikipedia — Grayscale: luminancia y
+conversión de color. <a
+href="https://en.wikipedia.org/wiki/Grayscale">https://en.wikipedia.org/wiki/Grayscale</a></li>
+<li><strong>[POSTPR]</strong> Wikipedia — Video post-processing. <a
+href="https://en.wikipedia.org/wiki/Video_post-processing">https://en.wikipedia.org/wiki/Video_post-processing</a></li>
+<li><strong>[QUI13]</strong> Quilez, I. (2013). “Painting a Landscape
+with Maths” [Video]. <a
+href="https://www.youtube.com/watch?v=0ifChJ0nJfM">https://www.youtube.com/watch?v=0ifChJ0nJfM</a></li>
+<li><strong>[ROS09]</strong> Rost, R. J. et al. (2009). <em>OpenGL
+Shading Language</em> (3rd ed.). Addison-Wesley.</li>
+<li><strong>[SHADER]</strong> Wikipedia — Shader: Pixel Shaders. <a
+href="https://en.wikipedia.org/wiki/Shader#Pixel_shaders">https://en.wikipedia.org/wiki/Shader#Pixel_shaders</a></li>
+<li><strong>[STOY]</strong> ShaderToy — Plataforma interactiva de
+shaders. <a
+href="https://www.shadertoy.com">https://www.shadertoy.com</a></li>
+<li><strong>[STOYH]</strong> ShaderToy — How To. <a
+href="https://www.shadertoy.com/howto">https://www.shadertoy.com/howto</a></li>
+<li><strong>[WEBGL]</strong> WebGL Fundamentals. <a
+href="https://webglfundamentals.org/">https://webglfundamentals.org/</a></li>
+</ul>
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+</body>
+</html>

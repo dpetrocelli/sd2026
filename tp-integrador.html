@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+  <meta name="generator" content="pandoc + UNLu/DCB template">
+  <title>TP Integrador — Blockchain Distribuida y CUDA — UNLu
+DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="unlu-header">
+  <div class="brand">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </div>
+  <div class="course-bar">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="toc-sidebar">
+    <div class="toc-title">Contenidos</div>
+    <ul>
+    <li><a href="#trabajo-práctico-integrador"
+    id="toc-trabajo-práctico-integrador">Trabajo Práctico Integrador</a>
+    <ul>
+    <li><a href="#blockchain-distribuida-y-cuda"
+    id="toc-blockchain-distribuida-y-cuda">Blockchain Distribuida y
+    CUDA</a></li>
+    <li><a href="#requisitos-consideraciones-y-formato-de-entrega"
+    id="toc-requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+    consideraciones y formato de entrega</a></li>
+    <li><a href="#contenidos-del-programa-relacionados"
+    id="toc-contenidos-del-programa-relacionados">Contenidos del
+    programa relacionados</a></li>
+    <li><a href="#objetivo" id="toc-objetivo">Objetivo</a></li>
+    <li><a href="#estructura-de-la-blockchain"
+    id="toc-estructura-de-la-blockchain">Estructura de la BlockChain</a>
+    <ul>
+    <li><a href="#cómo-es-la-red-que-queremos-construir"
+    id="toc-cómo-es-la-red-que-queremos-construir">¿Cómo es la red que
+    queremos construir?</a></li>
+    </ul></li>
+    <li><a
+    href="#pilar-1--programación-del-minero-cpu-y-minero-gpu-cuda"
+    id="toc-pilar-1--programación-del-minero-cpu-y-minero-gpu-cuda">Pilar
+    1 — Programación del minero CPU y minero GPU CUDA</a>
+    <ul>
+    <li><a href="#hit-1--introducción-al-mundo-de-cuda"
+    id="toc-hit-1--introducción-al-mundo-de-cuda">Hit #1 — Introducción
+    al mundo de CUDA</a></li>
+    <li><a href="#hit-2--hola-mundo-en-cuda"
+    id="toc-hit-2--hola-mundo-en-cuda">Hit #2 — Hola mundo en
+    CUDA</a></li>
+    <li><a href="#hit-3--librerías-cuda"
+    id="toc-hit-3--librerías-cuda">Hit #3 — Librerías CUDA</a></li>
+    <li><a href="#hit-4--introducción-a-hash-usando-cuda"
+    id="toc-hit-4--introducción-a-hash-usando-cuda">Hit #4 —
+    Introducción a HASH usando CUDA</a></li>
+    <li><a href="#hit-5---hash-por-fuerza-bruta-con-cuda"
+    id="toc-hit-5---hash-por-fuerza-bruta-con-cuda">Hit #5 - HASH por
+    fuerza bruta con CUDA</a></li>
+    <li><a href="#hit-6---longitudes-de-prefijo-en-cuda-hash"
+    id="toc-hit-6---longitudes-de-prefijo-en-cuda-hash">Hit #6 -
+    Longitudes de prefijo en CUDA HASH</a></li>
+    <li><a href="#hit-7---hash-por-fuerza-bruta-con-cuda-con-límites"
+    id="toc-hit-7---hash-por-fuerza-bruta-con-cuda-con-límites">Hit #7 -
+    HASH por fuerza bruta con CUDA (con límites)</a></li>
+    </ul></li>
+    <li><a
+    href="#pilar-2---infraestructura-de-servicios-distribuidos-para-una-blockchain-escalable"
+    id="toc-pilar-2---infraestructura-de-servicios-distribuidos-para-una-blockchain-escalable">Pilar
+    2 - Infraestructura de servicios distribuidos para una blockchain
+    escalable</a>
+    <ul>
+    <li><a href="#p1---validación-de-transacciones-y-bloques"
+    id="toc-p1---validación-de-transacciones-y-bloques">P1 - Validación
+    de Transacciones y Bloques</a></li>
+    <li><a href="#p2--distribución-async-de-tareas-de-minería"
+    id="toc-p2--distribución-async-de-tareas-de-minería">P2 —
+    Distribución (async) de tareas de minería</a></li>
+    <li><a href="#p3---estado-blockchain-transacciones-y-bloques"
+    id="toc-p3---estado-blockchain-transacciones-y-bloques">P3 - Estado
+    blockchain, transacciones y bloques</a></li>
+    <li><a href="#p4---nodo-coordinador-de-tareas-nct"
+    id="toc-p4---nodo-coordinador-de-tareas-nct">P4 - Nodo coordinador
+    de tareas (NCT)</a></li>
+    <li><a href="#p5--pool-de-transacciones"
+    id="toc-p5--pool-de-transacciones">P5 — Pool de
+    Transacciones</a></li>
+    </ul></li>
+    <li><a
+    href="#pilar-3---despliegue-prueba-y-escalabilidad-de-red-blockchain"
+    id="toc-pilar-3---despliegue-prueba-y-escalabilidad-de-red-blockchain">Pilar
+    3 - Despliegue, prueba y escalabilidad de red BlockChain</a>
+    <ul>
+    <li><a href="#31---kubernetes-como-nuestra-plataforma-base"
+    id="toc-31---kubernetes-como-nuestra-plataforma-base">3.1 -
+    Kubernetes como nuestra plataforma base</a></li>
+    <li><a href="#32---despliegue-de-recursos-automatizado"
+    id="toc-32---despliegue-de-recursos-automatizado">3.2 - Despliegue
+    de recursos automatizado</a></li>
+    <li><a href="#33---pruebas-y-análisis-de-resultados"
+    id="toc-33---pruebas-y-análisis-de-resultados">3.3 - Pruebas y
+    análisis de resultados</a></li>
+    <li><a href="#arquitectura-modelo"
+    id="toc-arquitectura-modelo">Arquitectura modelo</a></li>
+    </ul></li>
+    <li><a href="#referencias-y-bibliografía"
+    id="toc-referencias-y-bibliografía">Referencias y Bibliografía</a>
+    <ul>
+    <li><a href="#blockchain-y-criptografía"
+    id="toc-blockchain-y-criptografía">Blockchain y
+    Criptografía</a></li>
+    <li><a href="#cuda-y-computación-en-gpu"
+    id="toc-cuda-y-computación-en-gpu">CUDA y Computación en
+    GPU</a></li>
+    <li><a href="#algoritmos-de-hashing"
+    id="toc-algoritmos-de-hashing">Algoritmos de Hashing</a></li>
+    <li><a href="#evolución-de-gpus-y-shaders"
+    id="toc-evolución-de-gpus-y-shaders">Evolución de GPUs y
+    Shaders</a></li>
+    <li><a href="#herramientas"
+    id="toc-herramientas">Herramientas</a></li>
+    </ul></li>
+    </ul></li>
+    </ul>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
+      <a href="index.html" style="color:var(--gray);">← Volver al índice</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">TP
+INTEGRADOR</div>
+
+<h1 id="trabajo-práctico-integrador">Trabajo Práctico Integrador</h1>
+<h2 id="blockchain-distribuida-y-cuda">Blockchain Distribuida y
+CUDA</h2>
+<p><strong>Fecha de entrega:</strong> 23/06/2026</p>
+<hr />
+<h2 id="requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+consideraciones y formato de entrega</h2>
+<ul>
+<li><strong>Integrar herramientas de IA en su ciclo de vida de
+desarrollo</strong> (Cursor, ChatGPT/Codex, Claude, GitHub Copilot,
+etc.). Se espera que las utilicen como asistentes para codificar,
+depurar y documentar. En el informe, mencionen qué herramientas usaron y
+cómo les ayudaron.</li>
+<li><strong>Se puede implementar con cualquier lenguaje dentro de los
+que se mencionaron en clase (node, python, java).</strong> El minero
+CUDA debe estar en C/C++ con CUDA.</li>
+<li><strong>Deben incluir una grabación video</strong> que se debe subir
+al repositorio donde se expliquen los servicios, componentes y
+configuraciones que tomaron en cuenta. Esto debe mostrar que comprenden
+cada punto y su desarrollo.</li>
+<li><strong>Pruebas Unitarias y de Integración:</strong> Incluir un
+conjunto mínimo de pruebas automatizadas que cubren las funcionalidades
+críticas del proyecto.</li>
+<li>Generar un <strong>informe detallado</strong> que incluya respuestas
+a consultas, métricas y tiempos de evaluación, gráficas, diagramas de
+arquitectura y conclusiones.</li>
+<li>Mantener un <strong>repositorio público</strong> en un servicio de
+control de versiones como GitHub, Bitbucket o GitLab. Cada pilar debe
+contar con una carpeta y un README.md explicativo.
+<ul>
+<li>El README.md de cada Pilar debe incluir como mínimo: instrucciones
+para ejecutar el proyecto, diagrama de arquitectura, y decisiones de
+diseño tomadas.</li>
+</ul></li>
+<li>Compilar la aplicación para ejecución desde la terminal, con
+recursos preparados para ser desplegados directamente sin necesidad de
+abrir un IDE.</li>
+<li>Implementar un <strong>pipeline de CI/CD</strong> que automatice la
+compilación y el despliegue de la aplicación con cada nueva versión de
+código (GitHub Actions).</li>
+<li>Desplegar el servicio en un <strong>entorno público</strong>
+accesible desde Internet para su evaluación en producción (Despliegue en
+la nube).</li>
+<li>Proporcionar un <strong>endpoint público</strong> para cada servicio
+que permita verificar el estado de los principales servicios. No
+requiere GUI, puede devolver un JSON (Key=Servicio, value=Status).
+Ejemplos: <a
+href="https://status.lemon.me/">https://status.lemon.me/</a>, <a
+href="https://health.aws.amazon.com/health/status">https://health.aws.amazon.com/health/status</a>.</li>
+<li>Gestionar y mantener <strong>registros de actividades
+(logs)</strong> en memoria y disco.</li>
+<li><strong>Seguridad:</strong>
+<ul>
+<li>No commitear <code>.env</code>, credenciales ni secrets al
+repositorio. Configurar <code>.gitignore</code> apropiado desde el
+inicio.</li>
+<li>Gestionar credenciales por ambiente de forma segura (GitHub Secrets,
+Secret Manager / Parameter Store). <strong>Zero static keys</strong>:
+autenticarse contra cloud providers vía Workload Identity / OIDC.</li>
+<li>Para registros Docker: usar image pull secrets o Workload Identity
+en lugar de enviar credenciales en payloads.</li>
+<li>Incluir <strong>gitleaks</strong> [GITLEAKS] en el pipeline de CI —
+si detecta un secret hardcodeado, el pipeline debe fallar.</li>
+<li>Si expusieron un secret accidentalmente, revóquenlo de inmediato y
+generen uno nuevo: queda en el historial de Git aunque después lo
+eliminen.</li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="contenidos-del-programa-relacionados">Contenidos del programa
+relacionados</h2>
+<ul>
+<li><strong>U1.6</strong> Comunicación Cliente-Servidor y
+protocolos.</li>
+<li><strong>U4.3–U4.4</strong> Contenedores Docker y orquestación con
+Kubernetes (GKE).</li>
+<li><strong>U4.5</strong> Cloud Computing: elasticidad, nube
+híbrida.</li>
+<li><strong>U5.1–U5.4</strong> DevOps y CI/CD: pipelines de despliegue
+automatizado.</li>
+<li><strong>U5.5</strong> Observabilidad: métricas y monitoreo
+(Prometheus, Grafana).</li>
+<li><strong>U5.6</strong> Infraestructura como Código (IaC):
+OpenTofu/Terraform.</li>
+<li><strong>U6.1–U6.5</strong> Computación paralela: fundamentos, GPGPU,
+supercomputación.</li>
+<li><strong>U7.5</strong> Esquemas algorítmicos paralelos: Granja de
+Trabajadores, Bolsa de Tareas.</li>
+<li><strong>U7.7</strong> CUDA: programación masivamente paralela en
+GPU, algoritmos de hashing.</li>
+</ul>
+<hr />
+<h2 id="objetivo">Objetivo</h2>
+<p>Este documento sirve como guía para implementar una
+<strong>“Blockchain Distribuida desde cero”</strong>, a completar
+durante el curso. Está diseñado para aplicar conocimientos teóricos en
+un proyecto práctico y funcional, organizado en entregables secuenciales
+que coinciden con los temas tratados en clase.</p>
+<p>Las tareas están divididas en fases claras y cada entregable
+representa una etapa del desarrollo. A medida que avanzamos en el curso,
+se proporcionarán detalles técnicos y recursos necesarios para cada
+parte del proyecto, desde la configuración del entorno de desarrollo
+hasta la implementación de algoritmos clave para la eficiencia y
+seguridad de la blockchain.</p>
+<hr />
+<h2 id="estructura-de-la-blockchain">Estructura de la BlockChain</h2>
+<p>Una blockchain es una base de datos distribuida donde un conjunto de
+nodos interactúan en modo descentralizado (P2P) para almacenar un
+conjunto de registros coherentes entre cada uno de los nodos.</p>
+<p>El concepto básico de blockchain es bastante simple: una base de
+datos que mantiene una lista en continuo crecimiento de registros
+ordenados.</p>
+<blockquote>
+<p>Algo muy similar a un log de transacciones de una base de datos.</p>
+</blockquote>
+<p><img src="assets/images/tpi_blockchain_chain.jpg"
+alt="Estructura de bloques encadenados mediante hashes" /></p>
+<p>Como se puede observar, existe un orden y una secuencialidad en las
+operaciones que se registran en una blockchain, haciendo que el
+contenido de cada bloque se pueda generar de forma distribuida.</p>
+<h3 id="cómo-es-la-red-que-queremos-construir">¿Cómo es la red que
+queremos construir?</h3>
+<p>Queremos crear una blockchain en la que <strong>todos
+confíen</strong>. Si existiera más de una cadena, los usuarios perderían
+la confianza, porque no podrían determinar razonablemente cuál cadena es
+la “válida”. Para que un grupo de usuarios acepte el estado subyacente
+almacenado en una blockchain, se necesita una única <strong>blockchain
+canónica</strong> en la que un grupo de personas confíe. El whitepaper
+original de Nakamoto [NAK08] describe el modelo, y el libro de
+referencia de Antonopoulos [ANT17] lo desarrolla en profundidad.</p>
+<p>Esto es exactamente lo que hace el algoritmo <strong>Proof of Work
+(PoW)</strong> [POW]: asegura que una blockchain particular permanecerá
+canónica en el futuro, haciendo increíblemente difícil para un atacante
+crear nuevos bloques que sobrescriban una parte específica de la
+historia (por ejemplo, borrando transacciones o creando transacciones
+falsas) o mantener una bifurcación. Para que su bloque sea validado
+primero, un atacante necesitaría resolver el <strong>nonce</strong>
+[NONCE] (<em>number used only once</em>) más rápido que cualquier otro
+en la red, de manera que la red crea que su cadena es la más completa.
+Esto sería imposible a menos que el atacante contara con más de la mitad
+del poder de minado de la red — un escenario conocido como
+<strong>ataque del 51%</strong> [51ATK].</p>
+<p>La coherencia de la información, en una arquitectura PoW como
+Bitcoin, está garantizada por un proceso denominado
+<strong>minería</strong> [GPUMIN]. Debido a su complejidad
+computacional, usualmente se ejecuta sobre <strong>GPU</strong>.</p>
+<p>Un minero (o, más precisamente, la computadora de minería) debe
+resolver un problema matemático complejo que requiere un poder
+computacional significativo (cálculo de hashes [POWNONCE]). El primer
+minero en resolver el problema es recompensado.</p>
+<p>Una operación de hash es un cálculo matemático esencial para
+verificar transacciones y crear bloques en una blockchain. La
+<strong>tasa de hash</strong> [CSHR] mide la potencia computacional de
+la minería: cuántas operaciones de hash puede realizar una plataforma de
+minería por segundo. Cuantas más operaciones de hash se realicen, mayor
+es la probabilidad de obtener la <strong>recompensa de bloque</strong>
+[EERI21].</p>
+<p>A través de esta guía aprenderá a crear una red desde cero y a
+programar los algoritmos de minería.</p>
+<p>Para apoyar los desarrollos de la blockchain, usted utilizará
+servicios de un sistema distribuido. Esta es la respuesta a la necesidad
+de tener escalabilidad horizontal.</p>
+<ul>
+<li>Es inherente a la existencia de un sistema distribuido la existencia
+de 2 o más nodos.</li>
+<li>En el núcleo de un sistema distribuido se encuentra el procesamiento
+asincrónico.</li>
+</ul>
+<p>El objetivo de este proyecto es presentar un prototipo de
+arquitectura que permite paralelizar y distribuir la generación de
+bloques (blockchain paralelizable).</p>
+<p>La principal ventaja de esta arquitectura es que, si dos operaciones
+no son mutuamente excluyentes o secuenciales, pueden ser realizadas en
+paralelo.</p>
+<p><img src="assets/images/tpi_block_structure.jpg"
+alt="Estructura de bloques con sub-bloques de transacciones" /></p>
+<p>Para lograr esto, se propone utilizar herramientas como
+<strong>RabbitMQ</strong> para el manejo de colas de los bloques a
+procesar, <strong>Redis</strong> como motor de base de datos para
+registrar los bloques y transacciones, utilizando la CPU o GPU (CUDA)
+para el cálculo criptográfico intensivo de hashes y resolución de
+desafíos. Por último, desarrollar un servidor (coordinador) para la
+comunicación entre todas las tareas.</p>
+<hr />
+<h2 id="pilar-1--programación-del-minero-cpu-y-minero-gpu-cuda">Pilar 1
+— Programación del minero CPU y minero GPU CUDA</h2>
+<p>En una etapa inicial, los <strong>Pixel Shaders</strong> [JAD] fueron
+la herramienta de programación paralela dentro del <strong>pipeline de
+renderizado</strong> [EBN]. Durante mucho tiempo esta fue la única
+funcionalidad de las placas de video — incluso el nombre “placa de
+video” reflejaba un uso sesgado al procesamiento del pipeline
+gráfico.</p>
+<p>Esto cambió con la llegada de <strong>CUDA</strong> [CUDAPG] en 2006
+[CUDAHIST].</p>
+<p><img src="assets/images/tpi_nvidia_gpus.png"
+alt="GPUs NVIDIA y el ecosistema de computación paralela" /></p>
+<p>CUDA es una tecnología <em>game-changer</em>: cambia la forma de
+pensar e interactuar con las “placas de video”. Ahora pasamos a
+llamarlas <strong>unidades de GPU</strong> [GPUMIN], y eventualmente —
+solo eventualmente — uno de sus usos es el procesamiento gráfico.</p>
+<p>Esto no significa que el procesamiento de video no siga siendo su
+fuerte; significa que se abre la puerta para utilizarlas con otros
+fines, como la minería en el caso de las arquitecturas blockchain o la
+IA en el caso de modelos generativos.</p>
+<p>CUDA es una tecnología propietaria del fabricante NVIDIA.</p>
+<p><img src="assets/images/tpi_pilar1.png"
+alt="Pilar 1 - Pipeline de Minería CUDA" /></p>
+<h3 id="hit-1--introducción-al-mundo-de-cuda">Hit #1 — Introducción al
+mundo de CUDA</h3>
+<p>Instalen lo necesario para ejecutar CUDA. Si disponen de una placa
+gráfica NVIDIA pueden trabajar en hardware nativo:</p>
+<ul>
+<li><strong>CUDA Toolkit</strong> [CUDATK]</li>
+<li><strong>Nsight Visual Studio Code Edition</strong> [NSIGHT]</li>
+</ul>
+<p>Si no tienen una placa gráfica NVIDIA, hay varias alternativas:</p>
+<ul>
+<li><strong>Google Colab</strong> [COLAB]: ofrece GPUs T4 gratuitas con
+CUDA preinstalado. Es la opción más sencilla para comenzar.</li>
+<li><strong>Vast.ai</strong> [VAST]: GPUs en la nube desde ~USD 0,04/hr
+con CUDA 12.1+ preconfigurado.</li>
+</ul>
+<p>También pueden usar <strong>Godbolt (Compiler Explorer)</strong>
+[GODBOLT] para hacer pruebas sin instalar nada — la opción más
+recomendada para la parte inicial de esta guía. Tengan en cuenta que la
+arquitectura del hardware detrás de Godbolt puede variar; verifiquen la
+arquitectura actual en la UI (menú de opciones del compilador). Las
+arquitecturas CUDA actuales incluyen: <code>sm_86</code> (Ampere / RTX
+30xx), <code>sm_89</code> (Ada Lovelace / RTX 40xx), <code>sm_90</code>
+(Hopper / H100), <code>sm_100</code> (Blackwell / RTX 50xx).</p>
+<p>Si va a usar la versión nativa sobre hardware propio debe saber
+que:</p>
+<ol type="1">
+<li>Una cosa es el <strong>driver</strong> (traductor entre el sistema
+operativo y el hardware).</li>
+<li>Otra cosa es el <strong>compilador</strong> (traductor entre el
+lenguaje de programación y el sistema operativo).</li>
+<li>Y por último, otra cosa es <strong>CUDA</strong> (traductor entre el
+código fuente y el lenguaje de programación), y que para que todo esto
+funcione, la versión de CUDA, del lenguaje de programación, del
+compilador, del sistema operativo y del driver deben ser
+compatibles.</li>
+</ol>
+<h3 id="hit-2--hola-mundo-en-cuda">Hit #2 — Hola mundo en CUDA</h3>
+<p>Visiten la presentación original de CUDA [CUDA11] o su versión
+actualizada [CUDAPG] y elaboren un programa básico de “Hola mundo” como
+los ejemplos que ahí se mencionan. Empiecen el informe describiendo:</p>
+<ul>
+<li>Qué entorno están utilizando.</li>
+<li>Si se encontraron con problemas, cómo los solucionaron.</li>
+<li>Cuál es su setup.</li>
+<li>Si usan hardware nativo, las características del mismo.</li>
+</ul>
+<h3 id="hit-3--librerías-cuda">Hit #3 — Librerías CUDA</h3>
+<p>Visiten <strong>NVIDIA CCCL</strong> [CCCL] (CUDA Core Compute
+Libraries) y expandan el informe comentando de qué se trata este
+repositorio. ¿Cuándo fue la última vez que se actualizó?</p>
+<blockquote>
+<p><strong>Nota:</strong> el repositorio original de Thrust
+(<code>github.com/nvidia/thrust</code>) fue archivado en marzo de 2024.
+Thrust ahora forma parte de <strong>CCCL</strong> [CCCL]. Visiten la
+documentación de <strong>Thrust</strong> [THRUST] dentro de CCCL y
+documenten en el informe de qué se trata y cómo se relaciona con el
+ecosistema CUDA actual.</p>
+</blockquote>
+<p>Compilen y ejecuten el primer ejemplo de la sección <a
+href="https://docs.nvidia.com/cuda/thrust/index.html#vectors">Vectors</a>
+de Thrust. ¿Hace falta instalar algo adicional o ya viene con CUDA?</p>
+<p>Lean el <strong>Thrust Quick Start Guide</strong> [THRQSG] y comenten
+en el informe cuáles son las diferencias entre programar CUDA “a pelo”
+vs usar Thrust/CCCL.</p>
+<hr />
+<p><strong>Fin de la teoría, ahora manos a la obra.</strong></p>
+<blockquote>
+<p>Antes de pasar a la implementación, recuerde construir tanto
+<strong>código compatible con CPU</strong> (por ejemplo Python) así como
+también lo que menciona el enunciado (GPU CUDA).</p>
+</blockquote>
+<h3 id="hit-4--introducción-a-hash-usando-cuda">Hit #4 — Introducción a
+HASH usando CUDA</h3>
+<p>El cálculo de funciones de hashing es ampliamente utilizado en
+criptografía. Existen múltiples algoritmos: algunos como
+<strong>MD5</strong> (1991) [MD5] ya son considerados inseguros, y otros
+como <strong>SHA-256</strong> (2001-2002) [SHA2] aún resisten la
+evolución y los tiempos actuales. Estos algoritmos suelen calcularse en
+GPU porque son “costosos” computacionalmente — característica deseable
+para PoW.</p>
+<blockquote>
+<p><em>Nota: En este ejercicio utilizamos MD5 por su velocidad de
+cálculo, lo cual permite iterar rápidamente y observar resultados en
+tiempos razonables. Sin embargo, las blockchains reales como Bitcoin
+utilizan SHA-256 (double-SHA-256) por su resistencia a colisiones. Como
+ejercicio adicional opcional, compare el throughput (hashes/segundo) de
+MD5 vs SHA-256 en GPU y analice el impacto en el tiempo de
+minado.</em></p>
+</blockquote>
+<p>En este punto, usted <strong>deberá escribir un programa que reciba
+un string por parámetro y calcule, utilizando la GPU, un MD5 y devuelva
+el hash calculado por consola.</strong></p>
+<p>Puede usar librerías disponibles para este fin. Las encontrará
+preguntando por CUDA MD5.</p>
+<h3 id="hit-5---hash-por-fuerza-bruta-con-cuda">Hit #5 - HASH por fuerza
+bruta con CUDA</h3>
+<p>Modifique el programa anterior para que reciba dos parámetros (un
+hash y una cadena). Ahora debe encontrar un número tal que, al
+concatenarlo con la cadena y calcular el hash, el resultado comience con
+una cadena específica proporcionada como segundo parámetro.</p>
+<p>Como no hay forma de adivinar cuál es ese número, deberá utilizar la
+GPU para probar miles o millones de combinaciones por segundo
+aleatoriamente hasta encontrar la correcta.</p>
+<p>Como salida, debe mostrar el hash resultante y el número que utilizó
+para generarlo.</p>
+<h3 id="hit-6---longitudes-de-prefijo-en-cuda-hash">Hit #6 - Longitudes
+de prefijo en CUDA HASH</h3>
+<p>Realice mediciones sobre el programa anterior probando diferentes
+longitudes de prefijo. ¿Cuál es el prefijo más largo que logró
+encontrar? ¿Cuánto tardó? ¿Cuál es la relación entre la longitud del
+prefijo a buscar y el tiempo requerido para encontrarlo?</p>
+<h3 id="hit-7---hash-por-fuerza-bruta-con-cuda-con-límites">Hit #7 -
+HASH por fuerza bruta con CUDA (con límites)</h3>
+<p>Modifique el programa anterior para que reciba dos parámetros nuevos,
+ambos serán números, y su programa debe buscar posibles soluciones solo
+dentro de ese rango. Si en ese rango no hay soluciones, debe informar
+que no encontró nada.</p>
+<h4 id="cierre-etapa-inicial">Cierre etapa inicial</h4>
+<p>Elabore una batería de tests (parámetros de entrada) y ejecútelos en
+GPU y en CPU. Elabore una comparativa de los resultados obtenidos.</p>
+<hr />
+<h2
+id="pilar-2---infraestructura-de-servicios-distribuidos-para-una-blockchain-escalable">Pilar
+2 - Infraestructura de servicios distribuidos para una blockchain
+escalable</h2>
+<p>Después de desarrollar el minero utilizando CUDA GPU, es crucial
+integrar los conceptos y habilidades adquiridas a lo largo de este curso
+a nivel de arquitectura distribuida. En esta arquitectura simplificada,
+vamos a desarrollar solo algunos de los componentes que una blockchain
+real contiene. A continuación se detallan los puntos esenciales a
+desarrollar.</p>
+<p><strong>Objetivo de la construcción de la blockchain:</strong>
+Manejar transferencias entre usuarios (usuario A; usuario B; monto) de
+forma segura y asegurando que el contenido de la blockchain no puede ser
+alterado.</p>
+<p><img src="assets/images/tpi_pilar2.png"
+alt="Pilar 2 - Arquitectura Distribuida" /></p>
+<h3 id="p1---validación-de-transacciones-y-bloques">P1 - Validación de
+Transacciones y Bloques</h3>
+<p>Minero en CUDA (realizado en Pilar 1) para resolver tareas de PoW
+(Proof of Work) a través de algoritmos de hash. Este algoritmo debe
+recibir parámetros para incrementar la complejidad de las tareas
+(manejado por el nodo coordinador, descrito más adelante).</p>
+<blockquote>
+<p><strong>Plataforma escalable (Cloud / Kubernetes) con al menos 2
+réplicas por servicio.</strong></p>
+</blockquote>
+<h3 id="p2--distribución-async-de-tareas-de-minería">P2 — Distribución
+(async) de tareas de minería</h3>
+<p>Integración de un <strong>sistema de colas</strong> (RabbitMQ)
+configurado en una arquitectura híbrida de colas y tópicos a la cual se
+suscriben un conjunto de nodos <em>workers</em> para recibir tareas a
+ser resueltas. Como es de esperarse, N nodos deben competir o colaborar
+— en un <strong>pool de minería</strong> [POOL] los mineros comparten
+poder de cómputo y dividen las recompensas proporcionalmente — para
+resolver la tarea de hash y notificar cuando encuentren un resultado,
+determinando así el worker ganador y resolviendo el hash.</p>
+<h3 id="p3---estado-blockchain-transacciones-y-bloques">P3 - Estado
+blockchain, transacciones y bloques</h3>
+<p>Integración de un <strong>motor de DB con persistencia</strong>
+(Redis + Persistencia) el cual permite registrar el trackeo de las
+operaciones en la base de datos. Esta será la encargada de construir la
+“blockchain”.</p>
+<h3 id="p4---nodo-coordinador-de-tareas-nct">P4 - Nodo coordinador de
+tareas (NCT)</h3>
+<p>Nodo coordinador que será responsable de:</p>
+<ul>
+<li>Definir cómo se estructuran las transacciones en el sistema, cómo se
+validan y cómo se agregan a la cadena de bloques.</li>
+<li>Formar los bloques de tareas que deben ser resueltos por los nodos
+workers.</li>
+<li>Responsable del algoritmo de consenso que permita a todos los nodos
+en la red acordar la validez de los bloques y las transacciones.</li>
+</ul>
+<p>El NCT, para el manejo de tareas, utiliza RabbitMQ como un sistema de
+mensajería asincrónica para gestionar las tareas de minería distribuidas
+entre los nodos trabajadores. Actúa como mediador para la distribución y
+manejo de tareas de PoW que necesitan ser resueltas para crear nuevos
+bloques.</p>
+<h4 id="proceso">Proceso</h4>
+<p><strong>NCT.1 - Publicación de Tareas:</strong> El nodo coordinador
+(P4) publica tareas de minería en RabbitMQ. Estas tareas incluyen los
+datos necesarios para que los nodos trabajadores intenten resolver el
+problema de PoW. La información típicamente incluiría:</p>
+<ul>
+<li>El hash del último bloque confirmado.</li>
+<li>La lista de transacciones pendientes para incluir en el próximo
+bloque.</li>
+<li>El nivel de dificultad actual del PoW.</li>
+</ul>
+<p><strong>NCT.2 - Competencia o cooperación:</strong> Los nodos
+trabajadores están suscritos a ciertas colas en RabbitMQ y reciben
+tareas de minería. Cada nodo intenta resolver el problema de PoW y el
+primero en lograrlo publica su solución al coordinador del sistema.</p>
+<p><strong>NCT.3 - Verificación de resultados:</strong> Una vez que un
+nodo de minado encuentra una solución válida y la envía al coordinador,
+este verifica la información, y si es correcta, procede con las
+siguientes etapas de confirmación del bloque.</p>
+<p><strong>NCT.4 - Almacenamiento de Bloques:</strong> Redis se usa para
+almacenar información de bloques de manera eficiente y rápida. Cada
+bloque se almacena como un hash en Redis, facilitando el acceso rápido y
+la persistencia de datos.</p>
+<p><strong>Estructura ejemplo de un Bloque en Redis:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>previous_hash</code></td>
+<td>Hash del bloque anterior, necesario para mantener la integridad de
+la cadena.</td>
+</tr>
+<tr>
+<td><code>nonce</code></td>
+<td>El valor que resuelve el problema de PoW.</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>Fecha y hora de creación del bloque.</td>
+</tr>
+<tr>
+<td><code>transactions</code></td>
+<td>Lista de transacciones incluidas en el bloque.</td>
+</tr>
+<tr>
+<td><code>block_hash</code></td>
+<td>Hash del bloque actual, calculado a partir de los datos del
+bloque.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="p5--pool-de-transacciones">P5 — Pool de Transacciones</h3>
+<p>Construir un <strong>pool de transacciones</strong> (TrP) pendientes
+[MSRBTC] donde el TrP fragmenta una tarea completa en desafíos más
+pequeños. Entonces:</p>
+<ul>
+<li>Subdivide tareas de minería generadas por el nodo coordinador en
+partes más pequeñas (rangos de búsqueda del nonce).</li>
+<li>Recibir keep-alive de los mineros GPU para conocer la capacidad
+disponible de procesamiento. En caso de no disponer de mineros GPU:
+<ul>
+<li>Reducir la complejidad de la tarea de minado (Prefijo).</li>
+<li>Iniciar/destruir instancias de mineros CPU en la nube cuando sea
+necesario. Opciones de implementación: <strong>HPA</strong> (Horizontal
+Pod Autoscaler) de Kubernetes para escalar pods automáticamente,
+<strong>VMs on-demand</strong> via OpenTofu, o <strong>Cloud Run
+jobs</strong> para ejecuciones efímeras.</li>
+</ul></li>
+</ul>
+<hr />
+<h2
+id="pilar-3---despliegue-prueba-y-escalabilidad-de-red-blockchain">Pilar
+3 - Despliegue, prueba y escalabilidad de red BlockChain</h2>
+<p>Tras el desarrollo de los componentes y servicios necesarios, y la
+integración de las herramientas pertinentes, es fundamental avanzar
+hacia la implementación en un entorno productivo. Para esto,
+utilizaremos la plataforma de Google Cloud, que ofrece una cuenta de
+prueba con 300 USD. Este crédito nos permite explorar y emplear
+múltiples recursos que, a pesar de ciertas limitaciones, son adecuados
+para desplegar y escalar efectivamente nuestra plataforma.</p>
+<p><img src="assets/images/tpi_pilar3.png"
+alt="Pilar 3 - Despliegue en Kubernetes" /></p>
+<h3 id="31---kubernetes-como-nuestra-plataforma-base">3.1 - Kubernetes
+como nuestra plataforma base</h3>
+<p>Para el despliegue de nuestra plataforma, emplearemos Kubernetes,
+configurado a través de <strong>OpenTofu (OT)</strong>, una herramienta
+de infraestructura como código. Mediante OT, configuraremos un clúster
+de Kubernetes en Google Kubernetes Engine (GKE), que será responsable de
+administrar todos los recursos que despleguemos. Este clúster hospedará
+tanto los servicios de infraestructura esenciales como RabbitMQ y Redis,
+como los componentes de las aplicaciones que ejecutaremos. La
+configuración mínima del clúster deberá incluir:</p>
+<ul>
+<li>Un nodegroup específico para los servicios de infraestructura.</li>
+<li>Un nodegroup compartido para las aplicaciones del sistema.</li>
+<li>Máquinas virtuales externas al clúster dedicadas a tareas de
+procesamiento intensivo.</li>
+</ul>
+<h3 id="32---despliegue-de-recursos-automatizado">3.2 - Despliegue de
+recursos automatizado</h3>
+<p>La automatización del despliegue es crucial y se gestionará a través
+de múltiples pipelines de CI/CD que facilitarán:</p>
+<ul>
+<li><strong>Pipeline 1:</strong> Construcción y configuración del
+entorno Kubernetes.</li>
+<li><strong>Pipeline 2:</strong> Despliegue de servicios fundamentales
+como Redis y RabbitMQ.</li>
+<li><strong>Pipeline 3:</strong> Implementación de cada una de las
+aplicaciones desarrolladas (frontend, backend, split, join).</li>
+<li><strong>Pipeline 4:</strong> Despliegue de máquinas virtuales que
+actuarán como nodos de trabajo adicionales, los cuales se ajustarán
+dinámicamente según la demanda de la red.</li>
+</ul>
+<h3 id="33---pruebas-y-análisis-de-resultados">3.3 - Pruebas y análisis
+de resultados</h3>
+<p>La evaluación del rendimiento es esencial. Implementaremos una serie
+de pruebas para analizar cómo se comporta la plataforma bajo diversas
+cargas y configuraciones. Esto incluirá:</p>
+<ul>
+<li>Realizar pruebas de carga con bulks de transacciones de diferentes
+tamaños, desde 1 hasta 100,000 transacciones, para observar cómo escala
+nuestra solución.</li>
+<li>Probar diferentes dificultades de prefijo de hash, desde 1 hasta 8
+caracteres, para evaluar la robustez del sistema ante variaciones en los
+requisitos de procesamiento.</li>
+<li>Experimentar con varios tamaños de fragmentación del pool de
+transacciones, desde 1% hasta 50%, para determinar la eficiencia de la
+distribución de tareas.</li>
+<li>Simular el ingreso y egreso de nodos con GPU para verificar la
+capacidad de la red de adaptarse a cambios en el hardware disponible,
+garantizando la generación dinámica de nodos CPU cuando sea
+necesario.</li>
+</ul>
+<blockquote>
+<p><strong>Nota:</strong> Para cada una de estas configuraciones, se
+medirán y analizarán los tiempos de respuesta. Con los resultados
+obtenidos, genere:</p>
+<ol type="1">
+<li>Conjunto de gráficos comparativos.</li>
+<li>Un análisis detallado para concluir sobre el desempeño y la
+escalabilidad de la red Blockchain implementada.</li>
+</ol>
+</blockquote>
+<p>Esto proporcionará información valiosa sobre la capacidad de
+adaptación y escalabilidad de la plataforma bajo diferentes escenarios
+operativos.</p>
+<h3 id="arquitectura-modelo">Arquitectura modelo</h3>
+<p>El diagrama interactivo de la arquitectura de referencia se comparte
+por separado durante la cursada (link de Miro disponible en el aula
+virtual).</p>
+<hr />
+<h2 id="referencias-y-bibliografía">Referencias y Bibliografía</h2>
+<h3 id="blockchain-y-criptografía">Blockchain y Criptografía</h3>
+<ul>
+<li><strong>[51ATK]</strong> Ataque del 51% — Binance Academy. <a
+href="https://academy.binance.com/en/glossary/51-percent-attack">https://academy.binance.com/en/glossary/51-percent-attack</a></li>
+<li><strong>[ANT17]</strong> Antonopoulos, A. M. (2017). <em>Mastering
+Bitcoin</em> (2nd ed.). O’Reilly Media.</li>
+<li><strong>[CSHR]</strong> CoinShares Mining Report — Hash Rate and
+Miners Cost Structures. <a
+href="https://blog.coinshares.com/coinshares-mining-report-the-halving-and-its-impact-on-hash-rate-and-miners-cost-structures-8646835d88ac">https://blog.coinshares.com/coinshares-mining-report-the-halving-and-its-impact-on-hash-rate-and-miners-cost-structures-8646835d88ac</a></li>
+<li><strong>[EERI21]</strong> Mining Reward Economics — EERI Research
+Paper 2021-02. <a
+href="https://www.econstor.eu/bitstream/10419/251106/1/EERI-RP-2021-02.pdf">https://www.econstor.eu/bitstream/10419/251106/1/EERI-RP-2021-02.pdf</a></li>
+<li><strong>[GPUMIN]</strong> GPU Cryptocurrency Mining — Investopedia.
+<a
+href="https://www.investopedia.com/tech/gpu-cryptocurrency-mining/">https://www.investopedia.com/tech/gpu-cryptocurrency-mining/</a></li>
+<li><strong>[MSRBTC]</strong> Bitcoin Transaction Processing — Microsoft
+Research. <a
+href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/bitcoin.pdf">https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/bitcoin.pdf</a></li>
+<li><strong>[NAK08]</strong> Nakamoto, S. (2008). “Bitcoin: A
+Peer-to-Peer Electronic Cash System”. <a
+href="https://bitcoin.org/bitcoin.pdf">https://bitcoin.org/bitcoin.pdf</a></li>
+<li><strong>[NONCE]</strong> Nonce — Investopedia. <a
+href="https://www.investopedia.com/terms/n/nonce.asp">https://www.investopedia.com/terms/n/nonce.asp</a></li>
+<li><strong>[POOL]</strong> Mining Pools — Phemex Academy. <a
+href="https://phemex.com/academy/what-are-mining-pools">https://phemex.com/academy/what-are-mining-pools</a></li>
+<li><strong>[POW]</strong> Proof of Work (PoW) — Bit2Me Academy. <a
+href="https://academy.bit2me.com/que-es-proof-of-work-pow/">https://academy.bit2me.com/que-es-proof-of-work-pow/</a></li>
+<li><strong>[POWNONCE]</strong> Proof of Work and the Nonce. <a
+href="https://dwan.org/index.php/2017/06/13/proof-of-work-and-the-nonce/">https://dwan.org/index.php/2017/06/13/proof-of-work-and-the-nonce/</a></li>
+</ul>
+<h3 id="cuda-y-computación-en-gpu">CUDA y Computación en GPU</h3>
+<ul>
+<li><strong>[CCCL]</strong> NVIDIA CCCL — CUDA Core Compute Libraries.
+<a
+href="https://github.com/NVIDIA/cccl">https://github.com/NVIDIA/cccl</a></li>
+<li><strong>[COLAB]</strong> Google Colaboratory. <a
+href="https://colab.research.google.com">https://colab.research.google.com</a></li>
+<li><strong>[CUDA11]</strong> NVIDIA (2011). <em>CUDA C/C++ Basics</em>
+— SC11 Tutorial. <a
+href="https://www.nvidia.com/docs/io/116711/sc11-cuda-c-basics.pdf">https://www.nvidia.com/docs/io/116711/sc11-cuda-c-basics.pdf</a></li>
+<li><strong>[CUDAHIST]</strong> History of CUDA Cores — History of
+Computers. <a
+href="https://historyofcomputers.eu/hardware/how-cuda-cores-transformed-nvidias-gpu-technology/">https://historyofcomputers.eu/hardware/how-cuda-cores-transformed-nvidias-gpu-technology/</a></li>
+<li><strong>[CUDAPG]</strong> NVIDIA. <em>CUDA C++ Programming
+Guide</em>. <a
+href="https://docs.nvidia.com/cuda/pdf/CUDA_C_Programming_Guide.pdf">https://docs.nvidia.com/cuda/pdf/CUDA_C_Programming_Guide.pdf</a></li>
+<li><strong>[CUDATK]</strong> CUDA Toolkit Downloads. <a
+href="https://developer.nvidia.com/cuda-downloads">https://developer.nvidia.com/cuda-downloads</a></li>
+<li><strong>[GODBOLT]</strong> Godbolt — Compiler Explorer. <a
+href="https://godbolt.org/">https://godbolt.org/</a></li>
+<li><strong>[NSIGHT]</strong> NVIDIA Nsight Visual Studio Code Edition.
+<a
+href="https://marketplace.visualstudio.com/items?itemName=NVIDIA.nsight-vscode-edition">https://marketplace.visualstudio.com/items?itemName=NVIDIA.nsight-vscode-edition</a></li>
+<li><strong>[THRQSG]</strong> NVIDIA. <em>Thrust Quick Start Guide</em>.
+<a
+href="https://docs.nvidia.com/cuda/pdf/Thrust_Quick_Start_Guide.pdf">https://docs.nvidia.com/cuda/pdf/Thrust_Quick_Start_Guide.pdf</a></li>
+<li><strong>[THRUST]</strong> NVIDIA Thrust Documentation. <a
+href="https://docs.nvidia.com/cuda/thrust/index.html">https://docs.nvidia.com/cuda/thrust/index.html</a></li>
+<li><strong>[VAST]</strong> Vast.ai — GPU Cloud. <a
+href="https://vast.ai">https://vast.ai</a></li>
+</ul>
+<h3 id="algoritmos-de-hashing">Algoritmos de Hashing</h3>
+<ul>
+<li><strong>[MD5]</strong> Wikipedia — MD5. <a
+href="https://es.wikipedia.org/wiki/MD5">https://es.wikipedia.org/wiki/MD5</a></li>
+<li><strong>[SHA2]</strong> Wikipedia — SHA-2. <a
+href="https://es.wikipedia.org/wiki/SHA-2">https://es.wikipedia.org/wiki/SHA-2</a></li>
+</ul>
+<h3 id="evolución-de-gpus-y-shaders">Evolución de GPUs y Shaders</h3>
+<ul>
+<li><strong>[EBN]</strong> Ebner, M. “Evolution of Shaders”. University
+of Greifswald. <a
+href="https://stubber.math-inf.uni-greifswald.de/~ebner/resources/uniWu/evoShader.pdf">https://stubber.math-inf.uni-greifswald.de/~ebner/resources/uniWu/evoShader.pdf</a></li>
+<li><strong>[JAD]</strong> Jadhav, V. “The History &amp; Evolution of
+Graphics Cards (GPUs)”. <a
+href="https://medium.com/@veersenjadhav/the-history-of-evolution-of-graphics-cards-gpus-89f1d5354d78">https://medium.com/@veersenjadhav/the-history-of-evolution-of-graphics-cards-gpus-89f1d5354d78</a></li>
+</ul>
+<h3 id="herramientas">Herramientas</h3>
+<ul>
+<li><strong>[GITLEAKS]</strong> gitleaks — Protect and discover secrets
+using Gitleaks. <a
+href="https://github.com/gitleaks/gitleaks">https://github.com/gitleaks/gitleaks</a></li>
+</ul>
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+</body>
+</html>

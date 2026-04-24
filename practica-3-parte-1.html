@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+  <meta name="generator" content="pandoc + UNLu/DCB template">
+  <title>Práctica III · Parte 1 — Kubernetes / RabbitMQ — UNLu
+DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="unlu-header">
+  <div class="brand">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </div>
+  <div class="course-bar">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="toc-sidebar">
+    <div class="toc-title">Contenidos</div>
+    <ul>
+    <li><a href="#trabajo-práctico-nº-3--parte-1"
+    id="toc-trabajo-práctico-nº-3--parte-1">Trabajo Práctico Nº 3 —
+    Parte 1</a>
+    <ul>
+    <li><a href="#computación-distribuida-kubernetes--rabbitmq"
+    id="toc-computación-distribuida-kubernetes--rabbitmq">Computación
+    Distribuida (Kubernetes / RabbitMQ)</a></li>
+    <li><a href="#requisitos-consideraciones-y-formato-de-entrega"
+    id="toc-requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+    consideraciones y formato de entrega</a></li>
+    <li><a href="#contenidos-del-programa-relacionados"
+    id="toc-contenidos-del-programa-relacionados">Contenidos del
+    programa relacionados</a>
+    <ul>
+    <li><a href="#hit-0--patrones-de-mensajería-con-rabbitmq"
+    id="toc-hit-0--patrones-de-mensajería-con-rabbitmq">Hit #0 —
+    Patrones de Mensajería con RabbitMQ</a></li>
+    <li><a href="#hit-1--el-operador-de-sobel-un-equipo"
+    id="toc-hit-1--el-operador-de-sobel-un-equipo">Hit #1 — El operador
+    de Sobel (“un equipo”)</a></li>
+    </ul></li>
+    <li><a href="#referencias-y-bibliografía"
+    id="toc-referencias-y-bibliografía">Referencias y
+    Bibliografía</a></li>
+    </ul></li>
+    </ul>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
+      <a href="index.html" style="color:var(--gray);">← Volver al índice</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">TP
+3 · Parte 1</div>
+
+<h1 id="trabajo-práctico-nº-3--parte-1">Trabajo Práctico Nº 3 — Parte
+1</h1>
+<h2 id="computación-distribuida-kubernetes--rabbitmq">Computación
+Distribuida (Kubernetes / RabbitMQ)</h2>
+<p><strong>Fecha de entrega:</strong> 05/05/2026 — todos los puntos.</p>
+<hr />
+<h2 id="requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+consideraciones y formato de entrega</h2>
+<ul>
+<li><p><strong>Integrar herramientas de IA en su ciclo de vida de
+desarrollo</strong> (Cursor, ChatGPT/Codex, Claude, GitHub Copilot,
+etc.). Se espera que las usen como asistentes para codificar, depurar y
+documentar. En el informe, mencionen qué herramientas usaron y cómo les
+ayudaron.</p></li>
+<li><p><strong>Lenguaje libre</strong> dentro de los vistos en clase
+(Node.js, Python, Java).</p></li>
+<li><p><strong>Video explicativo</strong> subido al repositorio donde
+expliquen los servicios, componentes y configuraciones que tomaron en
+cuenta. Debe mostrar que comprenden cada punto y su desarrollo.</p></li>
+<li><p><strong>Pruebas unitarias y de integración:</strong> incluir un
+conjunto mínimo de pruebas automatizadas que cubran las funcionalidades
+críticas del proyecto.</p></li>
+<li><p><strong>Informe detallado</strong> que incluya respuestas a
+consultas, métricas y tiempos de evaluación, gráficas, diagramas de
+arquitectura y conclusiones.</p></li>
+<li><p><strong>Repositorio público</strong> en un servicio de control de
+versiones (GitHub, GitLab o Bitbucket). Cada ejercicio (Hit #N) debe
+contar con una carpeta y un <code>README.md</code> explicativo que
+incluya como mínimo: instrucciones para ejecutar el proyecto, diagrama
+de arquitectura y decisiones de diseño tomadas.</p></li>
+<li><p><strong>Ejecutable desde la terminal</strong>, con recursos
+preparados para ser desplegados directamente sin necesidad de abrir un
+IDE.</p></li>
+<li><p><strong>Pipeline de CI/CD</strong> que automatice la compilación
+y el despliegue de la aplicación con cada nueva versión del código
+(GitHub Actions).</p></li>
+<li><p><strong>Despliegue público</strong> en la nube, accesible desde
+Internet, para su evaluación en producción.</p></li>
+<li><p><strong>Endpoint de health-check público</strong> por cada
+servicio. No requiere GUI, puede devolver un JSON simple
+(<code>{servicio: estado}</code>). Ejemplos: <a
+href="https://status.lemon.me/">status.lemon.me</a>, <a
+href="https://health.aws.amazon.com/health/status">health.aws.amazon.com</a>.</p></li>
+<li><p><strong>Logging:</strong> mantener registros de actividad en
+memoria y persistirlos en disco.</p></li>
+<li><p><strong>Seguridad:</strong></p>
+<ul>
+<li><p>No commitear <code>.env</code>, credenciales ni secrets al
+repositorio. Configurar <code>.gitignore</code> apropiado desde el
+inicio.</p></li>
+<li><p>Gestionar credenciales por ambiente de forma segura (GitHub
+Secrets, Secret Manager / Parameter Store). <strong>Zero static
+keys</strong>: autenticarse contra cloud providers vía Workload Identity
+/ OIDC.</p></li>
+<li><p>Para registros Docker: usar <em>image pull secrets</em> o
+Workload Identity en lugar de enviar credenciales en payloads.</p></li>
+<li><p>Incluir <strong>gitleaks</strong> [GITLEAKS] en el pipeline de CI
+— si detecta un secret hardcodeado, el pipeline debe fallar.</p></li>
+<li><p>Si expusieron un secret accidentalmente, revóquenlo de inmediato
+y generen uno nuevo: queda en el historial de Git aunque después lo
+eliminen.</p></li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="contenidos-del-programa-relacionados">Contenidos del programa
+relacionados</h2>
+<ul>
+<li><strong>U3.1</strong> Cloud Computing: principios y
+aplicaciones.</li>
+<li><strong>U4.3</strong> Contenedores Docker: imágenes,
+<code>Dockerfile</code>, <code>docker-compose</code>.</li>
+<li><strong>U4.4</strong> Orquestación con Kubernetes [K8S]: Pods,
+Services, Deployments, autoscaling, tolerancia a fallos.</li>
+<li><strong>U4.5</strong> Características de la nube: elasticidad, tipos
+de nube (híbrida), Cloud-Bursting.</li>
+<li><strong>U5.1–U5.4</strong> DevOps y CI/CD: pipelines de despliegue,
+construcción de imágenes Docker, despliegues sobre Kubernetes.</li>
+<li><strong>U5.5</strong> Observabilidad: logging, métricas y monitoreo
+(Prometheus, Grafana).</li>
+<li><strong>U5.6</strong> Infraestructura como Código (IaC):
+Terraform.</li>
+<li><strong>U7.5</strong> Esquemas algorítmicos paralelos:
+Maestro/Esclavo, Granja de Trabajadores [BUR18].</li>
+</ul>
+<hr />
+<blockquote>
+<p><strong>Ámbito de ejecución:</strong> todos los Hits de esta Parte 1
+corren sobre <strong>Kubernetes local</strong> (Microk8s, k3s o
+similar). El despliegue en la nube es el alcance de la Parte 2.</p>
+</blockquote>
+<h3 id="hit-0--patrones-de-mensajería-con-rabbitmq">Hit #0 — Patrones de
+Mensajería con RabbitMQ</h3>
+<p>Antes de comenzar con el procesamiento distribuido de imágenes, es
+fundamental comprender los patrones de mensajería que van a usar a lo
+largo de este TP y del TP Integrador. <strong>RabbitMQ</strong> [RMQ] va
+a ser su broker de mensajes, y necesitan entender cómo funciona y qué
+patrones soporta.</p>
+<p>Implementen los siguientes <strong>4 ejemplos simples utilizando
+RabbitMQ</strong>. Cada ejemplo es un programa funcional independiente
+con su código en una subcarpeta dedicada del repositorio
+(<code>TP3/queue/exN/</code>), e incluye los manifiestos de Kubernetes
+para desplegarlo.</p>
+<p><img src="assets/images/tp3_hit0_mq.png"
+alt="Patrón 1 — Message Queue" /></p>
+<h4 id="ejemplo-1--message-queue-punto-a-punto">Ejemplo 1 — Message
+Queue (punto a punto)</h4>
+<p>Un productor envía mensajes a una cola y <strong>un solo
+consumidor</strong> los recibe. Cada mensaje es procesado exactamente
+por un consumidor. Implementen un productor que envíe 10 tareas
+numeradas y un consumidor que las reciba y las imprima. Después levanten
+2 consumidores y observen cómo RabbitMQ distribuye los mensajes entre
+ambos (round-robin). Documenten el comportamiento observado.</p>
+<p><img src="assets/images/tp3_hit0_pubsub.png"
+alt="Patrón 2 — Pub/Sub Fan-out" /></p>
+<h4 id="ejemplo-2--event-bus--pub-sub-fan-out">Ejemplo 2 — Event Bus /
+Pub-Sub (fan-out)</h4>
+<p>Un productor publica eventos en un <em>exchange</em> de tipo
+<code>fanout</code> y <strong>todos los consumidores</strong> suscritos
+reciben una copia del mensaje. Implementen un publicador que emita
+eventos de “nuevo bloque minado” y 3 suscriptores que representen nodos
+de la red que deben recibir la notificación. Verifiquen que los 3
+reciben el mismo mensaje.</p>
+<p>En la industria, este patrón lo implementan servicios como AWS
+EventBridge, Google Pub/Sub y Apache Kafka.</p>
+<p><img src="assets/images/tp3_hit0_dlq.png"
+alt="Patrón 3 — Dead Letter Queue" /></p>
+<h4 id="ejemplo-3--dead-letter-queue-dlq">Ejemplo 3 — Dead Letter Queue
+(DLQ)</h4>
+<p>Configuren una cola principal con un <strong>Dead Letter Exchange
+(DLX)</strong> en RabbitMQ. El consumidor debe rechazar
+(<code>nack</code>) los mensajes que contengan un campo
+<code>"error": true</code>, y estos deben ser redirigidos
+automáticamente a la cola de Dead Letters. Implementen un segundo
+consumidor que lea la DLQ e imprima los mensajes fallidos.</p>
+<p>Este patrón es fundamental para no perder mensajes que no pudieron
+ser procesados. En la industria se usa en SQS + DLQ (AWS) y RabbitMQ
+DLX.</p>
+<p><img src="assets/images/tp3_hit0_retry.png"
+alt="Patrón 4 — Retry con Exponential Backoff" /></p>
+<h4 id="ejemplo-4--retry-con-exponential-backoff">Ejemplo 4 — Retry con
+Exponential Backoff</h4>
+<p>Implementen un consumidor que al recibir un mensaje intente
+procesarlo, y si falla (simulen un fallo aleatorio con probabilidad del
+50%) lo reencole con un delay creciente: 1s, 2s, 4s, 8s (<em>exponential
+backoff</em>). Después de 4 reintentos fallidos, envíen el mensaje a la
+DLQ del ejemplo anterior.</p>
+<p>Para implementar el delay pueden usar el plugin
+<code>rabbitmq_delayed_message_exchange</code> o TTL por mensaje con una
+cola intermedia. Registren en un log el número de intento y el tiempo de
+espera de cada reintento.</p>
+<p>Este patrón es estándar en la industria para manejar fallos
+transitorios (servicios caídos, timeouts, <em>rate limits</em>).</p>
+<h4 id="ejemplo-5--discusión">Ejemplo 5 — Discusión</h4>
+<p>Documenten en el informe (<code>TP3/queue/ex5/</code>): un diagrama
+de arquitectura de cada patrón, las diferencias entre ellos y en qué
+escenarios usarían cada uno. Esta base les va a servir para los Hits
+siguientes, donde aplicarán estos patrones al procesamiento distribuido
+de imágenes.</p>
+<blockquote>
+<p><strong>Recordatorio de entrega del Hit #0:</strong> cada ejemplo va
+en su carpeta <code>TP3/queue/exN/</code> con el código de la
+aplicación, los manifiestos de Kubernetes y un breve
+<code>README.md</code>. El Ejemplo 5 incluye solo la documentación
+comparativa.</p>
+</blockquote>
+<hr />
+<h3 id="hit-1--el-operador-de-sobel-un-equipo">Hit #1 — El operador de
+Sobel (“un equipo”)</h3>
+<p>El operador de Sobel [SOB68] es una máscara que, aplicada a una
+imagen, permite detectar (resaltar) bordes. Es una operación matemática
+que, aplicada a cada píxel y considerando los píxeles vecinos, obtiene
+un nuevo valor (color) para ese píxel. Aplicando la operación a cada
+píxel se obtiene una nueva imagen que resalta los bordes.</p>
+<p><strong>Objetivo:</strong></p>
+<ul>
+<li><strong>Input:</strong> una imagen.</li>
+<li><strong>Proceso:</strong> aplicación del operador de Sobel.</li>
+<li><strong>Output:</strong> una imagen filtrada (con los bordes
+resaltados).</li>
+</ul>
+<p><strong>Etapa 1 — Centralizado.</strong> Desarrollen un proceso
+<em>centralizado</em> que tome una imagen, aplique la máscara y genere
+un nuevo archivo con el resultado. Ámbito: una sola laptop / equipo.</p>
+<p><strong>Etapa 2 — Distribuido.</strong> Desarrollen el mismo proceso
+<em>de manera distribuida</em>: dividan la imagen en N pedazos y asignen
+la tarea de aplicar la máscara a N procesos distribuidos (workers).
+Después unifiquen los resultados. Ámbito: Docker.</p>
+<p><strong>Etapa 3 — Tolerante a fallos.</strong> Mejoren la aplicación
+de la Etapa 2 para que, en caso de que un <em>worker</em> (proceso
+distribuido al que se le asignó parte de la imagen a procesar) se caiga
+y no responda, el proceso principal detecte la situación y reasigne el
+cálculo a otro worker.</p>
+<p><img src="assets/images/tp3_hit1.png"
+alt="Hit #1 — Sobel Distribuido con Workers Docker" /></p>
+<h2 id="referencias-y-bibliografía">Referencias y Bibliografía</h2>
+<ul>
+<li><strong>[BUR18]</strong> Burns, B. (2018). <em>Designing Distributed
+Systems: Patterns and Paradigms for Scalable, Reliable Services</em>.
+O’Reilly Media.</li>
+<li><strong>[GITLEAKS]</strong> Gitleaks — Protect and discover secrets.
+<a
+href="https://github.com/gitleaks/gitleaks">github.com/gitleaks/gitleaks</a></li>
+<li><strong>[K8S]</strong> Kubernetes Documentation. <a
+href="https://kubernetes.io/docs/">kubernetes.io/docs</a></li>
+<li><strong>[RMQ]</strong> RabbitMQ Documentation — Tutorials y patrones
+de mensajería. <a
+href="https://www.rabbitmq.com/tutorials">rabbitmq.com/tutorials</a></li>
+<li><strong>[SOB68]</strong> Sobel, I. &amp; Feldman, G. (1968). “A 3x3
+Isotropic Gradient Operator for Image Processing”. Stanford AI
+Project.</li>
+</ul>
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+  <meta name="generator" content="pandoc + UNLu/DCB template">
+  <title>Práctica II — Sistemas Distribuidos y Concurrencia — UNLu
+DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="unlu-header">
+  <div class="brand">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </div>
+  <div class="course-bar">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="toc-sidebar">
+    <div class="toc-title">Contenidos</div>
+    <ul>
+    <li><a href="#trabajo-práctico-nº-2"
+    id="toc-trabajo-práctico-nº-2">Trabajo Práctico Nº 2</a>
+    <ul>
+    <li><a href="#sistemas-distribuidos-y-concurrencia"
+    id="toc-sistemas-distribuidos-y-concurrencia">Sistemas Distribuidos
+    y Concurrencia</a></li>
+    <li><a href="#requisitos-consideraciones-y-formato-de-entrega"
+    id="toc-requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+    consideraciones y formato de entrega</a></li>
+    <li><a href="#contenidos-del-programa-relacionados"
+    id="toc-contenidos-del-programa-relacionados">Contenidos del
+    programa relacionados</a></li>
+    <li><a href="#práctica" id="toc-práctica">Práctica</a>
+    <ul>
+    <li><a href="#hit-1--tareas-remotas-en-contenedores"
+    id="toc-hit-1--tareas-remotas-en-contenedores">Hit #1 — Tareas
+    remotas en contenedores</a></li>
+    <li><a href="#hit-2--concurrencia-y-exclusión-mutua"
+    id="toc-hit-2--concurrencia-y-exclusión-mutua">Hit #2 — Concurrencia
+    y exclusión mutua</a></li>
+    <li><a href="#hit-3--coordinación-y-tolerancia-a-fallos"
+    id="toc-hit-3--coordinación-y-tolerancia-a-fallos">Hit #3 —
+    Coordinación y tolerancia a fallos</a></li>
+    </ul></li>
+    <li><a href="#referencias-y-bibliografía"
+    id="toc-referencias-y-bibliografía">Referencias y
+    Bibliografía</a></li>
+    </ul></li>
+    </ul>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
+      <a href="index.html" style="color:var(--gray);">← Volver al índice</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">TP
+2</div>
+
+<h1 id="trabajo-práctico-nº-2">Trabajo Práctico Nº 2</h1>
+<h2 id="sistemas-distribuidos-y-concurrencia">Sistemas Distribuidos y
+Concurrencia</h2>
+<p><strong>Fecha de entrega:</strong> 31/03/2026</p>
+<hr />
+<h2 id="requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+consideraciones y formato de entrega</h2>
+<ul>
+<li><strong>Integrar herramientas de IA en su ciclo de vida de
+desarrollo</strong> (Cursor, ChatGPT/Codex, Claude, GitHub Copilot,
+etc.). Se espera que las utilicen como asistentes para codificar,
+depurar y documentar. En el informe, mencionen qué herramientas usaron y
+cómo les ayudaron.</li>
+<li><strong>Se puede implementar con cualquier lenguaje dentro de los
+que se mencionaron en clase (node, python, java).</strong></li>
+<li><strong>Deben incluir una grabación video</strong> que se debe subir
+al repositorio donde se expliquen los servicios, componentes y
+configuraciones que tomaron en cuenta. Esto debe mostrar que comprenden
+cada punto y su desarrollo.</li>
+<li><strong>Pruebas Unitarias y de Integración:</strong> Incluir un
+conjunto mínimo de pruebas automatizadas que cubren las funcionalidades
+críticas del proyecto.</li>
+<li>Generar un <strong>informe detallado</strong> que incluya respuestas
+a consultas, métricas y tiempos de evaluación, gráficas, diagramas de
+arquitectura y conclusiones.</li>
+<li>Mantener un <strong>repositorio público</strong> en un servicio de
+control de versiones como GitHub, Bitbucket o GitLab. Cada ejercicio
+(HIT #) debe contar con una carpeta y un README.md explicativo.
+<ul>
+<li>El README.md de cada Hit debe incluir como mínimo: instrucciones
+para ejecutar el proyecto, diagrama de arquitectura, y decisiones de
+diseño tomadas.</li>
+</ul></li>
+<li>Compilar la aplicación para ejecución desde la terminal, con
+recursos preparados para ser desplegados directamente sin necesidad de
+abrir un IDE.</li>
+<li>Implementar un <strong>pipeline de CI/CD</strong> que automatice la
+compilación y el despliegue de la aplicación con cada nueva versión de
+código (GitHub Actions).</li>
+<li>Desplegar el servicio en un <strong>entorno público</strong>
+accesible desde Internet para su evaluación en producción (Despliegue en
+la nube).</li>
+<li>Proporcionar un <strong>endpoint público</strong> para cada servicio
+que permita verificar el estado de los principales servicios. No
+requiere GUI, puede devolver un JSON (Key=Servicio, value=Status).
+Ejemplos: <a
+href="https://status.lemon.me/">https://status.lemon.me/</a>, <a
+href="https://health.aws.amazon.com/health/status">https://health.aws.amazon.com/health/status</a>.</li>
+<li>Gestionar y mantener <strong>registros de actividades
+(logs)</strong> en memoria y disco.</li>
+<li><strong>Seguridad:</strong>
+<ul>
+<li>No commitear <code>.env</code>, credenciales ni secrets al
+repositorio. Configurar <code>.gitignore</code> apropiado desde el
+inicio.</li>
+<li>Gestionar credenciales por ambiente de forma segura (GitHub Secrets,
+Secret Manager / Parameter Store). <strong>Zero static keys</strong>:
+autenticarse contra cloud providers vía Workload Identity / OIDC.</li>
+<li>Para registros Docker: usar image pull secrets o Workload Identity
+en lugar de enviar credenciales en payloads.</li>
+<li>Incluir <strong>gitleaks</strong> [GITLEAKS] en el pipeline de CI —
+si detecta un secret hardcodeado, el pipeline debe fallar.</li>
+<li>Si expusieron un secret accidentalmente, revóquenlo de inmediato y
+generen uno nuevo: queda en el historial de Git aunque después lo
+eliminen.</li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="contenidos-del-programa-relacionados">Contenidos del programa
+relacionados</h2>
+<ul>
+<li><strong>U1.6</strong> Comunicación Cliente-Servidor (HTTP,
+JSON).</li>
+<li><strong>U2.1</strong> Sincronización de relojes: relojes lógicos de
+Lamport.</li>
+<li><strong>U2.2</strong> Exclusión mutua: algoritmos centralizado,
+distribuido, Token Ring.</li>
+<li><strong>U2.3</strong> Bloqueos en Sistemas Distribuidos: detección y
+prevención.</li>
+<li><strong>U2.4</strong> Hilos (Threads): empleo y diseño de paquetes
+de hilos.</li>
+<li><strong>U4.3</strong> Contenedores Docker: imágenes, Dockerfile,
+Docker Hub.</li>
+</ul>
+<hr />
+<h2 id="práctica">Práctica</h2>
+<h3 id="hit-1--tareas-remotas-en-contenedores">Hit #1 — Tareas remotas
+en contenedores</h3>
+<p>Implementen un servidor que resuelva “tareas arbitrarias”
+empaquetadas como contenedores <strong>Docker</strong> [DOCKER, MER14].
+Conjunto de acciones de diseño y arquitectura que deben respetarse:</p>
+<h4 id="servidor">Servidor</h4>
+<ul>
+<li>Desarrollar el servidor utilizando tecnología HTTP.</li>
+<li>El servidor debe estar contenerizado y alojado en un host con Docker
+instalado.</li>
+<li>Debe permanecer receptivo a nuevas solicitudes del cliente,
+exponiendo métodos para interactuar.</li>
+<li>Debe incluir un método <code>ejecutarTareaRemota()</code> asociado a
+un endpoint (<code>getRemoteTask()</code>) que procese las tareas
+enviadas por el cliente.</li>
+<li>Los parámetros de las tareas se reciben vía HTTP
+<strong>POST</strong> con cuerpo JSON.</li>
+<li>Durante la ejecución, el servidor levanta temporalmente un “servicio
+tarea” como contenedor Docker.</li>
+<li>Una vez en funcionamiento, se comunica con el “servicio tarea” para
+ejecutar la lógica con los parámetros proporcionados.</li>
+<li>Espera los resultados de la tarea y los devuelve al cliente.</li>
+</ul>
+<h4 id="servicio-tarea">Servicio tarea</h4>
+<ul>
+<li>Establecer un servicio de escucha vía HTTP.</li>
+<li>Implementar la tarea de procesamiento
+<code>ejecutarTarea()</code>.</li>
+<li>Configurar el servicio para recibir los parámetros de entrada en
+formato JSON.</li>
+<li>Empaquetar la solución como imagen Docker para facilitar la
+distribución y el despliegue.</li>
+<li>Publicar la solución en <strong>Docker Hub</strong> [DHUB], pública
+o privada.</li>
+</ul>
+<h4 id="cliente">Cliente</h4>
+<ul>
+<li>Hacer una solicitud HTTP POST contra el servidor.</li>
+<li>Enviar los parámetros necesarios en formato JSON, incluyendo:
+<ul>
+<li>El cálculo a realizar.</li>
+<li>Los parámetros específicos requeridos por la tarea.</li>
+<li>Datos adicionales necesarios para el procesamiento.</li>
+<li>La imagen Docker que contiene la solución de la tarea.</li>
+</ul></li>
+</ul>
+<blockquote>
+<p><strong>Importante (Seguridad):</strong> Las credenciales de acceso
+al registro Docker <strong>NO deben enviarse en el payload del
+request</strong>. Como parte de este hit, investigue e implemente una
+forma segura de autenticar al servidor contra el registro Docker sin
+exponer credenciales en tránsito (por ejemplo: <em>image pull
+secrets</em>, tokens de acceso de corta duración, OIDC federation, o
+configuración previa en el host). Documente la solución elegida y
+justifique por qué es más segura que enviar usuario y contraseña en el
+JSON.</p>
+</blockquote>
+<p><img src="assets/images/tp2_hit1.png"
+alt="Hit #1 - Arquitectura Cliente/Servidor con Tareas Docker" /></p>
+<hr />
+<h3 id="hit-2--concurrencia-y-exclusión-mutua">Hit #2 — Concurrencia y
+exclusión mutua</h3>
+<p>Modifiquen el servidor del Hit #1 para que acepte múltiples tareas
+concurrentes. Para ello:</p>
+<ol type="1">
+<li><strong>Pool de workers:</strong> implementar un pool con un límite
+configurable (por ejemplo, N workers máximos). Cada worker ejecuta una
+tarea en un contenedor Docker independiente.</li>
+<li><strong>Exclusión mutua:</strong> cuando llegan más tareas que
+workers disponibles, las tareas deben encolarse. Implementen la cola con
+exclusión mutua para garantizar que no haya <em>race conditions</em> al
+asignar tareas. Pueden usar un mutex distribuido o implementar el
+algoritmo de Ricart-Agrawala [RIC81] para el acceso a la cola
+compartida.</li>
+<li><strong>Relojes lógicos:</strong> implementen <em>timestamps</em>
+lógicos (relojes de Lamport) [LAM78] en los mensajes entre cliente y
+servidor para ordenar las solicitudes de manera consistente.</li>
+<li><strong>Medición de throughput:</strong> midan y documenten el
+throughput del sistema (tareas completadas por minuto) variando la
+cantidad de workers: 1, 2, 4 y 8. Presenten los resultados en una tabla
+y grafiquen la curva de escalabilidad. Analicen si el <em>speedup</em>
+es lineal o si hay un cuello de botella — la <strong>ley de
+Amdahl</strong> [AMD67] es la herramienta teórica para razonar este
+límite. Considerando que todo corre en un solo equipo: ¿cuáles son los
+recursos compartidos que podrían convertirse en cuello de botella (CPU,
+memoria, I/O de disco, red de Docker, daemon de Docker)? ¿Cómo los
+identificarían y medirían?</li>
+</ol>
+<p><img src="assets/images/tp2_hit2.png"
+alt="Hit #2 - Pool de Workers con Exclusión Mutua" /></p>
+<hr />
+<h3 id="hit-3--coordinación-y-tolerancia-a-fallos">Hit #3 — Coordinación
+y tolerancia a fallos</h3>
+<p>Desplieguen 2 o más instancias del servidor del Hit #1 detrás de un
+balanceador de carga (pueden usar <strong>nginx</strong> [NGINX],
+HAProxy o un load balancer en la nube).</p>
+<p>Implementen un mecanismo de <strong>elección de líder</strong>
+utilizando el <strong>algoritmo Bully</strong> [GAR82] para que uno de
+los nodos actúe como coordinador del sistema. El coordinador será
+responsable de:</p>
+<ul>
+<li>Asignar tareas entrantes a los nodos workers disponibles.</li>
+<li>Mantener el registro de estado de cada nodo.</li>
+<li>Si el líder/coordinador se cae (simúlenlo matando el proceso), otro
+nodo debe detectar la caída y tomar el control automáticamente mediante
+una nueva elección.</li>
+</ul>
+<p>Documenten en el informe: el diagrama de secuencia de una elección de
+líder, el tiempo de recuperación ante una caída del coordinador, y cómo
+se redistribuyen las tareas pendientes.</p>
+<p><img src="assets/images/tp2_hit3.png"
+alt="Hit #3 - Elección de Líder (Algoritmo Bully)" /></p>
+<hr />
+<h2 id="referencias-y-bibliografía">Referencias y Bibliografía</h2>
+<ul>
+<li><strong>[AMD67]</strong> Amdahl, G. M. (1967). “Validity of the
+Single Processor Approach to Achieving Large Scale Computing
+Capabilities”. <em>AFIPS Conference Proceedings</em>, 30, 483–485.</li>
+<li><strong>[DHUB]</strong> Docker Hub — Container Image Library. <a
+href="https://hub.docker.com/">https://hub.docker.com/</a></li>
+<li><strong>[DOCKER]</strong> Docker Documentation. <a
+href="https://docs.docker.com/">https://docs.docker.com/</a></li>
+<li><strong>[GAR82]</strong> Garcia-Molina, H. (1982). “Elections in a
+Distributed Computing System”. <em>IEEE Transactions on Computers</em>,
+C-31(1), 48–59.</li>
+<li><strong>[GITLEAKS]</strong> gitleaks — Protect and discover secrets
+using Gitleaks. <a
+href="https://github.com/gitleaks/gitleaks">https://github.com/gitleaks/gitleaks</a></li>
+<li><strong>[LAM78]</strong> Lamport, L. (1978). “Time, Clocks, and the
+Ordering of Events in a Distributed System”. <em>Communications of the
+ACM</em>, 21(7), 558–565.</li>
+<li><strong>[MER14]</strong> Merkel, D. (2014). “Docker: Lightweight
+Linux Containers for Consistent Development and Deployment”. <em>Linux
+Journal</em>, 2014(239).</li>
+<li><strong>[NGINX]</strong> nginx Documentation — Load Balancing. <a
+href="https://nginx.org/en/docs/http/load_balancing.html">https://nginx.org/en/docs/http/load_balancing.html</a></li>
+<li><strong>[RIC81]</strong> Ricart, G. &amp; Agrawala, A. K. (1981).
+“An Optimal Algorithm for Mutual Exclusion in Computer Networks”.
+<em>Communications of the ACM</em>, 24(1), 9–17.</li>
+<li><strong>[TAN17]</strong> Tanenbaum, A. S. &amp; Van Steen, M.
+(2017). <em>Distributed Systems: Principles and Paradigms</em> (3rd
+ed.). Pearson. — Cap. 6: Sincronización.</li>
+</ul>
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+</body>
+</html>

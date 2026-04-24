@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+  <meta name="generator" content="pandoc + UNLu/DCB template">
+  <title>Práctica III · Parte 2 — Cloud Computing (Kubernetes /
+RabbitMQ) — UNLu DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="unlu-header">
+  <div class="brand">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </div>
+  <div class="course-bar">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="toc-sidebar">
+    <div class="toc-title">Contenidos</div>
+    <ul>
+    <li><a href="#trabajo-práctico-nº-3--parte-2"
+    id="toc-trabajo-práctico-nº-3--parte-2">Trabajo Práctico Nº 3 —
+    Parte 2</a>
+    <ul>
+    <li><a href="#computación-en-la-nube-kubernetes--rabbitmq"
+    id="toc-computación-en-la-nube-kubernetes--rabbitmq">Computación en
+    la Nube (Kubernetes / RabbitMQ)</a></li>
+    <li><a href="#práctica" id="toc-práctica">Práctica</a>
+    <ul>
+    <li><a href="#hit-2--sobel-con-offloading-en-la-nube"
+    id="toc-hit-2--sobel-con-offloading-en-la-nube">Hit #2 — Sobel con
+    offloading en la nube</a></li>
+    <li><a
+    href="#hit-3--sobel-contenerizado-asincrónico-y-escalable-base-del-tp-integrador"
+    id="toc-hit-3--sobel-contenerizado-asincrónico-y-escalable-base-del-tp-integrador">Hit
+    #3 — Sobel contenerizado, asincrónico y escalable (base del TP
+    Integrador)</a></li>
+    <li><a href="#hit-3-cont--análisis-de-desempeño-bajo-carga"
+    id="toc-hit-3-cont--análisis-de-desempeño-bajo-carga">Hit #3 (cont.)
+    — Análisis de desempeño bajo carga</a></li>
+    <li><a href="#hit-4--observabilidad-prometheus--grafana"
+    id="toc-hit-4--observabilidad-prometheus--grafana">Hit #4 —
+    Observabilidad (Prometheus + Grafana)</a></li>
+    </ul></li>
+    <li><a href="#referencias-y-bibliografía"
+    id="toc-referencias-y-bibliografía">Referencias y
+    Bibliografía</a></li>
+    </ul></li>
+    </ul>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
+      <a href="index.html" style="color:var(--gray);">← Volver al índice</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">TP
+3 · Parte 2</div>
+
+<h1 id="trabajo-práctico-nº-3--parte-2">Trabajo Práctico Nº 3 — Parte
+2</h1>
+<h2 id="computación-en-la-nube-kubernetes--rabbitmq">Computación en la
+Nube (Kubernetes / RabbitMQ)</h2>
+<p><strong>Fecha de entrega:</strong> 20/05/2026 — todos los puntos.</p>
+<blockquote>
+<p><strong>Continuidad con la Parte 1.</strong> Esta entrega asume los
+ejercicios del Hit #0 (patrones de mensajería [RMQ]) y el Hit #1 (Sobel
+distribuido sobre Docker [SOB68]) ya resueltos. Los requisitos generales
+de entrega (informe, repositorio público, CI/CD, gitleaks, video,
+health-check) y la lista de <strong>Contenidos del programa
+relacionados</strong> son los mismos que los declarados en la Parte 1 —
+no se repiten acá.</p>
+</blockquote>
+<hr />
+<h2 id="práctica">Práctica</h2>
+<p>En la nube tenemos dos patrones de trabajo:</p>
+<ul>
+<li><strong>Cloud Native:</strong> la aplicación corre 100% en la
+nube.</li>
+<li><strong>Híbrido (On-premise + Cloud):</strong> parte de la
+aplicación corre en equipos locales y otra parte en la nube.</li>
+</ul>
+<p>Pensemos la nube como una <em>extensión</em> de la capacidad de
+cómputo de los equipos locales. Aplicando este enfoque podemos
+implementar el patrón de <strong>Cloud-Bursting</strong> [CBURST]:
+cuando la demanda local satura la capacidad propia, “se desborda” hacia
+la nube.</p>
+<p>En esta segunda parte vamos a hacer que todo lo que en la Parte 1 se
+corrió “distribuido” (pero centralizado en la propia computadora)
+<strong>escale realmente</strong>.</p>
+<p>¿Qué queremos lograr?</p>
+<ul>
+<li><strong>Si nos quedamos solo en local</strong>, agregar más nodos de
+trabajo requiere tiempo (compra, ambientación, espacio físico e
+instalación de paquetes) y genera un costo fijo mínimo, además del
+variable por intensidad de uso.</li>
+<li><strong>Hacer offloading a la nube</strong> [KUM10] es la
+alternativa elástica: los recursos se aprovisionan y se destruyen
+on-demand, y se paga solo por el tiempo de uso. En este apartado vamos a
+trabajar sobre este enfoque.</li>
+</ul>
+<hr />
+<h3 id="hit-2--sobel-con-offloading-en-la-nube">Hit #2 — Sobel con
+offloading en la nube</h3>
+<p>El objetivo del Hit #2 es construir una <strong>base
+elástica</strong>: el mismo cómputo del operador de Sobel del Hit #1,
+pero usando <strong>Terraform</strong> [TF] para crear nodos de trabajo
+bajo demanda y eliminarlos al terminar la tarea. Para cada worker, el
+ciclo es:</p>
+<ul>
+<li><strong>Provisioning:</strong> crear la VM en el cloud
+provider.</li>
+<li><strong>Bootstrap:</strong> instalar las herramientas necesarias
+mediante <code>user_data</code> (Java, Docker, tooling).</li>
+<li><strong>Deploy:</strong> copiar el ejecutable (<code>.jar</code>,
+<code>.py</code>, etc.) o descargar la imagen Docker desde un registry
+público.</li>
+<li><strong>Join:</strong> poner a correr la aplicación e integrarla al
+cluster de trabajo.</li>
+<li><strong>Teardown:</strong> una vez completada la tarea, destruir la
+VM.</li>
+</ul>
+<h4 id="requisitos-de-infraestructura-como-código-iac">Requisitos de
+Infraestructura como Código (IaC)</h4>
+<ul>
+<li><strong>Remote state obligatorio:</strong> configurar un backend
+remoto para el estado de Terraform (GCS bucket + lock, o S3 + DynamoDB
+lock). <strong>No se acepta</strong> estado local
+(<code>terraform.tfstate</code> en el repo).</li>
+<li><strong>Estructura de archivos mínima:</strong> organizar el código
+Terraform en archivos separados: <code>provider.tf</code> (configuración
+del provider y backend), <code>variables.tf</code> (declaración de
+variables), <code>main.tf</code> (recursos principales) y
+<code>outputs.tf</code> (valores de salida). No colocar todo en un único
+archivo.</li>
+<li><strong>Terraform plan en CI/CD:</strong> el pipeline debe ejecutar
+<code>terraform plan</code> en cada Pull Request y
+<code>terraform apply</code> <strong>solo</strong> al mergear a la rama
+principal.</li>
+</ul>
+<p>El objetivo es construir una arquitectura <strong>híbrida</strong>
+escalable (tipo 1, inicial). Presenten el diagrama de arquitectura y
+justifiquen, para cada servicio, dónde lo despliegan (local vs nube) y
+por qué.</p>
+<p><img src="assets/images/tp3_hit2.png"
+alt="Hit #2 — Sobel con Offloading en la Nube" /></p>
+<hr />
+<h3
+id="hit-3--sobel-contenerizado-asincrónico-y-escalable-base-del-tp-integrador">Hit
+#3 — Sobel contenerizado, asincrónico y escalable (base del TP
+Integrador)</h3>
+<p>A diferencia del esquema híbrido del Hit #2, ahora la idea es
+construir una infraestructura <strong>100% en la nube</strong> pero con
+un enfoque diferente: orquestada con Kubernetes [K8S].</p>
+<h4 id="1-desplegar-con-terraform-un-cluster-de-kubernetes-gke">1.
+Desplegar con Terraform un cluster de Kubernetes (GKE)</h4>
+<p>Este cluster va a manejar todos los recursos del sistema: tanto los
+servicios de infraestructura (RabbitMQ, Redis) como los componentes de
+aplicación (frontend, backend, split, joiner). La configuración mínima
+exigida es:</p>
+<ol type="1">
+<li><strong>Nodegroup de infraestructura:</strong> aloja los servicios
+base (RabbitMQ, Redis, observabilidad).</li>
+<li><strong>Nodegroup de aplicaciones:</strong> aloja los componentes
+del sistema (frontend, backend, split, joiner).</li>
+<li><strong>Pool de workers fuera del cluster:</strong> máquinas
+virtuales gestionadas con Terraform aparte (no son nodos de Kubernetes),
+encargadas de las tareas de cómputo intensivo. Mantenerlas fuera del
+cluster permite escalarlas de manera independiente y aprovechar tipos de
+instancia distintos sin cambiar el <code>nodepool</code> de GKE.</li>
+</ol>
+<h4
+id="requisitos-de-mensajería-aplicando-los-patrones-del-hit-0">Requisitos
+de mensajería (aplicando los patrones del Hit #0)</h4>
+<ul>
+<li><strong>Dead Letter Queue:</strong> configurar una DLX en las colas
+de procesamiento Sobel. Si un worker falla al procesar un fragmento de
+imagen (crash, timeout, <em>out of memory</em>), el mensaje debe ir a la
+DLQ en lugar de perderse. Implementar un servicio que monitoree la DLQ y
+re-asigne los fragmentos fallidos a otros workers.</li>
+<li><strong>Retry con exponential backoff:</strong> cuando un worker no
+puede contactar a RabbitMQ o Redis (por ejemplo, durante un despliegue o
+reinicio), debe reintentar la conexión con backoff exponencial (1s, 2s,
+4s, 8s, máximo 30s). <strong>No implementar retry infinito sin
+backoff:</strong> genera tormentas de reconexión que empeoran el
+problema.</li>
+<li><strong>Pub/Sub para notificación de resultados:</strong> cuando un
+worker completa un fragmento, publicar el resultado en un
+<em>exchange</em> <code>fanout</code> para que tanto el servicio
+<em>joiner</em> como el dashboard de monitoreo reciban la
+notificación.</li>
+</ul>
+<p><img src="assets/images/tp3_hit3.png"
+alt="Hit #3 — Arquitectura Kubernetes (GKE)" /></p>
+<h4 id="2-construir-los-pipelines-de-despliegue">2. Construir los
+pipelines de despliegue</h4>
+<ul>
+<li><strong>Pipeline 1 — Infraestructura:</strong> construye el cluster
+de Kubernetes con Terraform.
+<ul>
+<li><strong>Pipeline 1.1</strong> — Despliega los servicios base
+(RabbitMQ, Redis y otros).</li>
+<li><strong>Pipeline 1.2 … 1.N</strong> — Despliega cada aplicación
+(frontend, backend, split, joiner).</li>
+</ul></li>
+<li><strong>Pipeline 2 — Workers dinámicos:</strong> despliega y
+destruye las máquinas virtuales que actúan como workers. Objetivo
+deseable: que el dimensionamiento sea <strong>dinámico</strong> según la
+cola pendiente.</li>
+</ul>
+<hr />
+<h3 id="hit-3-cont--análisis-de-desempeño-bajo-carga">Hit #3 (cont.) —
+Análisis de desempeño bajo carga</h3>
+<p>Para evaluar el desempeño de la plataforma vamos a medir los tiempos
+de respuesta en diferentes escenarios, modificando tres variables:</p>
+<ul>
+<li><strong>V1 — Tamaño de los datos:</strong> 1 KB, 10 KB, 100 KB, 1
+MB, 10 MB, 100 MB.</li>
+<li><strong>V2 — Concurrencia:</strong> distintos niveles de peticiones
+concurrentes.</li>
+<li><strong>V3 — Cantidad de workers:</strong> se ajusta el número de
+procesos o threads disponibles para manejar las peticiones.</li>
+</ul>
+<blockquote>
+<p><strong>Nota sobre quotas:</strong> las cuentas gratuitas de los
+cloud providers tienen límites de VMs por región/zona. Si necesitan
+escalar a más nodos para los experimentos, distribúyanlos entre varias
+regiones para no chocar contra el cupo.</p>
+</blockquote>
+<p>El objetivo es entender cómo la plataforma responde al modificar
+estas variables, identificar la capacidad real de escalabilidad y los
+posibles cuellos de botella. Los resultados se presentan en una tabla
+con el tiempo de respuesta para cada combinación de variables, dando una
+visión clara de la evolución del desempeño bajo distintas
+condiciones.</p>
+<p><strong>Herramienta de load testing:</strong> usar una herramienta de
+benchmarking como <strong>Locust</strong> [LOCUST] o <strong>k6</strong>
+[K6]. Permiten definir escenarios reproducibles y generar reportes
+comparables. Documenten la configuración del test (cantidad de
+<em>virtual users</em>, <em>ramp-up</em>, duración) y presenten los
+resultados con métricas estándar: latencia p50/p95/p99, throughput
+(req/s) y tasa de errores.</p>
+<hr />
+<h3 id="hit-4--observabilidad-prometheus--grafana">Hit #4 —
+Observabilidad (Prometheus + Grafana)</h3>
+<p>Desplieguen Prometheus [PROM] y Grafana [GRAF] en el cluster de
+Kubernetes para monitorear la plataforma:</p>
+<ol type="1">
+<li><strong>Instalación:</strong> instalar Prometheus y Grafana en el
+nodegroup de infraestructura. Pueden usar el Helm chart oficial
+<code>prometheus-community/kube-prometheus-stack</code>.</li>
+<li><strong>Instrumentación:</strong> instrumentar los servicios
+(backend, workers, split, joiner) para que exporten métricas custom:
+tareas procesadas, tareas en cola, tiempo de procesamiento por tarea y
+errores.</li>
+<li><strong>Dashboard:</strong> crear un dashboard en Grafana que
+muestre como mínimo:
+<ul>
+<li>Uso de CPU y memoria por pod/nodo.</li>
+<li>Mensajes procesados en RabbitMQ (publicados vs consumidos vs en
+cola).</li>
+<li>Latencia de procesamiento de tareas (p50, p95, p99).</li>
+<li>Tasa de errores.</li>
+</ul></li>
+<li><strong>Alertas:</strong> configurar al menos una alerta básica (por
+ejemplo: cola de RabbitMQ supera un umbral, o un worker no responde en X
+segundos).</li>
+</ol>
+<hr />
+<h2 id="referencias-y-bibliografía">Referencias y Bibliografía</h2>
+<ul>
+<li><strong>[BUR18]</strong> Burns, B. (2018). <em>Designing Distributed
+Systems: Patterns and Paradigms for Scalable, Reliable Services</em>.
+O’Reilly Media.</li>
+<li><strong>[CBURST]</strong> Cloud-bursting — Atlassian. <a
+href="https://www.atlassian.com/es/continuous-delivery/principles/cloud-bursting">atlassian.com/…/cloud-bursting</a></li>
+<li><strong>[GRAF]</strong> Grafana Documentation. <a
+href="https://grafana.com/docs/grafana/">grafana.com/docs/grafana</a></li>
+<li><strong>[K6]</strong> k6 — Load testing for engineering teams. <a
+href="https://k6.io">k6.io</a></li>
+<li><strong>[K8S]</strong> Kubernetes Documentation. <a
+href="https://kubernetes.io/docs/">kubernetes.io/docs</a></li>
+<li><strong>[KUM10]</strong> Kumar, K. &amp; Lu, Y. (2010). “Cloud
+Computing for Mobile Users: Can Offloading Computation Save Energy?”.
+Purdue University. <a
+href="https://www.cs.purdue.edu/homes/bb/mobile-cloud-survey.pdf">PDF</a></li>
+<li><strong>[LOCUST]</strong> Locust — Open source load testing tool. <a
+href="https://locust.io">locust.io</a></li>
+<li><strong>[PROM]</strong> Prometheus — Monitoring system &amp; time
+series database. <a
+href="https://prometheus.io/docs/">prometheus.io/docs</a></li>
+<li><strong>[RMQ]</strong> RabbitMQ Documentation — Tutorials y patrones
+de mensajería. <a
+href="https://www.rabbitmq.com/tutorials">rabbitmq.com/tutorials</a></li>
+<li><strong>[SOB68]</strong> Sobel, I. &amp; Feldman, G. (1968). “A 3x3
+Isotropic Gradient Operator for Image Processing”. Stanford AI
+Project.</li>
+<li><strong>[TF]</strong> Terraform by HashiCorp — Documentation. <a
+href="https://developer.hashicorp.com/terraform/docs">developer.hashicorp.com/terraform/docs</a></li>
+</ul>
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+</body>
+</html>

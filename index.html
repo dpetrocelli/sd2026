@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistemas Distribuidos y Programación Paralela 2026 — UNLu DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="unlu-header">
+  <div class="brand">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </div>
+  <div class="course-bar">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </div>
+</header>
+
+<div class="layout" style="grid-template-columns: 1fr;">
+  <main class="content" style="max-width: 1100px; margin: 0 auto; padding: 48px 56px 80px;">
+
+    <h1 style="border-bottom: none; padding-bottom: 0; margin-bottom: 6px;">Trabajos Prácticos</h1>
+    <p style="color: var(--gray); margin: 0 0 32px; font-size: 15px;">
+      Material de cursada — Sistemas Distribuidos y Programación Paralela · 2026 · Cátedra Petrocelli.
+    </p>
+
+    <h2 style="margin-top: 32px;">Práctica I — Introducción</h2>
+    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
+      Conceptos básicos para la construcción de Sistemas Distribuidos.
+    </p>
+
+    <div class="tp-grid">
+      <a href="practica-1.html" class="tp-card">
+        <span class="tp-num">TP 1</span>
+        <h3>Conceptos básicos de SD</h3>
+        <p class="tp-desc">
+          Sockets, comunicación cliente/servidor, serialización JSON, registro de contactos,
+          sistemas de inscripciones, y primer contacto con gRPC + Protocol Buffers.
+        </p>
+        <div class="tp-meta">
+          <span>Entrega: <strong>17/03/2026</strong></span>
+          <span>→ Ver TP</span>
+        </div>
+      </a>
+    </div>
+
+    <h2 style="margin-top: 48px;">Práctica II — Concurrencia</h2>
+    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
+      Arquitecturas concurrentes y coordinación entre procesos distribuidos.
+    </p>
+
+    <div class="tp-grid">
+      <a href="practica-2.html" class="tp-card">
+        <span class="tp-num">TP 2</span>
+        <h3>SD y Concurrencia</h3>
+        <p class="tp-desc">
+          Cliente/servidor con tareas en Docker, pool de workers con exclusión mutua,
+          y algoritmo de elección de líder (Bully).
+        </p>
+        <div class="tp-meta">
+          <span>Entrega: <strong>31/03/2026</strong></span>
+          <span>→ Ver TP</span>
+        </div>
+      </a>
+    </div>
+
+    <h2 style="margin-top: 48px;">Práctica III — Cloud Computing</h2>
+    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
+      Computación distribuida con Kubernetes y RabbitMQ. Dividida en dos partes.
+    </p>
+
+    <div class="tp-grid">
+
+      <a href="practica-3-parte-1.html" class="tp-card">
+        <span class="tp-num">TP 3 · PARTE 1</span>
+        <h3>Patrones de mensajería + Sobel distribuido</h3>
+        <p class="tp-desc">
+          Hit #0 — patrones con RabbitMQ (Message Queue, Pub/Sub, DLQ, Retry).
+          Hit #1 — operador de Sobel distribuido sobre Docker, con tolerancia a fallos.
+        </p>
+        <div class="tp-meta">
+          <span>Entrega: <strong>05/05/2026</strong></span>
+          <span>→ Ver TP</span>
+        </div>
+      </a>
+
+      <a href="practica-3-parte-2.html" class="tp-card">
+        <span class="tp-num">TP 3 · PARTE 2</span>
+        <h3>Cloud Computing — Kubernetes + GKE</h3>
+        <p class="tp-desc">
+          Hit #2 — offloading a la nube con Terraform.
+          Hit #3 — cluster GKE escalable con DLQ + backoff + Pub/Sub.
+          Hit #4 — observabilidad con Prometheus + Grafana.
+        </p>
+        <div class="tp-meta">
+          <span>Entrega: <strong>20/05/2026</strong></span>
+          <span>→ Ver TP</span>
+        </div>
+      </a>
+
+    </div>
+
+    <h2 style="margin-top: 48px;">Práctica IV — Programación Paralela</h2>
+    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
+      GPU computing: shaders, coordenadas UV, filtros y puente conceptual hacia CUDA.
+    </p>
+
+    <div class="tp-grid">
+      <a href="practica-4.html" class="tp-card">
+        <span class="tp-num">TP 4</span>
+        <h3>Shaders y GPU computing</h3>
+        <p class="tp-desc">
+          Pipeline de renderizado, pixel shaders, manipulación de imágenes en GPU,
+          filtros chroma key, y la transición conceptual hacia CUDA.
+        </p>
+        <div class="tp-meta">
+          <span>Entrega: <strong>15/05/2026</strong></span>
+          <span>→ Ver TP</span>
+        </div>
+      </a>
+    </div>
+
+    <h2 style="margin-top: 48px;">TP Integrador</h2>
+    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
+      Cierre de la cursada: sistema distribuido completo de minería blockchain con CUDA.
+    </p>
+
+    <div class="tp-grid">
+      <a href="tp-integrador.html" class="tp-card" style="border-left-color: var(--accent);">
+        <span class="tp-num" style="background: var(--accent);">TP INTEGRADOR</span>
+        <h3>Blockchain Distribuida y CUDA</h3>
+        <p class="tp-desc">
+          Tres pilares: (1) minero CUDA en C/C++, (2) red distribuida de nodos validadores
+          sobre los patrones del TP3, (3) despliegue end-to-end en Kubernetes.
+        </p>
+        <div class="tp-meta">
+          <span>Entrega: <strong>23/06/2026</strong></span>
+          <span>→ Ver TP</span>
+        </div>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+</body>
+</html>
