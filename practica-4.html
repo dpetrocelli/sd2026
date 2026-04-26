@@ -150,6 +150,62 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
     <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">TP
 4</div>
 
+    <details class="toc-inline" open>
+      <summary>📑 Índice del documento</summary>
+      <ul>
+      <li><a href="#trabajo-práctico-nº-4"
+      id="toc-trabajo-práctico-nº-4">Trabajo Práctico Nº 4</a>
+      <ul>
+      <li><a href="#programación-paralela-shaders"
+      id="toc-programación-paralela-shaders">Programación Paralela
+      (Shaders)</a></li>
+      <li><a href="#requisitos-consideraciones-y-formato-de-entrega"
+      id="toc-requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+      consideraciones y formato de entrega</a></li>
+      <li><a href="#contenidos-del-programa-relacionados"
+      id="toc-contenidos-del-programa-relacionados">Contenidos del
+      programa relacionados</a></li>
+      <li><a href="#práctica" id="toc-práctica">Práctica</a>
+      <ul>
+      <li><a href="#comencemos-con-lo-básico"
+      id="toc-comencemos-con-lo-básico">Comencemos con lo
+      básico</a></li>
+      <li><a href="#hit-1--pixel-shaders-y-pipeline-de-renderizado"
+      id="toc-hit-1--pixel-shaders-y-pipeline-de-renderizado">Hit #1 —
+      Pixel shaders y pipeline de renderizado</a></li>
+      <li><a href="#hit-2--pintando-con-código"
+      id="toc-hit-2--pintando-con-código">Hit #2 — Pintando con
+      código</a></li>
+      <li><a href="#hit-3" id="toc-hit-3">Hit #3</a></li>
+      <li><a href="#hit-4" id="toc-hit-4">Hit #4</a></li>
+      <li><a href="#hit-5" id="toc-hit-5">Hit #5</a></li>
+      <li><a href="#hit-6--filtro-escala-de-grises"
+      id="toc-hit-6--filtro-escala-de-grises">Hit #6 — Filtro escala de
+      grises</a></li>
+      <li><a href="#de-pixel-shaders-a-cuda-el-puente-conceptual"
+      id="toc-de-pixel-shaders-a-cuda-el-puente-conceptual">De Pixel
+      Shaders a CUDA: el puente conceptual</a></li>
+      </ul></li>
+      <li><a href="#referencias-y-bibliografía"
+      id="toc-referencias-y-bibliografía">Referencias y Bibliografía</a>
+      <ul>
+      <li><a href="#computación-paralela-y-gpu--papers-fundacionales"
+      id="toc-computación-paralela-y-gpu--papers-fundacionales">Computación
+      paralela y GPU — papers fundacionales</a></li>
+      <li><a href="#libros-de-texto" id="toc-libros-de-texto">Libros de
+      texto</a></li>
+      <li><a href="#documentación-y-recursos-web"
+      id="toc-documentación-y-recursos-web">Documentación y recursos
+      web</a></li>
+      </ul></li>
+      </ul></li>
+      </ul>
+      <div class="toc-controls">
+        <button type="button" class="toc-btn" data-action="expand-all">Expandir todo</button>
+        <button type="button" class="toc-btn" data-action="collapse-all">Colapsar todo</button>
+      </div>
+    </details>
+
 <h1 id="trabajo-práctico-nº-4">Trabajo Práctico Nº 4</h1>
 <h2 id="programación-paralela-shaders">Programación Paralela
 (Shaders)</h2>
@@ -516,6 +572,62 @@ href="https://webglfundamentals.org/">webglfundamentals.org</a></li>
     · Dr. David Petrocelli
   </div>
 </footer>
+
+<script>
+// Wrap each H2 (and its following content until the next H2) in a <details open>
+// element so users can collapse/expand sections.
+(function () {
+  const main = document.querySelector('main.content');
+  if (!main) return;
+
+  // Collect direct-child H2 headings so we don't touch nested ones (e.g., inside details we'll create)
+  const headings = Array.from(main.children).filter(el => el.tagName === 'H2');
+
+  headings.forEach(h2 => {
+    const details = document.createElement('details');
+    details.open = true;
+    details.className = 'section-collapsible';
+
+    const summary = document.createElement('summary');
+    // Move heading content (incl. anchor) into the summary so anchors keep working
+    summary.innerHTML = h2.innerHTML;
+    if (h2.id) summary.id = h2.id;
+    details.appendChild(summary);
+
+    // Move siblings until next H2 into details
+    const parent = h2.parentNode;
+    let next = h2.nextSibling;
+    parent.replaceChild(details, h2);
+    while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
+      const node = next;
+      next = next.nextSibling;
+      details.appendChild(node);
+    }
+  });
+
+  // If there's a hash in the URL, ensure the target's <details> is open
+  function openDetailsForHash(hash) {
+    if (!hash) return;
+    const target = document.getElementById(hash.replace(/^#/, ''));
+    if (!target) return;
+    let p = target.closest('details');
+    while (p) { p.open = true; p = p.parentElement && p.parentElement.closest('details'); }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  openDetailsForHash(window.location.hash);
+  window.addEventListener('hashchange', () => openDetailsForHash(window.location.hash));
+
+  // Wire up "Expand all" / "Collapse all" controls in the inline TOC
+  document.querySelectorAll('.toc-controls [data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const action = btn.getAttribute('data-action');
+      const open = action === 'expand-all';
+      document.querySelectorAll('details.section-collapsible').forEach(d => { d.open = open; });
+    });
+  });
+})();
+</script>
 
 </body>
 </html>

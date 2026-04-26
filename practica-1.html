@@ -69,6 +69,45 @@ Distribuidos — UNLu DCB</title>
     <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">TP
 1</div>
 
+    <details class="toc-inline" open>
+      <summary>📑 Índice del documento</summary>
+      <ul>
+      <li><a href="#trabajo-práctico-nº-1"
+      id="toc-trabajo-práctico-nº-1">Trabajo Práctico Nº 1</a>
+      <ul>
+      <li><a
+      href="#conceptos-básicos-para-la-construcción-de-sistemas-distribuidos"
+      id="toc-conceptos-básicos-para-la-construcción-de-sistemas-distribuidos">Conceptos
+      básicos para la construcción de Sistemas Distribuidos</a></li>
+      <li><a href="#requisitos-consideraciones-y-formato-de-entrega"
+      id="toc-requisitos-consideraciones-y-formato-de-entrega">Requisitos,
+      consideraciones y formato de entrega</a></li>
+      <li><a href="#contenidos-del-programa-relacionados"
+      id="toc-contenidos-del-programa-relacionados">Contenidos del
+      programa relacionados</a></li>
+      <li><a href="#práctica" id="toc-práctica">Práctica</a>
+      <ul>
+      <li><a href="#hit-1" id="toc-hit-1">Hit #1</a></li>
+      <li><a href="#hit-2" id="toc-hit-2">Hit #2</a></li>
+      <li><a href="#hit-3" id="toc-hit-3">Hit #3</a></li>
+      <li><a href="#hit-4" id="toc-hit-4">Hit #4</a></li>
+      <li><a href="#hit-5" id="toc-hit-5">Hit #5</a></li>
+      <li><a href="#hit-6" id="toc-hit-6">Hit #6</a></li>
+      <li><a href="#hit-7" id="toc-hit-7">Hit #7</a></li>
+      <li><a href="#hit-8--grpc--protobuf"
+      id="toc-hit-8--grpc--protobuf">Hit #8 — gRPC / Protobuf</a></li>
+      </ul></li>
+      <li><a href="#referencias-y-bibliografía"
+      id="toc-referencias-y-bibliografía">Referencias y
+      Bibliografía</a></li>
+      </ul></li>
+      </ul>
+      <div class="toc-controls">
+        <button type="button" class="toc-btn" data-action="expand-all">Expandir todo</button>
+        <button type="button" class="toc-btn" data-action="collapse-all">Colapsar todo</button>
+      </div>
+    </details>
+
 <h1 id="trabajo-práctico-nº-1">Trabajo Práctico Nº 1</h1>
 <h2
 id="conceptos-básicos-para-la-construcción-de-sistemas-distribuidos">Conceptos
@@ -310,6 +349,62 @@ href="https://scholar.harvard.edu/waldo/publications/note-distributed-computing"
     · Dr. David Petrocelli
   </div>
 </footer>
+
+<script>
+// Wrap each H2 (and its following content until the next H2) in a <details open>
+// element so users can collapse/expand sections.
+(function () {
+  const main = document.querySelector('main.content');
+  if (!main) return;
+
+  // Collect direct-child H2 headings so we don't touch nested ones (e.g., inside details we'll create)
+  const headings = Array.from(main.children).filter(el => el.tagName === 'H2');
+
+  headings.forEach(h2 => {
+    const details = document.createElement('details');
+    details.open = true;
+    details.className = 'section-collapsible';
+
+    const summary = document.createElement('summary');
+    // Move heading content (incl. anchor) into the summary so anchors keep working
+    summary.innerHTML = h2.innerHTML;
+    if (h2.id) summary.id = h2.id;
+    details.appendChild(summary);
+
+    // Move siblings until next H2 into details
+    const parent = h2.parentNode;
+    let next = h2.nextSibling;
+    parent.replaceChild(details, h2);
+    while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
+      const node = next;
+      next = next.nextSibling;
+      details.appendChild(node);
+    }
+  });
+
+  // If there's a hash in the URL, ensure the target's <details> is open
+  function openDetailsForHash(hash) {
+    if (!hash) return;
+    const target = document.getElementById(hash.replace(/^#/, ''));
+    if (!target) return;
+    let p = target.closest('details');
+    while (p) { p.open = true; p = p.parentElement && p.parentElement.closest('details'); }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  openDetailsForHash(window.location.hash);
+  window.addEventListener('hashchange', () => openDetailsForHash(window.location.hash));
+
+  // Wire up "Expand all" / "Collapse all" controls in the inline TOC
+  document.querySelectorAll('.toc-controls [data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const action = btn.getAttribute('data-action');
+      const open = action === 'expand-all';
+      document.querySelectorAll('details.section-collapsible').forEach(d => { d.open = open; });
+    });
+  });
+})();
+</script>
 
 </body>
 </html>

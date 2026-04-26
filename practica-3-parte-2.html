@@ -80,6 +80,56 @@ RabbitMQ) — UNLu DCB</title>
     <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">TP
 3 · Parte 2</div>
 
+    <details class="toc-inline" open>
+      <summary>📑 Índice del documento</summary>
+      <ul>
+      <li><a href="#trabajo-práctico-nº-3--parte-2"
+      id="toc-trabajo-práctico-nº-3--parte-2">Trabajo Práctico Nº 3 —
+      Parte 2</a>
+      <ul>
+      <li><a href="#computación-en-la-nube-kubernetes--rabbitmq"
+      id="toc-computación-en-la-nube-kubernetes--rabbitmq">Computación
+      en la Nube (Kubernetes / RabbitMQ)</a></li>
+      <li><a href="#práctica" id="toc-práctica">Práctica</a>
+      <ul>
+      <li><a href="#hit-2--sobel-con-offloading-en-la-nube"
+      id="toc-hit-2--sobel-con-offloading-en-la-nube">Hit #2 — Sobel con
+      offloading en la nube</a></li>
+      <li><a
+      href="#hit-3--sobel-contenerizado-asincrónico-y-escalable-base-del-tp-integrador"
+      id="toc-hit-3--sobel-contenerizado-asincrónico-y-escalable-base-del-tp-integrador">Hit
+      #3 — Sobel contenerizado, asincrónico y escalable (base del TP
+      Integrador)</a></li>
+      <li><a href="#hit-3-cont--análisis-de-desempeño-bajo-carga"
+      id="toc-hit-3-cont--análisis-de-desempeño-bajo-carga">Hit #3
+      (cont.) — Análisis de desempeño bajo carga</a></li>
+      <li><a href="#hit-4--observabilidad-prometheus--grafana"
+      id="toc-hit-4--observabilidad-prometheus--grafana">Hit #4 —
+      Observabilidad (Prometheus + Grafana)</a></li>
+      </ul></li>
+      <li><a href="#referencias-y-bibliografía"
+      id="toc-referencias-y-bibliografía">Referencias y Bibliografía</a>
+      <ul>
+      <li><a href="#cloud-computing--papers-fundacionales"
+      id="toc-cloud-computing--papers-fundacionales">Cloud Computing —
+      papers fundacionales</a></li>
+      <li><a href="#kubernetes-y-orquestación"
+      id="toc-kubernetes-y-orquestación">Kubernetes y
+      orquestación</a></li>
+      <li><a href="#observabilidad-y-sre"
+      id="toc-observabilidad-y-sre">Observabilidad y SRE</a></li>
+      <li><a href="#iac-load-testing-y-otras-herramientas"
+      id="toc-iac-load-testing-y-otras-herramientas">IaC, Load Testing y
+      otras herramientas</a></li>
+      </ul></li>
+      </ul></li>
+      </ul>
+      <div class="toc-controls">
+        <button type="button" class="toc-btn" data-action="expand-all">Expandir todo</button>
+        <button type="button" class="toc-btn" data-action="collapse-all">Colapsar todo</button>
+      </div>
+    </details>
+
 <h1 id="trabajo-práctico-nº-3--parte-2">Trabajo Práctico Nº 3 — Parte
 2</h1>
 <h2 id="computación-en-la-nube-kubernetes--rabbitmq">Computación en la
@@ -388,6 +438,62 @@ href="https://developer.hashicorp.com/terraform/docs">developer.hashicorp.com/te
     · Dr. David Petrocelli
   </div>
 </footer>
+
+<script>
+// Wrap each H2 (and its following content until the next H2) in a <details open>
+// element so users can collapse/expand sections.
+(function () {
+  const main = document.querySelector('main.content');
+  if (!main) return;
+
+  // Collect direct-child H2 headings so we don't touch nested ones (e.g., inside details we'll create)
+  const headings = Array.from(main.children).filter(el => el.tagName === 'H2');
+
+  headings.forEach(h2 => {
+    const details = document.createElement('details');
+    details.open = true;
+    details.className = 'section-collapsible';
+
+    const summary = document.createElement('summary');
+    // Move heading content (incl. anchor) into the summary so anchors keep working
+    summary.innerHTML = h2.innerHTML;
+    if (h2.id) summary.id = h2.id;
+    details.appendChild(summary);
+
+    // Move siblings until next H2 into details
+    const parent = h2.parentNode;
+    let next = h2.nextSibling;
+    parent.replaceChild(details, h2);
+    while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
+      const node = next;
+      next = next.nextSibling;
+      details.appendChild(node);
+    }
+  });
+
+  // If there's a hash in the URL, ensure the target's <details> is open
+  function openDetailsForHash(hash) {
+    if (!hash) return;
+    const target = document.getElementById(hash.replace(/^#/, ''));
+    if (!target) return;
+    let p = target.closest('details');
+    while (p) { p.open = true; p = p.parentElement && p.parentElement.closest('details'); }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  openDetailsForHash(window.location.hash);
+  window.addEventListener('hashchange', () => openDetailsForHash(window.location.hash));
+
+  // Wire up "Expand all" / "Collapse all" controls in the inline TOC
+  document.querySelectorAll('.toc-controls [data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const action = btn.getAttribute('data-action');
+      const open = action === 'expand-all';
+      document.querySelectorAll('details.section-collapsible').forEach(d => { d.open = open; });
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
