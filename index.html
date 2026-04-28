@@ -32,6 +32,21 @@
       Material de cursada — Sistemas Distribuidos y Programación Paralela · 2026 · Cátedra Petrocelli.
     </p>
 
+    <a href="autograder.html" class="tp-card" style="display:block; border-left-color: var(--accent); background: linear-gradient(90deg, rgba(0,82,155,0.04), transparent); margin-bottom: 32px;">
+      <span class="tp-num" style="background: var(--accent);">★ EMPEZAR ACÁ</span>
+      <h3>Autograder — Cómo se entregan los TPs</h3>
+      <p class="tp-desc">
+        Sistema de corrección automática: forkeás el ejercicio, codeás, pusheás, y en ~1 minuto recibís ✅/❌
+        con el detalle. Leé esta guía <strong>antes</strong> del primer TP — explica el flujo de entrega,
+        cómo probar local, las reglas (no tocar <code>tests/</code>, límite de submissions, deadlines)
+        y dónde ver tu nota.
+      </p>
+      <div class="tp-meta">
+        <span>Lectura obligatoria</span>
+        <span>→ Ver guía</span>
+      </div>
+    </a>
+
     <h2 style="margin-top: 32px;">Práctica I — Introducción</h2>
     <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
       Conceptos básicos para la construcción de Sistemas Distribuidos.
@@ -74,10 +89,25 @@
 
     <h2 style="margin-top: 48px;">Práctica III — Cloud Computing</h2>
     <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
-      Computación distribuida con Kubernetes y RabbitMQ. Dividida en dos partes.
+      Computación distribuida con Kubernetes y RabbitMQ. La <strong>Parte 0</strong> es el bootstrap del cluster
+      (prerrequisito); las Partes 1 y 2 son el desarrollo del TP.
     </p>
 
     <div class="tp-grid">
+
+      <a href="practica-0.html" class="tp-card" style="border-left-color: var(--accent);">
+        <span class="tp-num" style="background: var(--accent);">TP 3 · PARTE 0</span>
+        <h3>Bootstrap del cluster (k3s / k3d)</h3>
+        <p class="tp-desc">
+          Prerrequisito: levantar un cluster Kubernetes local en 30 segundos (k3s en Linux/WSL,
+          k3d en Mac/Windows), comandos básicos de kubectl, hello world con Deployment + Service,
+          y mini-anticipo del Hit #1. Reusa el material de SIP 2026 TP 0.
+        </p>
+        <div class="tp-meta">
+          <span>Antes de: <strong>05/05/2026</strong></span>
+          <span>→ Ver guía</span>
+        </div>
+      </a>
 
       <a href="practica-3-parte-1.html" class="tp-card">
         <span class="tp-num">TP 3 · PARTE 1</span>
