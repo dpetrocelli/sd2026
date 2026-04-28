@@ -66,6 +66,14 @@ render() {
 
 # ============ Render targets ============
 
+# --- TP 0 — Prerrequisitos (k3s) ---
+TMP0="$TMPDIR/tp0.md"
+rewrite_inline_imgs "TP0.md" "$TMP0"
+render "$TMP0" \
+  "practica-0.html" \
+  "Práctica III · Parte 0 — Bootstrap del cluster (k3s / k3d)" \
+  "TP 3 · Parte 0"
+
 # --- TP 3 · Parte 1 ---
 SRC1="2026 - FINAL Práctica III - Parte 1 - Kubernetes _ RabbitMQ.docx.md"
 TMP1="$TMPDIR/parte1.md"
@@ -114,6 +122,14 @@ render "$TMP4" \
   "practica-4.html" \
   "Práctica IV — Programación Paralela (Shaders)" \
   "TP 4"
+
+# --- Autograder — Guía para alumnos ---
+TMP_AG="$TMPDIR/autograder.md"
+rewrite_inline_imgs "Autograder.md" "$TMP_AG"
+render "$TMP_AG" \
+  "autograder.html" \
+  "Autograder — Guía para alumnos" \
+  "AUTOGRADER"
 
 # --- TP Integrador ---
 TMPI="$TMPDIR/tpi.md"
