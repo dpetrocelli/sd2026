@@ -46,6 +46,61 @@ detrás del driver:
 > tamaños chicos (N=1024). No es para entrenar redes ni procesar datasets
 > grandes — es para **aprender CUDA y entender la arquitectura GPU**.
 
+### El segundo simulador: Accel-Sim
+
+Además de GPGPU-Sim, este lab incluye **Accel-Sim 1.3.0** (febrero 2025),
+desarrollado por el mismo grupo de investigación (Khairy, Shen, Aamodt y
+Rogers, Purdue + UBC). Accel-Sim es la **evolución moderna** de GPGPU-Sim y
+fue presentado en el paper de referencia:
+
+> **Khairy, M., Shen, Z., Aamodt, T. M., & Rogers, T. G.** (2020).
+> *Accel-Sim: An Extensible Simulation Framework for Validated GPU Modeling.*
+> En *47th ACM/IEEE International Symposium on Computer Architecture (ISCA
+> 2020)*, Valencia, España, pp. 473–486.
+> [PDF](https://mkhairy.github.io/Docs/Accel-Sim.pdf)
+> · [Sitio oficial](https://accel-sim.github.io/)
+> · [Repo](https://github.com/accel-sim/accel-sim-framework)
+
+#### En qué se diferencia de GPGPU-Sim
+
+| Eje | GPGPU-Sim (ej. 01–04) | Accel-Sim (ej. 05) |
+|-----|------------------------|----------------------|
+| **Modo de simulación** | *Execution-driven* | *Trace-driven* |
+| **Qué consume** | El binario CUDA + PTX (ISA virtual) | Una traza SASS (ISA real de NVIDIA) |
+| **Cómo se obtiene la traza** | No aplica — ejecuta el binario | NVIDIA NVBit la captura ejecutando el binario sobre una GPU real |
+| **Velocidad** | Lento (simula cada instrucción ciclo a ciclo) | **Mucho más rápido** (ya tiene la traza, solo modela la microarquitectura) |
+| **Arquitecturas modeladas** | Hasta Volta con buen soporte | Volta, Turing, **Ampere** validadas |
+| **Escribir su propio kernel** | Sí — el flujo natural | Solo si tienen acceso a una GPU real para grabar la traza |
+| **Validación contra silicio** | Histórica (pre-2017) | Validada en ISCA 2020 sobre Tesla V100 con error medio ~14% |
+
+#### Por qué incluimos los dos
+
+Pedagógicamente cada uno aporta algo distinto:
+
+- **GPGPU-Sim** los obliga a pensar en CUDA: escriben el kernel, eligen el
+  grid, debuggean la lógica paralela. Es donde aprenden a *programar* GPU.
+- **Accel-Sim** los expone al flujo profesional moderno: trazas reales,
+  arquitecturas nuevas, simulación rápida. Es donde aprenden a *evaluar*
+  decisiones arquitectónicas como en la industria.
+
+El ejercicio 05 simula el **mismo `vectoradd` que el ejercicio 01** pero por
+el camino trace-driven. Comparar las métricas de ambos contra la misma V100
+es el cierre conceptual del lab.
+
+#### Imagen Docker oficial
+
+Para Accel-Sim no compilamos nada: usamos directamente la imagen oficial
+del proyecto (CUDA 12.8 + Ubuntu 24.04):
+
+```
+ghcr.io/accel-sim/accel-sim-framework:ubuntu-24.04-cuda-12.8
+```
+
+Está declarada como segundo servicio en `docker-compose.yml`. Pull una sola
+vez y andan.
+
+---
+
 ### ¿Por qué es pedagógicamente superior a una GPU real?
 
 | GPU real | Simulador |
@@ -203,17 +258,36 @@ Este lab no es un TP independiente — es **infraestructura compartida**:
 
 ### Lectura obligatoria
 
-- **Kirk & Hwu**, *Programming Massively Parallel Processors* (3ra ed.) —
-  el libro de cabecera de CUDA.
-- Mark Harris, *Optimizing Parallel Reduction in CUDA* (NVIDIA whitepaper) —
-  muestra 7 versiones progresivamente optimizadas del kernel del ejercicio
-  04. Lectura **obligatoria** antes de hacer el 04.
+- **Kirk, D. B., & Hwu, W. W.** (2016). *Programming Massively Parallel
+  Processors: A Hands-on Approach* (3ra ed.). Morgan Kaufmann. El libro de
+  cabecera de CUDA.
+- **Harris, M.** *Optimizing Parallel Reduction in CUDA* (NVIDIA
+  whitepaper). Muestra 7 versiones progresivamente optimizadas del kernel
+  del ejercicio 04. Lectura **obligatoria** antes de hacer el 04.
+
+### Papers académicos de los simuladores
+
+- **Bakhoda, A., Yuan, G. L., Fung, W. W. L., Wong, H., & Aamodt, T. M.**
+  (2009). *Analyzing CUDA Workloads Using a Detailed GPU Simulator.* En
+  *IEEE International Symposium on Performance Analysis of Systems and
+  Software (ISPASS 2009)*, pp. 163–174. — Paper original de **GPGPU-Sim**
+  (ejercicios 01–04). [IEEE Xplore](https://ieeexplore.ieee.org/document/4919648)
+- **Khairy, M., Shen, Z., Aamodt, T. M., & Rogers, T. G.** (2020).
+  *Accel-Sim: An Extensible Simulation Framework for Validated GPU
+  Modeling.* En *47th ACM/IEEE International Symposium on Computer
+  Architecture (ISCA 2020)*, Valencia, España, pp. 473–486. — Paper de
+  referencia de **Accel-Sim** (ejercicio 05).
+  [PDF](https://mkhairy.github.io/Docs/Accel-Sim.pdf)
 
 ### Documentación oficial
 
 - [Manual de GPGPU-Sim](http://www.gpgpu-sim.org/manual/index.php/Main_Page)
-- [CUDA C Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)
 - [Repo GPGPU-Sim](https://github.com/gpgpu-sim/gpgpu-sim_distribution)
+- [Sitio de Accel-Sim](https://accel-sim.github.io/)
+- [Repo de Accel-Sim](https://github.com/accel-sim/accel-sim-framework)
+- [CUDA C Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)
+- [NVIDIA NVBit](https://github.com/NVlabs/NVBit) — el tracer que captura
+  las trazas SASS que consume Accel-Sim.
 
 ### Comunidad
 
