@@ -54,27 +54,7 @@
       <span style="font-size: 24px; opacity: 0.8;">→</span>
     </a>
 
-    <h2 style="margin-top: 0;">Infraestructura compartida</h2>
-    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
-      Recursos transversales que se usan a lo largo de la cursada — TP 3, Lab CUDA y TP Integrador.
-    </p>
-
-    <a href="cluster-k3s.html" class="tp-card" style="display:block; border-left-color: var(--accent); background: linear-gradient(90deg, rgba(0,82,155,0.04), transparent); margin-bottom: 32px;">
-      <span class="tp-num" style="background: var(--accent);">★ CLUSTER K3S · GPU</span>
-      <h3>Cluster K3s con GPU NVIDIA — acceso para alumnos</h3>
-      <p class="tp-desc">
-        La cátedra mantiene un cluster K3s con nodos GPU disponible para todos los alumnos. Cada uno
-        recibe su <strong>kubeconfig</strong> personal (compartido en privado por Discord / aula virtual).
-        Sirve para correr Jobs reales del TP 3, ejecutar kernels CUDA en hardware (Lab CUDA) y desplegar
-        el Integrador end-to-end.
-      </p>
-      <div class="tp-meta">
-        <span>Acceso · reglas de uso · patrones de Jobs</span>
-        <span>→ Ver guía</span>
-      </div>
-    </a>
-
-    <h2 style="margin-top: 32px;">Autograder — Actividades por clase</h2>
+    <h2 style="margin-top: 0;">Autograder — Actividades por clase</h2>
     <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
       Corrección automática semanal. Cada lunes, una o dos actividades nuevas que refuerzan el TP de esa semana.
       <strong>Arranca 05/05/2026 · cierra 15/06/2026.</strong>
@@ -216,6 +196,21 @@
         <div class="tp-meta">
           <span>Apoyo a TP 4 e Integrador</span>
           <span>→ Ver lab</span>
+        </div>
+      </a>
+
+      <a href="cluster-k3s.html" class="tp-card" style="border-left-color: var(--accent);">
+        <span class="tp-num" style="background: var(--accent);">CLUSTER K3S · GPU</span>
+        <h3>Acceso al cluster con GPU NVIDIA</h3>
+        <p class="tp-desc">
+          La cátedra mantiene un cluster K3s con nodos GPU para todos los grupos. Cada uno
+          recibe su <strong>kubeconfig</strong> personal (compartido en privado por Discord / aula virtual).
+          Tercer entorno del Lab CUDA — donde corren sus kernels en hardware real y comparan
+          contra los simuladores. También se usa en TP 3 e Integrador.
+        </p>
+        <div class="tp-meta">
+          <span>Acceso · reglas · errores comunes</span>
+          <span>→ Ver guía</span>
         </div>
       </a>
     </div>
