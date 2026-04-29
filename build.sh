@@ -123,6 +123,14 @@ render "$TMP4" \
   "Práctica IV — Programación Paralela (Shaders)" \
   "TP 4"
 
+# --- Cluster K3s con GPU — infraestructura compartida ---
+TMP_K3S="$TMPDIR/cluster_k3s.md"
+rewrite_inline_imgs "CLUSTER_K3S.md" "$TMP_K3S"
+render "$TMP_K3S" \
+  "cluster-k3s.html" \
+  "Cluster K3s con GPU — Infraestructura compartida" \
+  "CLUSTER K3S"
+
 # --- Lab CUDA — Simulador GPU ---
 TMP_LAB="$TMPDIR/lab_cuda.md"
 rewrite_inline_imgs "LAB_CUDA.md" "$TMP_LAB"

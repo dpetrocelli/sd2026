@@ -138,22 +138,9 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
     <li><a href="#cómo-se-entrega-cada-ejercicio"
     id="toc-cómo-se-entrega-cada-ejercicio">Cómo se entrega cada
     ejercicio</a></li>
-    <li><a href="#tercer-entorno-cluster-k3s-con-gpu-real"
-    id="toc-tercer-entorno-cluster-k3s-con-gpu-real">Tercer entorno:
-    cluster K3s con GPU real</a>
-    <ul>
-    <li><a href="#acceso--paso-a-paso"
-    id="toc-acceso--paso-a-paso">Acceso — paso a paso</a></li>
-    <li><a href="#cómo-correr-sus-ejercicios-contra-la-gpu-real"
-    id="toc-cómo-correr-sus-ejercicios-contra-la-gpu-real">Cómo correr
-    sus ejercicios contra la GPU real</a></li>
-    <li><a href="#comparación-obligatoria-para-el-informe"
-    id="toc-comparación-obligatoria-para-el-informe">Comparación
-    obligatoria para el informe</a></li>
-    <li><a href="#reglas-de-uso-del-cluster"
-    id="toc-reglas-de-uso-del-cluster">Reglas de uso del
-    cluster</a></li>
-    </ul></li>
+    <li><a href="#tercer-entorno-gpu-real-en-el-cluster-k3s"
+    id="toc-tercer-entorno-gpu-real-en-el-cluster-k3s">Tercer entorno:
+    GPU real en el cluster K3s</a></li>
     <li><a href="#relación-con-el-resto-de-la-cursada"
     id="toc-relación-con-el-resto-de-la-cursada">Relación con el resto
     de la cursada</a></li>
@@ -224,22 +211,9 @@ CUDA</div>
       <li><a href="#cómo-se-entrega-cada-ejercicio"
       id="toc-cómo-se-entrega-cada-ejercicio">Cómo se entrega cada
       ejercicio</a></li>
-      <li><a href="#tercer-entorno-cluster-k3s-con-gpu-real"
-      id="toc-tercer-entorno-cluster-k3s-con-gpu-real">Tercer entorno:
-      cluster K3s con GPU real</a>
-      <ul>
-      <li><a href="#acceso--paso-a-paso"
-      id="toc-acceso--paso-a-paso">Acceso — paso a paso</a></li>
-      <li><a href="#cómo-correr-sus-ejercicios-contra-la-gpu-real"
-      id="toc-cómo-correr-sus-ejercicios-contra-la-gpu-real">Cómo correr
-      sus ejercicios contra la GPU real</a></li>
-      <li><a href="#comparación-obligatoria-para-el-informe"
-      id="toc-comparación-obligatoria-para-el-informe">Comparación
-      obligatoria para el informe</a></li>
-      <li><a href="#reglas-de-uso-del-cluster"
-      id="toc-reglas-de-uso-del-cluster">Reglas de uso del
-      cluster</a></li>
-      </ul></li>
+      <li><a href="#tercer-entorno-gpu-real-en-el-cluster-k3s"
+      id="toc-tercer-entorno-gpu-real-en-el-cluster-k3s">Tercer entorno:
+      GPU real en el cluster K3s</a></li>
       <li><a href="#relación-con-el-resto-de-la-cursada"
       id="toc-relación-con-el-resto-de-la-cursada">Relación con el resto
       de la cursada</a></li>
@@ -565,137 +539,24 @@ qué?).</li>
 href="https://github.com/dpetrocelli/cuda-sim/blob/main/docs/GUIA.md"><code>docs/GUIA.md</code></a>
 del repo.</p>
 <hr />
-<h2 id="tercer-entorno-cluster-k3s-con-gpu-real">Tercer entorno: cluster
-K3s con GPU real</h2>
-<p>Además de los dos simuladores, la cátedra pone a disposición un
-<strong>cluster K3s con GPUs NVIDIA físicas</strong> para que cada
-alumno pueda probar sus kernels en hardware real. Esto cierra el ciclo:
-simulan en GPGPU-Sim → simulan en Accel-Sim → ejecutan en GPU de verdad
-y comparan.</p>
+<h2 id="tercer-entorno-gpu-real-en-el-cluster-k3s">Tercer entorno: GPU
+real en el cluster K3s</h2>
+<p>Después de los dos simuladores, la cátedra pone a disposición un
+<strong>cluster K3s con GPUs NVIDIA físicas</strong> para que ejecuten
+sus kernels en hardware real y comparen métricas contra los
+simuladores.</p>
+<p><strong>El cluster es infraestructura transversal de la
+materia</strong> (lo usan TP3, Lab CUDA y el TP Integrador), por lo que
+la documentación de acceso, reglas y patrones de uso vive en su propia
+página:</p>
 <blockquote>
-<p><strong>El cluster es un recurso compartido</strong>. Cada alumno
-recibe su propio namespace y kubeconfig con cuota acotada. Úsenlo con
-respeto: kernels chicos, sesiones cortas, y cleanup de pods al
-terminar.</p>
+<p>👉 <strong><a href="cluster-k3s.html">Cluster K3s con GPU — guía de
+acceso y uso</a></strong></p>
 </blockquote>
-<h3 id="acceso--paso-a-paso">Acceso — paso a paso</h3>
-<blockquote>
-<p><strong>El link a la planilla de credenciales no se publica
-acá.</strong> Se comparte de forma privada por Discord / aula virtual.
-Si no la recibieron, escriban a la cátedra.</p>
-</blockquote>
-<ol type="1">
-<li><strong>Abrir la planilla de alumnos</strong> que les compartió la
-cátedra y buscar su fila por legajo.</li>
-<li>Descargar el archivo <code>kubeconfig-&lt;usuario&gt;.yaml</code>
-asociado.</li>
-<li>Guardarlo en <code>~/.kube/sd2026.yaml</code> y exportar la variable
-de entorno:
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">KUBECONFIG</span><span class="op">=</span>~/.kube/sd2026.yaml</span></code></pre></div></li>
-<li>Verificar la conexión y que la GPU está disponible:
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get nodes <span class="at">-L</span> nvidia.com/gpu.product</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> describe node <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-A2</span> <span class="st">&quot;nvidia.com/gpu&quot;</span></span></code></pre></div></li>
-<li>Probar con un Pod de prueba que ejecuta <code>nvidia-smi</code>:
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> run gpu-test <span class="at">--rm</span> <span class="at">-it</span> <span class="at">--restart</span><span class="op">=</span>Never <span class="dt">\</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--image</span><span class="op">=</span>nvidia/cuda:12.4.0-base-ubuntu22.04 <span class="dt">\</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--overrides</span><span class="op">=</span><span class="st">&#39;{&quot;spec&quot;:{&quot;containers&quot;:[{&quot;name&quot;:&quot;gpu-test&quot;,&quot;image&quot;:&quot;nvidia/cuda:12.4.0-base-ubuntu22.04&quot;,&quot;command&quot;:[&quot;nvidia-smi&quot;],&quot;resources&quot;:{&quot;limits&quot;:{&quot;nvidia.com/gpu&quot;:1}}}]}}&#39;</span></span></code></pre></div>
-Si ven la tarjeta listada con su modelo, memoria y driver — están
-adentro.</li>
-</ol>
-<h3 id="cómo-correr-sus-ejercicios-contra-la-gpu-real">Cómo correr sus
-ejercicios contra la GPU real</h3>
-<p>El <strong>mismo <code>.cu</code> corre tal cual</strong>: no cambia
-ni una línea de código. Cambia sólo el entorno donde se compila y
-ejecuta. Hay dos caminos:</p>
-<p><strong>Opción A — modificar el <code>docker-compose</code> local
-(más rápido para iterar).</strong> Si su laptop tiene GPU NVIDIA:
-descomenten la sección <code>deploy.resources</code> del
-<code>docker-compose.yml</code> y cambien la base del
-<code>Dockerfile</code> a
-<code>nvidia/cuda:12.4.0-devel-ubuntu22.04</code> sin compilar
-GPGPU-Sim. El binario ahora usa la <code>libcudart</code> real del
-driver.</p>
-<p><strong>Opción B — Job de Kubernetes (lo que les pedimos para la
-entrega).</strong> Empaquetan su kernel como imagen Docker, la suben a
-un registry, y crean un Job en su namespace del cluster:</p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> batch/v1</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Job</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> vector-add-real-gpu</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">restartPolicy</span><span class="kw">:</span><span class="at"> Never</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> cuda</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">image</span><span class="kw">:</span><span class="at"> &lt;su-registry&gt;/&lt;su-imagen&gt;:&lt;tag&gt;</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&quot;./vector_add&quot;</span><span class="kw">]</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">resources</span><span class="kw">:</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">limits</span><span class="kw">:</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">nvidia.com/gpu</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span></code></pre></div>
-<p>Aplican con <code>kubectl apply -f job.yaml</code> y siguen los logs
-con <code>kubectl logs -f job/vector-add-real-gpu</code>.</p>
-<h3 id="comparación-obligatoria-para-el-informe">Comparación obligatoria
-para el informe</h3>
-<p>Para los ejercicios 01–04, el informe debe incluir <strong>3 columnas
-de métricas</strong> del mismo kernel:</p>
-<table>
-<thead>
-<tr>
-<th>Métrica</th>
-<th>GPGPU-Sim (ej. 01–04)</th>
-<th>Accel-Sim (ej. 05)</th>
-<th>GPU real (cluster K3s)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Wall-clock total</td>
-<td>(lento, segundos a minutos)</td>
-<td>(medio)</td>
-<td>(ms)</td>
-</tr>
-<tr>
-<td>Throughput (GFLOPS o GB/s)</td>
-<td>sim</td>
-<td>sim</td>
-<td>medido con <code>nvprof</code> o Nsight</td>
-</tr>
-<tr>
-<td>Cache miss rate L1</td>
-<td>sim</td>
-<td>sim</td>
-<td>medido con Nsight</td>
-</tr>
-<tr>
-<td>Discrepancia vs. GPU real</td>
-<td>(calcular %)</td>
-<td>(calcular %)</td>
-<td>baseline</td>
-</tr>
-</tbody>
-</table>
-<p>Esto les da material concreto para discutir <strong>la precisión de
-cada simulador</strong> vs. el silicio real — exactamente la
-conversación que tienen los papers de arquitectura GPU.</p>
-<h3 id="reglas-de-uso-del-cluster">Reglas de uso del cluster</h3>
-<ul>
-<li><strong>Cuota:</strong> 1 GPU por Pod, máximo 30 minutos de
-wall-time por Job.</li>
-<li><strong>Limpieza:</strong> borrar Jobs y Pods al terminar
-(<code>kubectl delete job &lt;nombre&gt;</code>).</li>
-<li><strong>Sin batch nocturno:</strong> no dejar Jobs corriendo durante
-la noche.</li>
-<li><strong>Sin entrenamiento de modelos pesados:</strong> este cluster
-es para los ejercicios del lab y el TP Integrador, no para entrenar
-redes propias.</li>
-<li><strong>Reportar problemas:</strong> si el cluster se cae o un nodo
-no responde, avisar en Discord — no abusar de retries.</li>
-</ul>
+<p>Para los ejercicios 01–05 de este lab, una vez que están dentro del
+cluster, recuerden incluir en el informe la <strong>tabla comparativa de
+3 columnas</strong> (GPGPU-Sim · Accel-Sim · GPU real). Está documentada
+en la página del cluster.</p>
 <hr />
 <h2 id="relación-con-el-resto-de-la-cursada">Relación con el resto de la
 cursada</h2>

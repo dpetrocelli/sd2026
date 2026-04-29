@@ -225,105 +225,22 @@ del repo.
 
 ---
 
-## Tercer entorno: cluster K3s con GPU real
+## Tercer entorno: GPU real en el cluster K3s
 
-Además de los dos simuladores, la cátedra pone a disposición un **cluster
-K3s con GPUs NVIDIA físicas** para que cada alumno pueda probar sus kernels
-en hardware real. Esto cierra el ciclo: simulan en GPGPU-Sim → simulan en
-Accel-Sim → ejecutan en GPU de verdad y comparan.
+Después de los dos simuladores, la cátedra pone a disposición un **cluster
+K3s con GPUs NVIDIA físicas** para que ejecuten sus kernels en hardware
+real y comparen métricas contra los simuladores.
 
-> **El cluster es un recurso compartido**. Cada alumno recibe su propio
-> namespace y kubeconfig con cuota acotada. Úsenlo con respeto: kernels
-> chicos, sesiones cortas, y cleanup de pods al terminar.
+**El cluster es infraestructura transversal de la materia** (lo usan TP3,
+Lab CUDA y el TP Integrador), por lo que la documentación de acceso,
+reglas y patrones de uso vive en su propia página:
 
-### Acceso — paso a paso
+> 👉 **[Cluster K3s con GPU — guía de acceso y uso](cluster-k3s.html)**
 
-> **El link a la planilla de credenciales no se publica acá.** Se comparte
-> de forma privada por Discord / aula virtual. Si no la recibieron,
-> escriban a la cátedra.
-
-1. **Abrir la planilla de alumnos** que les compartió la cátedra y buscar
-   su fila por legajo.
-2. Descargar el archivo `kubeconfig-<usuario>.yaml` asociado.
-3. Guardarlo en `~/.kube/sd2026.yaml` y exportar la variable de entorno:
-   ```bash
-   export KUBECONFIG=~/.kube/sd2026.yaml
-   ```
-4. Verificar la conexión y que la GPU está disponible:
-   ```bash
-   kubectl get nodes -L nvidia.com/gpu.product
-   kubectl describe node | grep -A2 "nvidia.com/gpu"
-   ```
-5. Probar con un Pod de prueba que ejecuta `nvidia-smi`:
-   ```bash
-   kubectl run gpu-test --rm -it --restart=Never \
-     --image=nvidia/cuda:12.4.0-base-ubuntu22.04 \
-     --overrides='{"spec":{"containers":[{"name":"gpu-test","image":"nvidia/cuda:12.4.0-base-ubuntu22.04","command":["nvidia-smi"],"resources":{"limits":{"nvidia.com/gpu":1}}}]}}'
-   ```
-   Si ven la tarjeta listada con su modelo, memoria y driver — están
-   adentro.
-
-### Cómo correr sus ejercicios contra la GPU real
-
-El **mismo `.cu` corre tal cual**: no cambia ni una línea de código. Cambia
-sólo el entorno donde se compila y ejecuta. Hay dos caminos:
-
-**Opción A — modificar el `docker-compose` local (más rápido para iterar).**
-Si su laptop tiene GPU NVIDIA: descomenten la sección `deploy.resources` del
-`docker-compose.yml` y cambien la base del `Dockerfile` a
-`nvidia/cuda:12.4.0-devel-ubuntu22.04` sin compilar GPGPU-Sim. El binario
-ahora usa la `libcudart` real del driver.
-
-**Opción B — Job de Kubernetes (lo que les pedimos para la entrega).**
-Empaquetan su kernel como imagen Docker, la suben a un registry, y crean un
-Job en su namespace del cluster:
-
-```yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: vector-add-real-gpu
-spec:
-  template:
-    spec:
-      restartPolicy: Never
-      containers:
-        - name: cuda
-          image: <su-registry>/<su-imagen>:<tag>
-          command: ["./vector_add"]
-          resources:
-            limits:
-              nvidia.com/gpu: 1
-```
-
-Aplican con `kubectl apply -f job.yaml` y siguen los logs con
-`kubectl logs -f job/vector-add-real-gpu`.
-
-### Comparación obligatoria para el informe
-
-Para los ejercicios 01–04, el informe debe incluir **3 columnas de
-métricas** del mismo kernel:
-
-| Métrica | GPGPU-Sim (ej. 01–04) | Accel-Sim (ej. 05) | GPU real (cluster K3s) |
-|---------|------------------------|----------------------|--------------------------|
-| Wall-clock total | (lento, segundos a minutos) | (medio) | (ms) |
-| Throughput (GFLOPS o GB/s) | sim | sim | medido con `nvprof` o Nsight |
-| Cache miss rate L1 | sim | sim | medido con Nsight |
-| Discrepancia vs. GPU real | (calcular %) | (calcular %) | baseline |
-
-Esto les da material concreto para discutir **la precisión de cada
-simulador** vs. el silicio real — exactamente la conversación que tienen
-los papers de arquitectura GPU.
-
-### Reglas de uso del cluster
-
-- **Cuota:** 1 GPU por Pod, máximo 30 minutos de wall-time por Job.
-- **Limpieza:** borrar Jobs y Pods al terminar (`kubectl delete job <nombre>`).
-- **Sin batch nocturno:** no dejar Jobs corriendo durante la noche.
-- **Sin entrenamiento de modelos pesados:** este cluster es para los
-  ejercicios del lab y el TP Integrador, no para entrenar redes propias.
-- **Reportar problemas:** si el cluster se cae o un nodo no responde,
-  avisar en Discord — no abusar de retries.
+Para los ejercicios 01–05 de este lab, una vez que están dentro del
+cluster, recuerden incluir en el informe la **tabla comparativa de 3
+columnas** (GPGPU-Sim · Accel-Sim · GPU real). Está documentada en la
+página del cluster.
 
 ---
 

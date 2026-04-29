@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+  <meta name="generator" content="pandoc + UNLu/DCB template">
+  <title>Cluster K3s con GPU — Infraestructura compartida — UNLu
+DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+
+<header class="unlu-header">
+  <a href="index.html" class="brand brand-link" title="Volver al índice">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </a>
+  <a href="index.html" class="course-bar course-bar-link" title="Volver al índice">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </a>
+</header>
+
+<button type="button" id="sidebar-show" class="sidebar-toggle-btn sidebar-show" aria-label="Mostrar índice lateral" title="Mostrar índice lateral">☰</button>
+
+<div class="layout">
+  <aside class="toc-sidebar" id="toc-sidebar">
+    <div class="toc-header">
+      <div class="toc-title">Contenidos</div>
+      <button type="button" id="sidebar-hide" class="sidebar-toggle-btn sidebar-hide" aria-label="Ocultar índice lateral" title="Ocultar índice lateral">×</button>
+    </div>
+    <ul>
+    <li><a
+    href="#cluster-k3s-con-gpu--infraestructura-compartida-de-la-cátedra"
+    id="toc-cluster-k3s-con-gpu--infraestructura-compartida-de-la-cátedra">Cluster
+    K3s con GPU — Infraestructura compartida de la cátedra</a>
+    <ul>
+    <li><a href="#cuándo-usarlo" id="toc-cuándo-usarlo">¿Cuándo
+    usarlo?</a></li>
+    <li><a href="#requisitos-previos"
+    id="toc-requisitos-previos">Requisitos previos</a></li>
+    <li><a href="#instalar-kubectl" id="toc-instalar-kubectl">Instalar
+    kubectl</a>
+    <ul>
+    <li><a href="#linux" id="toc-linux">Linux</a></li>
+    <li><a href="#macos" id="toc-macos">macOS</a></li>
+    <li><a href="#windows-powershell"
+    id="toc-windows-powershell">Windows (PowerShell)</a></li>
+    </ul></li>
+    <li><a href="#acceso--paso-a-paso"
+    id="toc-acceso--paso-a-paso">Acceso — paso a paso</a>
+    <ul>
+    <li><a href="#paso-1--guardar-el-kubeconfig"
+    id="toc-paso-1--guardar-el-kubeconfig">Paso 1 — Guardar el
+    kubeconfig</a></li>
+    <li><a href="#paso-2--activar-el-kubeconfig"
+    id="toc-paso-2--activar-el-kubeconfig">Paso 2 — Activar el
+    kubeconfig</a></li>
+    <li><a href="#paso-3--verificar-la-conexión"
+    id="toc-paso-3--verificar-la-conexión">Paso 3 — Verificar la
+    conexión</a></li>
+    <li><a href="#paso-4--verificar-que-las-gpus-están-disponibles"
+    id="toc-paso-4--verificar-que-las-gpus-están-disponibles">Paso 4 —
+    Verificar que las GPUs están disponibles</a></li>
+    <li><a href="#paso-5--pod-de-prueba-con-nvidia-smi"
+    id="toc-paso-5--pod-de-prueba-con-nvidia-smi">Paso 5 — Pod de prueba
+    con <code>nvidia-smi</code></a></li>
+    </ul></li>
+    <li><a href="#comandos-esenciales"
+    id="toc-comandos-esenciales">Comandos esenciales</a>
+    <ul>
+    <li><a href="#desplegar-y-gestionar"
+    id="toc-desplegar-y-gestionar">Desplegar y gestionar</a></li>
+    <li><a href="#debug-y-monitoreo" id="toc-debug-y-monitoreo">Debug y
+    monitoreo</a></li>
+    <li><a href="#ver-cuotas-y-namespace-compartido"
+    id="toc-ver-cuotas-y-namespace-compartido">Ver cuotas y namespace
+    compartido</a></li>
+    </ul></li>
+    <li><a href="#patrones-de-uso-con-gpu"
+    id="toc-patrones-de-uso-con-gpu">Patrones de uso con GPU</a>
+    <ul>
+    <li><a
+    href="#patrón-1--job-de-kubernetes-lo-que-pedimos-para-la-entrega"
+    id="toc-patrón-1--job-de-kubernetes-lo-que-pedimos-para-la-entrega">Patrón
+    1 — Job de Kubernetes (lo que pedimos para la entrega)</a></li>
+    <li><a href="#patrón-2--pod-interactivo-debugging"
+    id="toc-patrón-2--pod-interactivo-debugging">Patrón 2 — Pod
+    interactivo (debugging)</a></li>
+    </ul></li>
+    <li><a href="#reglas-de-uso-importantes"
+    id="toc-reglas-de-uso-importantes">Reglas de uso
+    (importantes)</a></li>
+    <li><a href="#errores-comunes-y-soluciones"
+    id="toc-errores-comunes-y-soluciones">Errores comunes y
+    soluciones</a>
+    <ul>
+    <li><a
+    href="#error-you-must-be-logged-in-to-the-server-unauthorized"
+    id="toc-error-you-must-be-logged-in-to-the-server-unauthorized"><code>error: You must be logged in to the server (Unauthorized)</code></a></li>
+    <li><a href="#error-pods-mi-pod-is-forbidden-exceeded-quota"
+    id="toc-error-pods-mi-pod-is-forbidden-exceeded-quota"><code>Error: pods "mi-pod" is forbidden: exceeded quota</code></a></li>
+    <li><a href="#error-container-has-runasnonroot"
+    id="toc-error-container-has-runasnonroot"><code>Error: container has runAsNonRoot</code></a></li>
+    <li><a
+    href="#unable-to-connect-to-the-server-dial-tcp-connection-refused"
+    id="toc-unable-to-connect-to-the-server-dial-tcp-connection-refused"><code>Unable to connect to the server: dial tcp... connection refused</code></a></li>
+    <li><a
+    href="#pod-queda-en-pending-con-0n-nodes-available-insufficient-nvidiacomgpu"
+    id="toc-pod-queda-en-pending-con-0n-nodes-available-insufficient-nvidiacomgpu">Pod
+    queda en <code>Pending</code> con
+    <code>0/N nodes available: insufficient nvidia.com/gpu</code></a></li>
+    <li><a href="#imagepullbackoff"
+    id="toc-imagepullbackoff"><code>ImagePullBackOff</code></a></li>
+    <li><a href="#el-job-termina-pero-los-logs-salen-vacíos"
+    id="toc-el-job-termina-pero-los-logs-salen-vacíos">El Job termina
+    pero los logs salen vacíos</a></li>
+    <li><a href="#nvidia-smi-command-not-found-adentro-del-pod"
+    id="toc-nvidia-smi-command-not-found-adentro-del-pod"><code>nvidia-smi: command not found</code>
+    adentro del Pod</a></li>
+    </ul></li>
+    <li><a href="#comparación-obligatoria-lab-cuda-y-tp-integrador"
+    id="toc-comparación-obligatoria-lab-cuda-y-tp-integrador">Comparación
+    obligatoria (Lab CUDA y TP Integrador)</a></li>
+    <li><a href="#seguridad--leer-antes-de-irse"
+    id="toc-seguridad--leer-antes-de-irse">Seguridad — leer antes de
+    irse</a></li>
+    <li><a href="#recursos" id="toc-recursos">Recursos</a></li>
+    </ul></li>
+    </ul>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
+      <a href="index.html" style="color:var(--gray);">← Volver al índice</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">CLUSTER
+K3S</div>
+
+    <details class="toc-inline" open>
+      <summary>📑 Índice del documento</summary>
+      <ul>
+      <li><a
+      href="#cluster-k3s-con-gpu--infraestructura-compartida-de-la-cátedra"
+      id="toc-cluster-k3s-con-gpu--infraestructura-compartida-de-la-cátedra">Cluster
+      K3s con GPU — Infraestructura compartida de la cátedra</a>
+      <ul>
+      <li><a href="#cuándo-usarlo" id="toc-cuándo-usarlo">¿Cuándo
+      usarlo?</a></li>
+      <li><a href="#requisitos-previos"
+      id="toc-requisitos-previos">Requisitos previos</a></li>
+      <li><a href="#instalar-kubectl" id="toc-instalar-kubectl">Instalar
+      kubectl</a>
+      <ul>
+      <li><a href="#linux" id="toc-linux">Linux</a></li>
+      <li><a href="#macos" id="toc-macos">macOS</a></li>
+      <li><a href="#windows-powershell"
+      id="toc-windows-powershell">Windows (PowerShell)</a></li>
+      </ul></li>
+      <li><a href="#acceso--paso-a-paso"
+      id="toc-acceso--paso-a-paso">Acceso — paso a paso</a>
+      <ul>
+      <li><a href="#paso-1--guardar-el-kubeconfig"
+      id="toc-paso-1--guardar-el-kubeconfig">Paso 1 — Guardar el
+      kubeconfig</a></li>
+      <li><a href="#paso-2--activar-el-kubeconfig"
+      id="toc-paso-2--activar-el-kubeconfig">Paso 2 — Activar el
+      kubeconfig</a></li>
+      <li><a href="#paso-3--verificar-la-conexión"
+      id="toc-paso-3--verificar-la-conexión">Paso 3 — Verificar la
+      conexión</a></li>
+      <li><a href="#paso-4--verificar-que-las-gpus-están-disponibles"
+      id="toc-paso-4--verificar-que-las-gpus-están-disponibles">Paso 4 —
+      Verificar que las GPUs están disponibles</a></li>
+      <li><a href="#paso-5--pod-de-prueba-con-nvidia-smi"
+      id="toc-paso-5--pod-de-prueba-con-nvidia-smi">Paso 5 — Pod de
+      prueba con <code>nvidia-smi</code></a></li>
+      </ul></li>
+      <li><a href="#comandos-esenciales"
+      id="toc-comandos-esenciales">Comandos esenciales</a>
+      <ul>
+      <li><a href="#desplegar-y-gestionar"
+      id="toc-desplegar-y-gestionar">Desplegar y gestionar</a></li>
+      <li><a href="#debug-y-monitoreo" id="toc-debug-y-monitoreo">Debug
+      y monitoreo</a></li>
+      <li><a href="#ver-cuotas-y-namespace-compartido"
+      id="toc-ver-cuotas-y-namespace-compartido">Ver cuotas y namespace
+      compartido</a></li>
+      </ul></li>
+      <li><a href="#patrones-de-uso-con-gpu"
+      id="toc-patrones-de-uso-con-gpu">Patrones de uso con GPU</a>
+      <ul>
+      <li><a
+      href="#patrón-1--job-de-kubernetes-lo-que-pedimos-para-la-entrega"
+      id="toc-patrón-1--job-de-kubernetes-lo-que-pedimos-para-la-entrega">Patrón
+      1 — Job de Kubernetes (lo que pedimos para la entrega)</a></li>
+      <li><a href="#patrón-2--pod-interactivo-debugging"
+      id="toc-patrón-2--pod-interactivo-debugging">Patrón 2 — Pod
+      interactivo (debugging)</a></li>
+      </ul></li>
+      <li><a href="#reglas-de-uso-importantes"
+      id="toc-reglas-de-uso-importantes">Reglas de uso
+      (importantes)</a></li>
+      <li><a href="#errores-comunes-y-soluciones"
+      id="toc-errores-comunes-y-soluciones">Errores comunes y
+      soluciones</a>
+      <ul>
+      <li><a
+      href="#error-you-must-be-logged-in-to-the-server-unauthorized"
+      id="toc-error-you-must-be-logged-in-to-the-server-unauthorized"><code>error: You must be logged in to the server (Unauthorized)</code></a></li>
+      <li><a href="#error-pods-mi-pod-is-forbidden-exceeded-quota"
+      id="toc-error-pods-mi-pod-is-forbidden-exceeded-quota"><code>Error: pods "mi-pod" is forbidden: exceeded quota</code></a></li>
+      <li><a href="#error-container-has-runasnonroot"
+      id="toc-error-container-has-runasnonroot"><code>Error: container has runAsNonRoot</code></a></li>
+      <li><a
+      href="#unable-to-connect-to-the-server-dial-tcp-connection-refused"
+      id="toc-unable-to-connect-to-the-server-dial-tcp-connection-refused"><code>Unable to connect to the server: dial tcp... connection refused</code></a></li>
+      <li><a
+      href="#pod-queda-en-pending-con-0n-nodes-available-insufficient-nvidiacomgpu"
+      id="toc-pod-queda-en-pending-con-0n-nodes-available-insufficient-nvidiacomgpu">Pod
+      queda en <code>Pending</code> con
+      <code>0/N nodes available: insufficient nvidia.com/gpu</code></a></li>
+      <li><a href="#imagepullbackoff"
+      id="toc-imagepullbackoff"><code>ImagePullBackOff</code></a></li>
+      <li><a href="#el-job-termina-pero-los-logs-salen-vacíos"
+      id="toc-el-job-termina-pero-los-logs-salen-vacíos">El Job termina
+      pero los logs salen vacíos</a></li>
+      <li><a href="#nvidia-smi-command-not-found-adentro-del-pod"
+      id="toc-nvidia-smi-command-not-found-adentro-del-pod"><code>nvidia-smi: command not found</code>
+      adentro del Pod</a></li>
+      </ul></li>
+      <li><a href="#comparación-obligatoria-lab-cuda-y-tp-integrador"
+      id="toc-comparación-obligatoria-lab-cuda-y-tp-integrador">Comparación
+      obligatoria (Lab CUDA y TP Integrador)</a></li>
+      <li><a href="#seguridad--leer-antes-de-irse"
+      id="toc-seguridad--leer-antes-de-irse">Seguridad — leer antes de
+      irse</a></li>
+      <li><a href="#recursos" id="toc-recursos">Recursos</a></li>
+      </ul></li>
+      </ul>
+      <div class="toc-controls">
+        <button type="button" class="toc-btn" data-action="expand-all">Expandir todo</button>
+        <button type="button" class="toc-btn" data-action="collapse-all">Colapsar todo</button>
+      </div>
+    </details>
+
+<h1
+id="cluster-k3s-con-gpu--infraestructura-compartida-de-la-cátedra">Cluster
+K3s con GPU — Infraestructura compartida de la cátedra</h1>
+<blockquote>
+<p><strong>Para qué es este recurso</strong>: la cátedra mantiene un
+<strong>cluster K3s</strong> con nodos NVIDIA GPU disponible para todos
+los grupos de SD 2026. Es infraestructura <strong>transversal</strong> —
+sirve para varios TPs y para el Integrador. Esta página explica cómo
+conectarse, las reglas de uso, y los comandos esenciales para operar
+contra el cluster.</p>
+</blockquote>
+<hr />
+<h2 id="cuándo-usarlo">¿Cuándo usarlo?</h2>
+<table>
+<thead>
+<tr>
+<th>TP / Lab</th>
+<th>Uso del cluster</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TP 3 — Cloud Computing (K8s + RabbitMQ)</strong></td>
+<td>Después de validar contra <code>k3s/k3d</code> local, escalar al
+cluster compartido para probar Jobs distribuidos reales.</td>
+</tr>
+<tr>
+<td><strong>Práctica IV — Lab CUDA</strong></td>
+<td>Tercer entorno (después de los simuladores GPGPU-Sim y Accel-Sim).
+Permite ejecutar los kernels en una NVIDIA real y comparar métricas
+contra silicio.</td>
+</tr>
+<tr>
+<td><strong>TP Integrador — Blockchain + CUDA</strong></td>
+<td>Despliegue end-to-end del minero CUDA + nodos validadores. Es donde
+se evalúa la entrega final.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="requisitos-previos">Requisitos previos</h2>
+<ul>
+<li><strong>kubectl</strong> instalado (v1.28+).</li>
+<li><strong>El archivo <code>kubeconfig</code></strong> que les entregó
+el docente (ej: <code>juan.yaml</code>). Cada grupo recibe su propio
+kubeconfig con acceso a un namespace específico (<code>grupo-a</code>,
+<code>grupo-b</code>, etc.) y cuotas asignadas.</li>
+</ul>
+<blockquote>
+<p><strong>El link a la planilla de credenciales no se publica
+acá.</strong> Se comparte de forma privada por Discord / aula virtual.
+Si no lo recibieron, escriban a la cátedra.</p>
+</blockquote>
+<hr />
+<h2 id="instalar-kubectl">Instalar kubectl</h2>
+<h3 id="linux">Linux</h3>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-LO</span> <span class="st">&quot;https://dl.k8s.io/release/</span><span class="va">$(</span><span class="ex">curl</span> <span class="at">-sL</span> https://dl.k8s.io/release/stable.txt<span class="va">)</span><span class="st">/bin/linux/amd64/kubectl&quot;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x kubectl <span class="kw">&amp;&amp;</span> <span class="fu">sudo</span> mv kubectl /usr/local/bin/</span></code></pre></div>
+<h3 id="macos">macOS</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install kubectl</span></code></pre></div>
+<h3 id="windows-powershell">Windows (PowerShell)</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>winget install Kubernetes<span class="op">.</span><span class="fu">kubectl</span></span></code></pre></div>
+<hr />
+<h2 id="acceso--paso-a-paso">Acceso — paso a paso</h2>
+<h3 id="paso-1--guardar-el-kubeconfig">Paso 1 — Guardar el
+kubeconfig</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> ~/.kube</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> juan.yaml ~/.kube/juan.yaml</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> 600 ~/.kube/juan.yaml</span></code></pre></div>
+<blockquote>
+<p>Crean <code>~/.kube/</code>, mueven el archivo del docente, y
+protegen el permiso (solo el dueño puede leerlo). El
+<code>chmod 600</code> es importante: el archivo contiene
+credenciales.</p>
+</blockquote>
+<h3 id="paso-2--activar-el-kubeconfig">Paso 2 — Activar el
+kubeconfig</h3>
+<p><strong>Opción A — Sesión actual (temporal).</strong></p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">KUBECONFIG</span><span class="op">=</span>~/.kube/juan.yaml</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> config current-context</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida esperada: juan@k3s-cluster</span></span></code></pre></div>
+<p><strong>Opción B — Permanente (agregar al <code>.bashrc</code> /
+<code>.zshrc</code>).</strong></p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">&#39;export KUBECONFIG=~/.kube/juan.yaml&#39;</span> <span class="op">&gt;&gt;</span> ~/.bashrc</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.bashrc</span></code></pre></div>
+<blockquote>
+<p><em>Diferencia</em>: la Opción A solo funciona en esa terminal. La B
+persiste entre sesiones.</p>
+</blockquote>
+<h3 id="paso-3--verificar-la-conexión">Paso 3 — Verificar la
+conexión</h3>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Listar pods en su namespace</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get pods</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Listar todos los recursos</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get all</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver a qué namespace están asignados</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> config view <span class="at">--minify</span> <span class="kw">|</span> <span class="fu">grep</span> namespace</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Salida esperada: namespace: grupo-a</span></span></code></pre></div>
+<blockquote>
+<p><strong>Importante</strong>: su acceso está restringido a su
+namespace (<code>grupo-a</code> o el que les indicó el docente). No van
+a poder ver los namespaces de otros grupos.</p>
+</blockquote>
+<h3 id="paso-4--verificar-que-las-gpus-están-disponibles">Paso 4 —
+Verificar que las GPUs están disponibles</h3>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get nodes <span class="at">-L</span> nvidia.com/gpu.product</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> describe nodes <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-A2</span> <span class="st">&quot;nvidia.com/gpu&quot;</span></span></code></pre></div>
+<h3 id="paso-5--pod-de-prueba-con-nvidia-smi">Paso 5 — Pod de prueba con
+<code>nvidia-smi</code></h3>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> run gpu-test <span class="at">--rm</span> <span class="at">-it</span> <span class="at">--restart</span><span class="op">=</span>Never <span class="dt">\</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--image</span><span class="op">=</span>nvidia/cuda:12.4.0-base-ubuntu22.04 <span class="dt">\</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--overrides</span><span class="op">=</span><span class="st">&#39;{&quot;spec&quot;:{&quot;containers&quot;:[{&quot;name&quot;:&quot;gpu-test&quot;,&quot;image&quot;:&quot;nvidia/cuda:12.4.0-base-ubuntu22.04&quot;,&quot;command&quot;:[&quot;nvidia-smi&quot;],&quot;resources&quot;:{&quot;limits&quot;:{&quot;nvidia.com/gpu&quot;:1}}}]}}&#39;</span></span></code></pre></div>
+<p>Si ven la tarjeta listada con su modelo, memoria y driver — están
+adentro.</p>
+<hr />
+<h2 id="comandos-esenciales">Comandos esenciales</h2>
+<h3 id="desplegar-y-gestionar">Desplegar y gestionar</h3>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Aplicar un manifiesto YAML</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> apply <span class="at">-f</span> mi-app.yaml</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Crear un Pod directamente (sin YAML)</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> run mi-pod <span class="at">--image</span><span class="op">=</span>python:3.12 <span class="at">--restart</span><span class="op">=</span>Never</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver pods con detalles (IPs, nodos)</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get pods <span class="at">-o</span> wide</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Descripción detallada de un Pod</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> describe pod mi-pod</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Eliminar un Pod</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> delete pod mi-pod</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Eliminar recursos definidos en un archivo</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> delete <span class="at">-f</span> mi-app.yaml</span></code></pre></div>
+<h3 id="debug-y-monitoreo">Debug y monitoreo</h3>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Ver logs</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> logs mi-pod</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Logs en tiempo real</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> logs mi-pod <span class="at">-f</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Entrar al shell del Pod</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> exec <span class="at">-it</span> mi-pod <span class="at">--</span> bash</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> exec <span class="at">-it</span> mi-pod <span class="at">--</span> sh   <span class="co"># si no hay bash</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Redirigir puerto local al Pod</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> port-forward pod/mi-pod 8080:80</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Eventos del cluster (orden cronológico)</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get events <span class="at">--sort-by</span><span class="op">=</span>.lastTimestamp</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Consumo de recursos en vivo</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> top pods</span></code></pre></div>
+<h3 id="ver-cuotas-y-namespace-compartido">Ver cuotas y namespace
+compartido</h3>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cuánta quota le queda al grupo</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> describe resourcequota group-quota</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Recursos del namespace compartido (servicios de clase)</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get all <span class="at">-n</span> clase-compartido</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get services <span class="at">-n</span> clase-compartido</span></code></pre></div>
+<blockquote>
+<p>El namespace <code>clase-compartido</code> tiene servicios que la
+cátedra deja disponibles para todos los grupos (ej. RabbitMQ común,
+Postgres de demos). Pueden conectarse desde su código pero no modificar
+lo que hay.</p>
+</blockquote>
+<hr />
+<h2 id="patrones-de-uso-con-gpu">Patrones de uso con GPU</h2>
+<h3
+id="patrón-1--job-de-kubernetes-lo-que-pedimos-para-la-entrega">Patrón 1
+— Job de Kubernetes (lo que pedimos para la entrega)</h3>
+<p>Empaquetan su código como imagen Docker, la suben a un registry
+público (Docker Hub, GHCR) o privado (con <code>imagePullSecret</code>),
+y crean un Job:</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> batch/v1</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Job</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> gpu-workload</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">restartPolicy</span><span class="kw">:</span><span class="at"> Never</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> app</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">image</span><span class="kw">:</span><span class="at"> &lt;su-registry&gt;/&lt;su-imagen&gt;:&lt;tag&gt;</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">command</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">&quot;./vector_add&quot;</span><span class="kw">]</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">resources</span><span class="kw">:</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">limits</span><span class="kw">:</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">nvidia.com/gpu</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> apply <span class="at">-f</span> job.yaml</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> logs <span class="at">-f</span> job/gpu-workload</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> delete job gpu-workload      <span class="co"># limpieza al terminar</span></span></code></pre></div>
+<h3 id="patrón-2--pod-interactivo-debugging">Patrón 2 — Pod interactivo
+(debugging)</h3>
+<p>Para iterar rápido sin rebuildear la imagen:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> run dev <span class="at">--rm</span> <span class="at">-it</span> <span class="at">--restart</span><span class="op">=</span>Never <span class="dt">\</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--image</span><span class="op">=</span>nvidia/cuda:12.4.0-devel-ubuntu22.04 <span class="dt">\</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--overrides</span><span class="op">=</span><span class="st">&#39;{&quot;spec&quot;:{&quot;containers&quot;:[{&quot;name&quot;:&quot;dev&quot;,&quot;image&quot;:&quot;nvidia/cuda:12.4.0-devel-ubuntu22.04&quot;,&quot;command&quot;:[&quot;bash&quot;],&quot;stdin&quot;:true,&quot;tty&quot;:true,&quot;resources&quot;:{&quot;limits&quot;:{&quot;nvidia.com/gpu&quot;:1}}}]}}&#39;</span></span></code></pre></div>
+<p>Adentro tienen <code>nvcc</code>, librerías, drivers — pueden
+compilar y ejecutar directamente sin hacer push de imagen.</p>
+<hr />
+<h2 id="reglas-de-uso-importantes">Reglas de uso (importantes)</h2>
+<p>El cluster es un <strong>recurso compartido</strong>. Si lo abusan,
+se queda sin recursos para el resto.</p>
+<ul>
+<li><strong>Cuota:</strong> definida por grupo. Verificar con
+<code>kubectl describe resourcequota group-quota</code>. Si llega al
+límite, borrar Pods que no estén en uso.</li>
+<li><strong>Cleanup obligatorio:</strong>
+<code>kubectl delete job &lt;nombre&gt;</code> y
+<code>kubectl delete pod &lt;nombre&gt;</code> al terminar. Pods
+huérfanos se borran automáticamente cada 24 h, pero no abusen.</li>
+<li><strong>Sin batch nocturno:</strong> no dejar Jobs corriendo durante
+la noche pensando que “total nadie usa”.</li>
+<li><strong>Sin entrenar modelos pesados:</strong> el cluster es para
+los TPs y el Integrador, no para entrenar redes propias / fine-tunear
+LLMs / minar cripto fuera del TP.</li>
+<li><strong>Imágenes razonables:</strong> subir imágenes minimal
+(multi-stage build). Imágenes &gt;5 GB demoran el pull y bloquean al
+resto del grupo.</li>
+<li><strong>Reportar problemas:</strong> si el cluster se cae, un nodo
+no responde, o ven comportamiento raro — avisar en Discord, no abusar de
+retries.</li>
+</ul>
+<hr />
+<h2 id="errores-comunes-y-soluciones">Errores comunes y soluciones</h2>
+<h3
+id="error-you-must-be-logged-in-to-the-server-unauthorized"><code>error: You must be logged in to the server (Unauthorized)</code></h3>
+<ul>
+<li><strong>Causa:</strong> el token expiró o el kubeconfig está mal
+copiado.</li>
+<li><strong>Solución:</strong> pedile al docente que regenere el
+kubeconfig.</li>
+</ul>
+<h3
+id="error-pods-mi-pod-is-forbidden-exceeded-quota"><code>Error: pods "mi-pod" is forbidden: exceeded quota</code></h3>
+<ul>
+<li><strong>Causa:</strong> la quota del grupo está llena.</li>
+<li><strong>Solución:</strong> borrar Pods/Jobs que no usen con
+<code>kubectl delete pod mi-pod</code> o
+<code>kubectl delete job &lt;nombre&gt;</code>.</li>
+<li><strong>Diagnóstico:</strong>
+<code>kubectl describe resourcequota group-quota</code> muestra qué
+recurso (CPU, memoria, GPU, pod count) llegó al tope.</li>
+</ul>
+<h3
+id="error-container-has-runasnonroot"><code>Error: container has runAsNonRoot</code></h3>
+<ul>
+<li><strong>Causa:</strong> la imagen usa root pero la policy del
+cluster lo prohíbe.</li>
+<li><strong>Solución:</strong> agregar al manifiesto:
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">securityContext</span><span class="kw">:</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">runAsNonRoot</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span></code></pre></div>
+O mejor, usar una imagen que ya corra como usuario no-root.</li>
+</ul>
+<h3
+id="unable-to-connect-to-the-server-dial-tcp-connection-refused"><code>Unable to connect to the server: dial tcp... connection refused</code></h3>
+<ul>
+<li><strong>Causa:</strong> problema de red.</li>
+<li><strong>Solución:</strong> verificar conexión a Internet, VPN o LAN
+de la facultad.</li>
+</ul>
+<h3
+id="pod-queda-en-pending-con-0n-nodes-available-insufficient-nvidiacomgpu">Pod
+queda en <code>Pending</code> con
+<code>0/N nodes available: insufficient nvidia.com/gpu</code></h3>
+<ul>
+<li><strong>Causa:</strong> todas las GPUs están ocupadas por otros
+grupos.</li>
+<li><strong>Solución:</strong> esperar y reintentar, o ejecutar fuera de
+horario pico.</li>
+</ul>
+<h3 id="imagepullbackoff"><code>ImagePullBackOff</code></h3>
+<ul>
+<li><strong>Causa:</strong> la imagen no existe, el tag está mal, o el
+registry es privado sin <code>imagePullSecret</code> configurado.</li>
+<li><strong>Solución:</strong> verificar tag, hacer pública la imagen o
+configurar el secret.</li>
+</ul>
+<h3 id="el-job-termina-pero-los-logs-salen-vacíos">El Job termina pero
+los logs salen vacíos</h3>
+<ul>
+<li><strong>Causa:</strong> olvidaron redirigir stdout en el
+<code>command</code>.</li>
+<li><strong>Solución:</strong> asegurarse que el binario escriba a
+stdout (no a un archivo dentro del container).</li>
+</ul>
+<h3
+id="nvidia-smi-command-not-found-adentro-del-pod"><code>nvidia-smi: command not found</code>
+adentro del Pod</h3>
+<ul>
+<li><strong>Causa:</strong> usaron una imagen <code>*-base</code> que no
+incluye las utilidades.</li>
+<li><strong>Solución:</strong> cambiar a
+<code>nvidia/cuda:&lt;ver&gt;-runtime-&lt;os&gt;</code> mínimo, o
+<code>*-devel</code> si necesitan compilar.</li>
+</ul>
+<hr />
+<h2 id="comparación-obligatoria-lab-cuda-y-tp-integrador">Comparación
+obligatoria (Lab CUDA y TP Integrador)</h2>
+<p>Cuando entreguen ejercicios que comparen simulación vs. hardware
+real, el informe debe incluir <strong>3 columnas de métricas del mismo
+kernel</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>GPGPU-Sim</th>
+<th>Accel-Sim</th>
+<th>GPU real (cluster K3s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wall-clock total</td>
+<td>sim</td>
+<td>sim</td>
+<td>medido (<code>time</code> o Nsight)</td>
+</tr>
+<tr>
+<td>Throughput (GFLOPS / GB/s)</td>
+<td>sim</td>
+<td>sim</td>
+<td>medido (<code>nvprof</code> o Nsight)</td>
+</tr>
+<tr>
+<td>Cache miss rate L1</td>
+<td>sim</td>
+<td>sim</td>
+<td>medido (Nsight Compute)</td>
+</tr>
+<tr>
+<td>Discrepancia vs. GPU real</td>
+<td>calcular %</td>
+<td>calcular %</td>
+<td>baseline (0 %)</td>
+</tr>
+</tbody>
+</table>
+<p>Esto les permite discutir <strong>la precisión de cada
+simulador</strong> contra silicio — exactamente la conversación que
+tienen los papers de arquitectura GPU.</p>
+<hr />
+<h2 id="seguridad--leer-antes-de-irse">Seguridad — leer antes de
+irse</h2>
+<ul>
+<li>⚠️ <strong>El kubeconfig contiene credenciales</strong> con acceso
+completo a su namespace del cluster. <strong>No lo compartan con
+nadie</strong>, no lo suban a GitHub, no lo peguen en chats
+públicos.</li>
+<li>El token tiene una validez de <strong>1 año</strong>.</li>
+<li>Si pierden el archivo o creen que alguien lo vio — avisen
+inmediatamente al docente para revocar y regenerar.</li>
+<li>En el repositorio del grupo: agregar <code>*.kubeconfig</code>,
+<code>*.yaml</code> (con cuidado — no todos los YAMLs son secretos) o el
+directorio <code>.kube/</code> al <code>.gitignore</code>.</li>
+</ul>
+<hr />
+<h2 id="recursos">Recursos</h2>
+<ul>
+<li><a
+href="https://kubernetes.io/docs/concepts/workloads/controllers/job/">Kubernetes
+Job documentation</a></li>
+<li><a href="https://github.com/NVIDIA/k8s-device-plugin">NVIDIA Device
+Plugin para Kubernetes</a></li>
+<li><a href="https://docs.k3s.io/">k3s docs</a></li>
+<li><a href="practica-0.html">TP 3 — Práctica III · Parte 0 (bootstrap
+k3s local)</a> — prerrequisito conceptual: si todavía no manejaron
+<code>kubectl</code>, empezar acá.</li>
+<li><a href="lab-cuda.html">Lab CUDA</a> — los simuladores que
+complementan al cluster.</li>
+</ul>
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+<script>
+// Sidebar show/hide toggle (preference persisted in localStorage)
+(function () {
+  const sidebar = document.getElementById('toc-sidebar');
+  const layout = document.querySelector('.layout');
+  const hideBtn = document.getElementById('sidebar-hide');
+  const showBtn = document.getElementById('sidebar-show');
+  if (!sidebar || !layout || !hideBtn || !showBtn) return;
+
+  const KEY = 'unlu.dcb.sidebar.hidden';
+
+  function apply(hidden) {
+    layout.classList.toggle('sidebar-hidden', hidden);
+    showBtn.classList.toggle('visible', hidden);
+  }
+
+  apply(localStorage.getItem(KEY) === '1');
+
+  hideBtn.addEventListener('click', () => {
+    localStorage.setItem(KEY, '1');
+    apply(true);
+  });
+  showBtn.addEventListener('click', () => {
+    localStorage.removeItem(KEY);
+    apply(false);
+  });
+})();
+
+// Wrap each H2 (and its following content until the next H2) in a <details open>
+// element so users can collapse/expand sections.
+(function () {
+  const main = document.querySelector('main.content');
+  if (!main) return;
+
+  // Collect direct-child H2 headings so we don't touch nested ones (e.g., inside details we'll create)
+  const headings = Array.from(main.children).filter(el => el.tagName === 'H2');
+
+  headings.forEach(h2 => {
+    const details = document.createElement('details');
+    details.open = true;
+    details.className = 'section-collapsible';
+
+    const summary = document.createElement('summary');
+    // Move heading content (incl. anchor) into the summary so anchors keep working
+    summary.innerHTML = h2.innerHTML;
+    if (h2.id) summary.id = h2.id;
+    details.appendChild(summary);
+
+    // Move siblings until next H2 into details
+    const parent = h2.parentNode;
+    let next = h2.nextSibling;
+    parent.replaceChild(details, h2);
+    while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
+      const node = next;
+      next = next.nextSibling;
+      details.appendChild(node);
+    }
+  });
+
+  // If there's a hash in the URL, ensure the target's <details> is open
+  function openDetailsForHash(hash) {
+    if (!hash) return;
+    const target = document.getElementById(hash.replace(/^#/, ''));
+    if (!target) return;
+    let p = target.closest('details');
+    while (p) { p.open = true; p = p.parentElement && p.parentElement.closest('details'); }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  openDetailsForHash(window.location.hash);
+  window.addEventListener('hashchange', () => openDetailsForHash(window.location.hash));
+
+  // Wire up "Expand all" / "Collapse all" controls in the inline TOC
+  document.querySelectorAll('.toc-controls [data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const action = btn.getAttribute('data-action');
+      const open = action === 'expand-all';
+      document.querySelectorAll('details.section-collapsible').forEach(d => { d.open = open; });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
