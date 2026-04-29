@@ -190,8 +190,6 @@ Este lab no es un TP independiente — es **infraestructura compartida**:
   un minero blockchain con CUDA. Los 4 ejercicios de este lab son la
   **preparación directa** para ese TP — sin haber hecho los 4 no van a saber
   cómo escribir un minero eficiente.
-- **SIP 2026**: el seminario también usa este mismo entorno. Misma imagen
-  Docker, mismos ejercicios.
 
 ---
 
