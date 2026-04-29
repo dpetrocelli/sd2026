@@ -1,123 +1,181 @@
-# Autograder — Guía para alumnos
+# Autograder — Cronograma de actividades
 
-> Sistema de **corrección automática** de ejercicios. Hacés un fork, codeás, pusheás, y en menos de un minuto recibís el resultado con el detalle de qué pasó y qué falló.
-
----
-
-## Cómo funciona (vista rápida)
-
-```
-Vos pusheás → Webhook → Grader corre tests ocultos → ✅/❌ comentario en tu commit
-                                                    → Planilla de Google actualizada
-                                                    → Notificación en Discord
-                                                    → Email automático si fallás
-```
-
-Cada ejercicio es un repositorio de GitHub que vos **forkeás**, implementás y **pusheás**. Un sistema externo corre **tests ocultos** sobre tu código y te devuelve feedback automático.
+> **Corrección automática por ejercicio.** Cada lunes, una (o dos) actividades nuevas con corrección instantánea. Forkeás → codeás → pusheás → en ~1 min recibís ✅/❌ con el detalle. **Cierre del programa: lunes 15/06/2026.**
 
 ---
 
-## Paso a paso
+## Cómo funciona — en 30 segundos
 
-### 1. Forkear el ejercicio
-
-Entrá al link del ejercicio que te pasamos (por ejemplo `https://github.com/unlu-sd2026/exercise-01-node-registry`) y hacé click en **"Fork"** arriba a la derecha.
-
-### 2. Clonar tu fork
-
-```bash
-git clone https://github.com/TU_USUARIO/exercise-01-node-registry.git
-cd exercise-01-node-registry
+```
+Vos pusheás → Grader corre tests ocultos → ✅/❌ comentario en tu commit
+                                          → Planilla de Google + Discord + email si fallás
 ```
 
-### 3. Leer el README
+Cada ejercicio es un **repo de GitHub** que vos forkeás. Implementás siguiendo el `README.md` del repo, pusheás, y un sistema externo corre tests ocultos sobre tu código y te devuelve feedback automático.
 
-El `README.md` del ejercicio contiene la **especificación completa**: qué hay que construir, qué endpoints implementar, qué requisitos tiene el `Dockerfile` y qué evalúa el grader. **Leelo con atención** — todo lo que el grader testea está documentado ahí.
+### Reglas mínimas
 
-### 4. Implementar la solución
+- **No tocar** `tests/` ni `.github/` — solo `src/`, `Dockerfile`, `docker-compose.yml`, `.env.example`.
+- **Probá local antes de pushear** — máximo 5 submissions por ejercicio.
+- **Nunca commitees `.env`** — usá `.env.example` y agregá `.env` al `.gitignore`.
+- **Inglés** en código, comentarios y commits.
+- **Tarde:** período de gracia 3 días, marcado como `LATE`. Después se rechaza.
 
-Abrí los archivos en `src/` y reemplazá los `TODO` con tu código. Implementá el `Dockerfile`, el `docker-compose.yml` y el `.dockerignore` según las consignas.
+<details>
+<summary><strong>Workflow completo (paso a paso)</strong></summary>
 
-### 5. Probar localmente
+1. **Fork** del repo del ejercicio (`https://github.com/unlu-sd2026/exercise-XX-...`).
+2. **Clonar** tu fork: `git clone https://github.com/TU_USUARIO/exercise-XX-...`
+3. **Leer el `README.md`** — la spec completa está ahí.
+4. **Implementar** reemplazando los `TODO` en `src/`, `Dockerfile`, `docker-compose.yml`.
+5. **Probar local:**
+   ```bash
+   docker compose up --build -d
+   curl http://localhost:8080/health
+   pytest tests/ -v
+   docker compose down -v
+   ```
+6. **Push:** `git add -A && git commit -m "Implement solution" && git push`
+7. **Esperar el feedback** (~1 min). El grader postea un comentario ✅/❌ en tu último commit con detalle de qué tests pasaron y cuáles no.
 
-Antes de pushear, probá que tu solución levanta y pasa los tests visibles:
+Para ver tu nota: comentario en el commit del fork · planilla de Google · leaderboard en <https://unlu-sd2026.github.io/grader/>.
 
-```bash
-# Levantar el stack
-docker compose up --build -d
+</details>
 
-# Verificar que responde
-curl http://localhost:8080/health
+<details>
+<summary><strong>Preguntas frecuentes</strong></summary>
 
-# Correr los tests visibles (sanity)
-pip install pytest requests
-pytest tests/ -v
+**¿Cuántas veces puedo entregar?** Hasta 5 submissions por ejercicio. Cada push cuenta. Probá local antes.
 
-# Bajar el stack cuando termines
-docker compose down -v
-```
+**¿Puedo volver a pushear si fallé?** Sí, mientras no pasaste el límite.
 
-### 6. Push
+**Los tests locales pasan pero el grader dice que fallé.** El grader corre tests ocultos adicionales (más casos borde + buenas prácticas Docker). Leé el comentario del commit.
 
-```bash
-git add -A
-git commit -m "Implement solution"
-git push
-```
+**¿Puedo ver los tests ocultos?** No, están en repo privado. El comentario del commit te dice qué falló y por qué.
 
-### 7. Esperar el feedback (~1 min)
+**¿Y si pusheo después del deadline?** Período de gracia de 3 días marcado como `LATE`. Después, rechazo.
 
-Después del push, el grader automáticamente:
+**No tengo Docker.** Instalá Docker Desktop (<https://www.docker.com/products/docker-desktop/>). Gratis para uso educativo.
 
-1. Corre los **tests ocultos** sobre tu código (más exhaustivos que los visibles).
-2. Postea un **comentario ✅ o ❌ en tu último commit** con el puntaje y el detalle.
-3. Actualiza la **planilla de Google** del curso.
-4. Manda una notificación a **Discord**.
-5. Si fallaste, te llega un **email** con el detalle.
+**Cualquier duda → canal `#grading` en Discord.**
 
-Para verlo: andá a tu fork en GitHub → click en el último commit → vas a ver el comentario del grader.
+</details>
 
 ---
 
-## Reglas importantes
+## Cronograma — 9 actividades, 6 semanas
 
-- **NO modifiques** las carpetas `tests/` ni `.github/` de tu fork — solo tocá `src/`, `Dockerfile`, `docker-compose.yml`, `.dockerignore` y `.env.example`.
-- **NO commitees** tu archivo `.env` — contiene credenciales. Usá `.env.example` como plantilla y agregá `.env` al `.gitignore`.
-- **Probá localmente** antes de pushear — tenés un número limitado de submissions.
-- **Leé el comentario del commit** cuando te dé ❌ — te dice exactamente qué tests fallaron y por qué.
-- Todo el código, comentarios y commits van en **inglés**.
+> Cada actividad **refuerza el TP** que están viendo esa semana. No es carga extra — es práctica con corrección automática del concepto que ya están dando.
+
+### Clase 1 — Lunes 05/05/2026
+
+#### `01-node-registry` — Registro de nodos por sockets
+
+Servicio que registra nodos remotos vía sockets/HTTP, con health-check y persistencia simple. Calentamiento — refuerza lo de **TP 1** (registro de contactos + cliente/servidor) ahora con corrección automática.
+
+- **Refuerza:** TP 1 — Conceptos básicos de SD
+- **Entrega:** Lun **05/05/2026**
+- **Repo:** [unlu-sd2026/exercise-01-node-registry](https://github.com/unlu-sd2026/exercise-01-node-registry)
 
 ---
 
-## Preguntas frecuentes
+### Clase 2 — Lunes 12/05/2026 · semana doble
 
-**¿Cuántas veces puedo entregar?**
-Cada ejercicio tiene un máximo de submissions (normalmente **5**). Cada push cuenta como una submission. Hacelas valer — probá local antes.
+#### `02-dashboard` — Dashboard de estado de nodos
 
-**¿Puedo volver a pushear si fallé?**
-Sí, mientras no hayas llegado al límite. Corregís y pusheás de nuevo, el grader vuelve a evaluar.
+API + UI mínima que muestra qué nodos están vivos, latencia, último heartbeat. Sirve de base para observabilidad.
 
-**Los tests locales pasan pero el grader dice que fallé. ¿Por qué?**
-El grader corre tests **ocultos adicionales** que cubren más casos borde, buenas prácticas de Docker e integración. Leé el detalle del error en el comentario del commit.
+- **Refuerza:** TP 2 — SD y Concurrencia
+- **Repo:** [unlu-sd2026/exercise-02-dashboard](https://github.com/unlu-sd2026/exercise-02-dashboard)
 
-**¿Puedo ver los tests ocultos?**
-No. Están en un repositorio privado. Pero el comentario del commit te muestra **qué test falló y por qué**.
+#### `03-rabbitmq` — Patrones con RabbitMQ
 
-**¿Y si pusheo después del deadline?**
-Las entregas tardías se aceptan durante un **período de gracia** (normalmente 3 días) pero quedan marcadas como **LATE** en los resultados. Después del período de gracia, se rechazan.
+Implementar producer/consumer, DLQ, retry con backoff. **Es exactamente el Hit #0 del TP 3** con corrección automática.
 
-**No tengo cuenta de GitHub.**
-Creala gratis en <https://github.com/signup>.
+- **Refuerza:** TP 3 · Parte 1 (Hit #0)
+- **Repo:** [unlu-sd2026/exercise-03-rabbitmq](https://github.com/unlu-sd2026/exercise-03-rabbitmq)
 
-**No tengo Docker instalado.**
-Instalá Docker Desktop desde <https://www.docker.com/products/docker-desktop/>. Es gratis para uso educativo.
+- **Entrega ambos:** Lun **12/05/2026**
 
-**¿Dónde veo mi nota?**
-En tres lugares:
+---
 
-1. El **comentario en el commit** de tu fork (el más detallado).
-2. La **planilla de Google** del curso (te pasamos el link).
-3. El **leaderboard** en <https://unlu-sd2026.github.io/grader/>.
+### Clase 3 — Lunes 19/05/2026 · semana doble
+
+#### `05-observability` — Prometheus + Grafana sidecar
+
+Instrumentar un servicio con `/metrics`, scraping de Prometheus, dashboard de Grafana versionado en repo.
+
+- **Refuerza:** TP 3 · Parte 2 (Hit #4 — observabilidad)
+- **Repo:** [unlu-sd2026/exercise-05-observability](https://github.com/unlu-sd2026/exercise-05-observability)
+
+#### `06-cicd` — Pipeline GitHub Actions + ghcr.io
+
+Workflow que buildea, testea y pushea imagen Docker a `ghcr.io` con tags por SHA y `latest`. Gate de gitleaks obligatorio.
+
+- **Refuerza:** Requisitos de CI/CD del TP 3
+- **Repo:** [unlu-sd2026/exercise-06-cicd](https://github.com/unlu-sd2026/exercise-06-cicd)
+
+- **Entrega ambos:** Lun **19/05/2026**
+
+---
+
+### Clase 4 — Lunes 26/05/2026 · semana doble
+
+#### `07-hpa` — Horizontal Pod Autoscaler
+
+Configurar HPA contra una métrica custom (CPU, RPS o queue depth), demostrar que escala bajo carga sintética.
+
+- **Refuerza:** TP 3 · Parte 2 (Hit #3 — escalado)
+- **Repo:** [unlu-sd2026/exercise-07-hpa](https://github.com/unlu-sd2026/exercise-07-hpa)
+
+#### `08-grpc` — Servicio gRPC + Protobuf
+
+Definir un `.proto`, generar stubs, exponer un servicio gRPC con health-check y reflection.
+
+- **Refuerza:** TP 1 · Parte 2 (gRPC + Protobuf)
+- **Repo:** [unlu-sd2026/exercise-08-grpc](https://github.com/unlu-sd2026/exercise-08-grpc)
+
+- **Entrega ambos:** Lun **26/05/2026**
+
+---
+
+### Clase 5 — Lunes 02/06/2026
+
+#### `09-leader-election` — Algoritmo de Bully
+
+Implementar elección de líder Bully en N nodos, simular caída del líder y recuperación.
+
+- **Refuerza:** TP 2 — Bully
+- **Entrega:** Lun **02/06/2026**
+- **Repo:** [unlu-sd2026/exercise-09-leader-election](https://github.com/unlu-sd2026/exercise-09-leader-election)
+
+---
+
+### Clase 6 — Lunes 09/06/2026 · cierre
+
+#### `10-gke` — Deploy a Google Kubernetes Engine
+
+Provisión de GKE con Terraform, deploy del Sobel distribuido del TP 3, health checks públicos. **Cierre del programa de autograder.**
+
+- **Refuerza:** TP 3 · Parte 2 (Hit #2 — cloud)
+- **Entrega final:** Domingo **15/06/2026**
+- **Repo:** [unlu-sd2026/exercise-10-gke](https://github.com/unlu-sd2026/exercise-10-gke)
+
+---
+
+## Resumen del cronograma
+
+| Clase | Fecha | Ejercicios | Refuerza |
+|:---:|:---:|---|---|
+| 1 | **Lun 05/05** | `01-node-registry` | TP 1 |
+| 2 | **Lun 12/05** | `02-dashboard` · `03-rabbitmq` | TP 2 · TP 3 P1 Hit #0 |
+| 3 | **Lun 19/05** | `05-observability` · `06-cicd` | TP 3 P2 Hit #4 · CI/CD |
+| 4 | **Lun 26/05** | `07-hpa` · `08-grpc` | TP 3 P2 Hit #3 · TP 1 P2 |
+| 5 | **Lun 02/06** | `09-leader-election` | TP 2 |
+| 6 | **Lun 09/06** | `10-gke` | TP 3 P2 Hit #2 |
+| — | **Dom 15/06** | **Cierre del programa** | — |
+
+> **Nota:** sacamos `04-kubernetes` del listado original — es redundante con [TP 3 · Parte 0](practica-0.html) (bootstrap del cluster) + Hit #1 (Sobel sobre k8s), que ya cubren ese contenido.
 
 ---
 
@@ -127,7 +185,7 @@ En tres lugares:
 ┌────────────────────┐   push    ┌─────────────────────┐  POST   ┌──────────────────┐
 │  Tu fork           │─────────→│  Sanity Workflow     │────────→│  Cloudflare      │
 │  TU_USUARIO/       │          │  (GitHub Actions)    │         │  Worker          │
-│  exercise-01-...   │          │  corre tests visibles│         │  (webhook)       │
+│  exercise-XX-...   │          │  corre tests visibles│         │  (webhook)       │
 └────────────────────┘          └─────────────────────┘         └────────┬─────────┘
                                                                          │ dispara
                                                                          ▼
@@ -141,18 +199,3 @@ En tres lugares:
 │  ✅ 24/24 (100%)   │  comenta │  4. Reporta         │         │  (si ❌)         │
 └────────────────────┘          └─────────────────────┘         └──────────────────┘
 ```
-
----
-
-## Resumen de un vistazo
-
-| Acción | Dónde |
-|--------|-------|
-| Forkear ejercicio | GitHub → botón **Fork** |
-| Clonar | `git clone https://github.com/TU_USUARIO/exercise-XX-...` |
-| Probar local | `docker compose up --build -d` + `pytest tests/ -v` |
-| Entregar | `git push` |
-| Ver resultado | Comentario en el commit (~1 min) |
-| Ver nota acumulada | Planilla Google + leaderboard |
-
-**Cualquier duda → canal `#grading` en Discord.**
