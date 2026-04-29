@@ -60,6 +60,22 @@ body {
   margin: 0 auto;
 }
 
+.unlu-header .brand-link,
+.unlu-header .course-bar-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.unlu-header .brand-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.unlu-header .course-bar-link:hover {
+  background: rgba(0, 0, 0, 0.32);
+}
+
 .unlu-header .brand .logo {
   height: 56px;
   width: auto;
