@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+  <meta name="generator" content="pandoc + UNLu/DCB template">
+  <title>Autograder — Guía para alumnos — UNLu DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+
+<header class="unlu-header">
+  <a href="index.html" class="brand brand-link" title="Volver al índice">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </a>
+  <a href="index.html" class="course-bar course-bar-link" title="Volver al índice">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </a>
+</header>
+
+<button type="button" id="sidebar-show" class="sidebar-toggle-btn sidebar-show" aria-label="Mostrar índice lateral" title="Mostrar índice lateral">☰</button>
+
+<div class="layout">
+  <aside class="toc-sidebar" id="toc-sidebar">
+    <div class="toc-header">
+      <div class="toc-title">Contenidos</div>
+      <button type="button" id="sidebar-hide" class="sidebar-toggle-btn sidebar-hide" aria-label="Ocultar índice lateral" title="Ocultar índice lateral">×</button>
+    </div>
+    <ul>
+    <li><a href="#autograder--guía-para-alumnos"
+    id="toc-autograder--guía-para-alumnos">Autograder — Guía para
+    alumnos</a>
+    <ul>
+    <li><a href="#cómo-funciona-vista-rápida"
+    id="toc-cómo-funciona-vista-rápida">Cómo funciona (vista
+    rápida)</a></li>
+    <li><a href="#paso-a-paso" id="toc-paso-a-paso">Paso a paso</a>
+    <ul>
+    <li><a href="#1-forkear-el-ejercicio"
+    id="toc-1-forkear-el-ejercicio">1. Forkear el ejercicio</a></li>
+    <li><a href="#2-clonar-tu-fork" id="toc-2-clonar-tu-fork">2. Clonar
+    tu fork</a></li>
+    <li><a href="#3-leer-el-readme" id="toc-3-leer-el-readme">3. Leer el
+    README</a></li>
+    <li><a href="#4-implementar-la-solución"
+    id="toc-4-implementar-la-solución">4. Implementar la
+    solución</a></li>
+    <li><a href="#5-probar-localmente" id="toc-5-probar-localmente">5.
+    Probar localmente</a></li>
+    <li><a href="#6-push" id="toc-6-push">6. Push</a></li>
+    <li><a href="#7-esperar-el-feedback-1-min"
+    id="toc-7-esperar-el-feedback-1-min">7. Esperar el feedback (~1
+    min)</a></li>
+    </ul></li>
+    <li><a href="#reglas-importantes" id="toc-reglas-importantes">Reglas
+    importantes</a></li>
+    <li><a href="#preguntas-frecuentes"
+    id="toc-preguntas-frecuentes">Preguntas frecuentes</a></li>
+    <li><a href="#arquitectura-para-los-curiosos"
+    id="toc-arquitectura-para-los-curiosos">Arquitectura (para los
+    curiosos)</a></li>
+    <li><a href="#resumen-de-un-vistazo"
+    id="toc-resumen-de-un-vistazo">Resumen de un vistazo</a></li>
+    </ul></li>
+    </ul>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
+      <a href="index.html" style="color:var(--gray);">← Volver al índice</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">AUTOGRADER</div>
+
+    <details class="toc-inline" open>
+      <summary>📑 Índice del documento</summary>
+      <ul>
+      <li><a href="#autograder--guía-para-alumnos"
+      id="toc-autograder--guía-para-alumnos">Autograder — Guía para
+      alumnos</a>
+      <ul>
+      <li><a href="#cómo-funciona-vista-rápida"
+      id="toc-cómo-funciona-vista-rápida">Cómo funciona (vista
+      rápida)</a></li>
+      <li><a href="#paso-a-paso" id="toc-paso-a-paso">Paso a paso</a>
+      <ul>
+      <li><a href="#1-forkear-el-ejercicio"
+      id="toc-1-forkear-el-ejercicio">1. Forkear el ejercicio</a></li>
+      <li><a href="#2-clonar-tu-fork" id="toc-2-clonar-tu-fork">2.
+      Clonar tu fork</a></li>
+      <li><a href="#3-leer-el-readme" id="toc-3-leer-el-readme">3. Leer
+      el README</a></li>
+      <li><a href="#4-implementar-la-solución"
+      id="toc-4-implementar-la-solución">4. Implementar la
+      solución</a></li>
+      <li><a href="#5-probar-localmente" id="toc-5-probar-localmente">5.
+      Probar localmente</a></li>
+      <li><a href="#6-push" id="toc-6-push">6. Push</a></li>
+      <li><a href="#7-esperar-el-feedback-1-min"
+      id="toc-7-esperar-el-feedback-1-min">7. Esperar el feedback (~1
+      min)</a></li>
+      </ul></li>
+      <li><a href="#reglas-importantes"
+      id="toc-reglas-importantes">Reglas importantes</a></li>
+      <li><a href="#preguntas-frecuentes"
+      id="toc-preguntas-frecuentes">Preguntas frecuentes</a></li>
+      <li><a href="#arquitectura-para-los-curiosos"
+      id="toc-arquitectura-para-los-curiosos">Arquitectura (para los
+      curiosos)</a></li>
+      <li><a href="#resumen-de-un-vistazo"
+      id="toc-resumen-de-un-vistazo">Resumen de un vistazo</a></li>
+      </ul></li>
+      </ul>
+      <div class="toc-controls">
+        <button type="button" class="toc-btn" data-action="expand-all">Expandir todo</button>
+        <button type="button" class="toc-btn" data-action="collapse-all">Colapsar todo</button>
+      </div>
+    </details>
+
+<h1 id="autograder--guía-para-alumnos">Autograder — Guía para
+alumnos</h1>
+<blockquote>
+<p>Sistema de <strong>corrección automática</strong> de ejercicios.
+Hacés un fork, codeás, pusheás, y en menos de un minuto recibís el
+resultado con el detalle de qué pasó y qué falló.</p>
+</blockquote>
+<hr />
+<h2 id="cómo-funciona-vista-rápida">Cómo funciona (vista rápida)</h2>
+<pre><code>Vos pusheás → Webhook → Grader corre tests ocultos → ✅/❌ comentario en tu commit
+                                                    → Planilla de Google actualizada
+                                                    → Notificación en Discord
+                                                    → Email automático si fallás</code></pre>
+<p>Cada ejercicio es un repositorio de GitHub que vos
+<strong>forkeás</strong>, implementás y <strong>pusheás</strong>. Un
+sistema externo corre <strong>tests ocultos</strong> sobre tu código y
+te devuelve feedback automático.</p>
+<hr />
+<h2 id="paso-a-paso">Paso a paso</h2>
+<h3 id="1-forkear-el-ejercicio">1. Forkear el ejercicio</h3>
+<p>Entrá al link del ejercicio que te pasamos (por ejemplo
+<code>https://github.com/unlu-sd2026/exercise-01-node-registry</code>) y
+hacé click en <strong>“Fork”</strong> arriba a la derecha.</p>
+<h3 id="2-clonar-tu-fork">2. Clonar tu fork</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/TU_USUARIO/exercise-01-node-registry.git</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> exercise-01-node-registry</span></code></pre></div>
+<h3 id="3-leer-el-readme">3. Leer el README</h3>
+<p>El <code>README.md</code> del ejercicio contiene la
+<strong>especificación completa</strong>: qué hay que construir, qué
+endpoints implementar, qué requisitos tiene el <code>Dockerfile</code> y
+qué evalúa el grader. <strong>Leelo con atención</strong> — todo lo que
+el grader testea está documentado ahí.</p>
+<h3 id="4-implementar-la-solución">4. Implementar la solución</h3>
+<p>Abrí los archivos en <code>src/</code> y reemplazá los
+<code>TODO</code> con tu código. Implementá el <code>Dockerfile</code>,
+el <code>docker-compose.yml</code> y el <code>.dockerignore</code> según
+las consignas.</p>
+<h3 id="5-probar-localmente">5. Probar localmente</h3>
+<p>Antes de pushear, probá que tu solución levanta y pasa los tests
+visibles:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Levantar el stack</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose up <span class="at">--build</span> <span class="at">-d</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verificar que responde</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> http://localhost:8080/health</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Correr los tests visibles (sanity)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pytest requests</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">pytest</span> tests/ <span class="at">-v</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Bajar el stack cuando termines</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose down <span class="at">-v</span></span></code></pre></div>
+<h3 id="6-push">6. Push</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add <span class="at">-A</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;Implement solution&quot;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push</span></code></pre></div>
+<h3 id="7-esperar-el-feedback-1-min">7. Esperar el feedback (~1
+min)</h3>
+<p>Después del push, el grader automáticamente:</p>
+<ol type="1">
+<li>Corre los <strong>tests ocultos</strong> sobre tu código (más
+exhaustivos que los visibles).</li>
+<li>Postea un <strong>comentario ✅ o ❌ en tu último commit</strong>
+con el puntaje y el detalle.</li>
+<li>Actualiza la <strong>planilla de Google</strong> del curso.</li>
+<li>Manda una notificación a <strong>Discord</strong>.</li>
+<li>Si fallaste, te llega un <strong>email</strong> con el detalle.</li>
+</ol>
+<p>Para verlo: andá a tu fork en GitHub → click en el último commit →
+vas a ver el comentario del grader.</p>
+<hr />
+<h2 id="reglas-importantes">Reglas importantes</h2>
+<ul>
+<li><strong>NO modifiques</strong> las carpetas <code>tests/</code> ni
+<code>.github/</code> de tu fork — solo tocá <code>src/</code>,
+<code>Dockerfile</code>, <code>docker-compose.yml</code>,
+<code>.dockerignore</code> y <code>.env.example</code>.</li>
+<li><strong>NO commitees</strong> tu archivo <code>.env</code> —
+contiene credenciales. Usá <code>.env.example</code> como plantilla y
+agregá <code>.env</code> al <code>.gitignore</code>.</li>
+<li><strong>Probá localmente</strong> antes de pushear — tenés un número
+limitado de submissions.</li>
+<li><strong>Leé el comentario del commit</strong> cuando te dé ❌ — te
+dice exactamente qué tests fallaron y por qué.</li>
+<li>Todo el código, comentarios y commits van en
+<strong>inglés</strong>.</li>
+</ul>
+<hr />
+<h2 id="preguntas-frecuentes">Preguntas frecuentes</h2>
+<p><strong>¿Cuántas veces puedo entregar?</strong> Cada ejercicio tiene
+un máximo de submissions (normalmente <strong>5</strong>). Cada push
+cuenta como una submission. Hacelas valer — probá local antes.</p>
+<p><strong>¿Puedo volver a pushear si fallé?</strong> Sí, mientras no
+hayas llegado al límite. Corregís y pusheás de nuevo, el grader vuelve a
+evaluar.</p>
+<p><strong>Los tests locales pasan pero el grader dice que fallé. ¿Por
+qué?</strong> El grader corre tests <strong>ocultos adicionales</strong>
+que cubren más casos borde, buenas prácticas de Docker e integración.
+Leé el detalle del error en el comentario del commit.</p>
+<p><strong>¿Puedo ver los tests ocultos?</strong> No. Están en un
+repositorio privado. Pero el comentario del commit te muestra
+<strong>qué test falló y por qué</strong>.</p>
+<p><strong>¿Y si pusheo después del deadline?</strong> Las entregas
+tardías se aceptan durante un <strong>período de gracia</strong>
+(normalmente 3 días) pero quedan marcadas como <strong>LATE</strong> en
+los resultados. Después del período de gracia, se rechazan.</p>
+<p><strong>No tengo cuenta de GitHub.</strong> Creala gratis en <a
+href="https://github.com/signup">https://github.com/signup</a>.</p>
+<p><strong>No tengo Docker instalado.</strong> Instalá Docker Desktop
+desde <a
+href="https://www.docker.com/products/docker-desktop/">https://www.docker.com/products/docker-desktop/</a>.
+Es gratis para uso educativo.</p>
+<p><strong>¿Dónde veo mi nota?</strong> En tres lugares:</p>
+<ol type="1">
+<li>El <strong>comentario en el commit</strong> de tu fork (el más
+detallado).</li>
+<li>La <strong>planilla de Google</strong> del curso (te pasamos el
+link).</li>
+<li>El <strong>leaderboard</strong> en <a
+href="https://unlu-sd2026.github.io/grader/">https://unlu-sd2026.github.io/grader/</a>.</li>
+</ol>
+<hr />
+<h2 id="arquitectura-para-los-curiosos">Arquitectura (para los
+curiosos)</h2>
+<pre><code>┌────────────────────┐   push    ┌─────────────────────┐  POST   ┌──────────────────┐
+│  Tu fork           │─────────→│  Sanity Workflow     │────────→│  Cloudflare      │
+│  TU_USUARIO/       │          │  (GitHub Actions)    │         │  Worker          │
+│  exercise-01-...   │          │  corre tests visibles│         │  (webhook)       │
+└────────────────────┘          └─────────────────────┘         └────────┬─────────┘
+                                                                         │ dispara
+                                                                         ▼
+┌────────────────────┐          ┌─────────────────────┐         ┌──────────────────┐
+│  Planilla Google   │◀─────────│  Grader             │────────→│  Discord         │
+│  (resultados)      │  reporta │  (GitHub Actions)   │ avisa   │  (#grading)      │
+└────────────────────┘          │                     │         └──────────────────┘
+                                │  1. Clona tu fork   │
+┌────────────────────┐          │  2. Clona tests     │         ┌──────────────────┐
+│  Comment commit    │◀─────────│  3. Corre pytest    │         │  Email           │
+│  ✅ 24/24 (100%)   │  comenta │  4. Reporta         │         │  (si ❌)         │
+└────────────────────┘          └─────────────────────┘         └──────────────────┘</code></pre>
+<hr />
+<h2 id="resumen-de-un-vistazo">Resumen de un vistazo</h2>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Dónde</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Forkear ejercicio</td>
+<td>GitHub → botón <strong>Fork</strong></td>
+</tr>
+<tr>
+<td>Clonar</td>
+<td><code>git clone https://github.com/TU_USUARIO/exercise-XX-...</code></td>
+</tr>
+<tr>
+<td>Probar local</td>
+<td><code>docker compose up --build -d</code> +
+<code>pytest tests/ -v</code></td>
+</tr>
+<tr>
+<td>Entregar</td>
+<td><code>git push</code></td>
+</tr>
+<tr>
+<td>Ver resultado</td>
+<td>Comentario en el commit (~1 min)</td>
+</tr>
+<tr>
+<td>Ver nota acumulada</td>
+<td>Planilla Google + leaderboard</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cualquier duda → canal <code>#grading</code> en
+Discord.</strong></p>
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+<script>
+// Sidebar show/hide toggle (preference persisted in localStorage)
+(function () {
+  const sidebar = document.getElementById('toc-sidebar');
+  const layout = document.querySelector('.layout');
+  const hideBtn = document.getElementById('sidebar-hide');
+  const showBtn = document.getElementById('sidebar-show');
+  if (!sidebar || !layout || !hideBtn || !showBtn) return;
+
+  const KEY = 'unlu.dcb.sidebar.hidden';
+
+  function apply(hidden) {
+    layout.classList.toggle('sidebar-hidden', hidden);
+    showBtn.classList.toggle('visible', hidden);
+  }
+
+  apply(localStorage.getItem(KEY) === '1');
+
+  hideBtn.addEventListener('click', () => {
+    localStorage.setItem(KEY, '1');
+    apply(true);
+  });
+  showBtn.addEventListener('click', () => {
+    localStorage.removeItem(KEY);
+    apply(false);
+  });
+})();
+
+// Wrap each H2 (and its following content until the next H2) in a <details open>
+// element so users can collapse/expand sections.
+(function () {
+  const main = document.querySelector('main.content');
+  if (!main) return;
+
+  // Collect direct-child H2 headings so we don't touch nested ones (e.g., inside details we'll create)
+  const headings = Array.from(main.children).filter(el => el.tagName === 'H2');
+
+  headings.forEach(h2 => {
+    const details = document.createElement('details');
+    details.open = true;
+    details.className = 'section-collapsible';
+
+    const summary = document.createElement('summary');
+    // Move heading content (incl. anchor) into the summary so anchors keep working
+    summary.innerHTML = h2.innerHTML;
+    if (h2.id) summary.id = h2.id;
+    details.appendChild(summary);
+
+    // Move siblings until next H2 into details
+    const parent = h2.parentNode;
+    let next = h2.nextSibling;
+    parent.replaceChild(details, h2);
+    while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
+      const node = next;
+      next = next.nextSibling;
+      details.appendChild(node);
+    }
+  });
+
+  // If there's a hash in the URL, ensure the target's <details> is open
+  function openDetailsForHash(hash) {
+    if (!hash) return;
+    const target = document.getElementById(hash.replace(/^#/, ''));
+    if (!target) return;
+    let p = target.closest('details');
+    while (p) { p.open = true; p = p.parentElement && p.parentElement.closest('details'); }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  openDetailsForHash(window.location.hash);
+  window.addEventListener('hashchange', () => openDetailsForHash(window.location.hash));
+
+  // Wire up "Expand all" / "Collapse all" controls in the inline TOC
+  document.querySelectorAll('.toc-controls [data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const action = btn.getAttribute('data-action');
+      const open = action === 'expand-all';
+      document.querySelectorAll('details.section-collapsible').forEach(d => { d.open = open; });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
