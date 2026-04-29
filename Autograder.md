@@ -13,6 +13,17 @@ Vos pusheás → Grader corre tests ocultos → ✅/❌ comentario en tu commit
 
 Cada ejercicio es un **repo de GitHub** que vos forkeás. Implementás siguiendo el `README.md` del repo, pusheás, y un sistema externo corre tests ocultos sobre tu código y te devuelve feedback automático.
 
+### Dónde ver tus resultados
+
+| Canal | Link | Qué encontrás |
+|---|---|---|
+| 🏆 **Leaderboard público** | <https://unlu-sd2026.github.io/grader/> | Ranking del curso, puntaje acumulado, ejercicios resueltos |
+| 💬 **Comentario en tu commit** | tu fork → último commit | Detalle del último submit: qué tests pasaron, cuáles no, por qué |
+| 📊 **Planilla de Google** | (link en `#grading`) | Histórico completo de submissions, deadline tracking |
+| 🔔 **Discord** | canal `#grading` | Notificación en tiempo real de cada corrección |
+
+> El **leaderboard** se actualiza automáticamente después de cada submit (workflow `leaderboard.yml` corre y publica a GitHub Pages). Si no ves tu nombre, esperá ~2 minutos.
+
 ### Reglas mínimas
 
 - **No tocar** `tests/` ni `.github/` — solo `src/`, `Dockerfile`, `docker-compose.yml`, `.env.example`.
