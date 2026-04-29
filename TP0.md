@@ -6,8 +6,6 @@
 
 > Esta es la **Parte 0** del TP 3: el bootstrap del cluster que vas a usar en las Partes 1 y 2. Sin haber completado esta parte (cluster k3s/k3d funcional + checklist de validación al final), no se acepta la entrega del Hit #1 (Sobel distribuido sobre Kubernetes).
 
-> 📎 **Reuso de SIP 2026:** esta guía es la misma versión que se usa en *Seminario de Integración Profesional 2026 (TP 0)*, con dos cambios: el contexto del Hit final (acá Sobel + RabbitMQ + worker pool, no un scraper) y la tabla "Docker → Kubernetes" suma `Deployment`/`Service` que en SIP no aparecen. Si ya cursaste y aprobaste el TP 0 de SIP 2026, el cluster que armaste te sirve tal cual: solo revisá el checklist final.
-
 ---
 
 ## ¿Por qué Kubernetes y por qué k3s?
