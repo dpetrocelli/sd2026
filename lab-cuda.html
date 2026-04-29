@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+  <meta name="generator" content="pandoc + UNLu/DCB template">
+  <title>Lab CUDA — Simulador GPU sin placa física — UNLu DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #204a87; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #8f5902; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #204a87; font-weight: bold; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #ce5c00; font-weight: bold; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+
+<header class="unlu-header">
+  <a href="index.html" class="brand brand-link" title="Volver al índice">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </a>
+  <a href="index.html" class="course-bar course-bar-link" title="Volver al índice">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </a>
+</header>
+
+<button type="button" id="sidebar-show" class="sidebar-toggle-btn sidebar-show" aria-label="Mostrar índice lateral" title="Mostrar índice lateral">☰</button>
+
+<div class="layout">
+  <aside class="toc-sidebar" id="toc-sidebar">
+    <div class="toc-header">
+      <div class="toc-title">Contenidos</div>
+      <button type="button" id="sidebar-hide" class="sidebar-toggle-btn sidebar-hide" aria-label="Ocultar índice lateral" title="Ocultar índice lateral">×</button>
+    </div>
+    <ul>
+    <li><a href="#lab-cuda--simulador-gpu-sin-placa-física"
+    id="toc-lab-cuda--simulador-gpu-sin-placa-física">Lab CUDA —
+    Simulador GPU sin placa física</a>
+    <ul>
+    <li><a href="#qué-es-este-lab-y-por-qué-existe"
+    id="toc-qué-es-este-lab-y-por-qué-existe">¿Qué es este lab y por qué
+    existe?</a>
+    <ul>
+    <li><a href="#el-simulador-gpgpu-sim"
+    id="toc-el-simulador-gpgpu-sim">El simulador: GPGPU-Sim</a></li>
+    <li><a href="#qué-hace-exactamente"
+    id="toc-qué-hace-exactamente">Qué hace exactamente</a></li>
+    <li><a href="#por-qué-es-pedagógicamente-superior-a-una-gpu-real"
+    id="toc-por-qué-es-pedagógicamente-superior-a-una-gpu-real">¿Por qué
+    es pedagógicamente superior a una GPU real?</a></li>
+    </ul></li>
+    <li><a href="#repositorio-del-lab"
+    id="toc-repositorio-del-lab">Repositorio del lab</a>
+    <ul>
+    <li><a href="#estructura" id="toc-estructura">Estructura</a></li>
+    </ul></li>
+    <li><a href="#setup" id="toc-setup">Setup</a>
+    <ul>
+    <li><a href="#requisitos" id="toc-requisitos">Requisitos</a></li>
+    <li><a href="#primera-vez" id="toc-primera-vez">Primera vez</a></li>
+    <li><a href="#día-a-día" id="toc-día-a-día">Día a día</a></li>
+    </ul></li>
+    <li><a href="#los-4-ejercicios" id="toc-los-4-ejercicios">Los 4
+    ejercicios</a>
+    <ul>
+    <li><a href="#progresión-pedagógica"
+    id="toc-progresión-pedagógica">Progresión pedagógica</a></li>
+    </ul></li>
+    <li><a href="#cómo-se-entrega-cada-ejercicio"
+    id="toc-cómo-se-entrega-cada-ejercicio">Cómo se entrega cada
+    ejercicio</a></li>
+    <li><a href="#migración-a-gpu-real-cuando-llegue-el-cluster"
+    id="toc-migración-a-gpu-real-cuando-llegue-el-cluster">Migración a
+    GPU real (cuando llegue el cluster)</a></li>
+    <li><a href="#relación-con-el-resto-de-la-cursada"
+    id="toc-relación-con-el-resto-de-la-cursada">Relación con el resto
+    de la cursada</a></li>
+    <li><a href="#recursos" id="toc-recursos">Recursos</a>
+    <ul>
+    <li><a href="#lectura-obligatoria"
+    id="toc-lectura-obligatoria">Lectura obligatoria</a></li>
+    <li><a href="#documentación-oficial"
+    id="toc-documentación-oficial">Documentación oficial</a></li>
+    <li><a href="#comunidad" id="toc-comunidad">Comunidad</a></li>
+    </ul></li>
+    <li><a href="#troubleshooting-rápido"
+    id="toc-troubleshooting-rápido">Troubleshooting rápido</a></li>
+    </ul></li>
+    </ul>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
+      <a href="index.html" style="color:var(--gray);">← Volver al índice</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">LAB
+CUDA</div>
+
+    <details class="toc-inline" open>
+      <summary>📑 Índice del documento</summary>
+      <ul>
+      <li><a href="#lab-cuda--simulador-gpu-sin-placa-física"
+      id="toc-lab-cuda--simulador-gpu-sin-placa-física">Lab CUDA —
+      Simulador GPU sin placa física</a>
+      <ul>
+      <li><a href="#qué-es-este-lab-y-por-qué-existe"
+      id="toc-qué-es-este-lab-y-por-qué-existe">¿Qué es este lab y por
+      qué existe?</a>
+      <ul>
+      <li><a href="#el-simulador-gpgpu-sim"
+      id="toc-el-simulador-gpgpu-sim">El simulador: GPGPU-Sim</a></li>
+      <li><a href="#qué-hace-exactamente"
+      id="toc-qué-hace-exactamente">Qué hace exactamente</a></li>
+      <li><a href="#por-qué-es-pedagógicamente-superior-a-una-gpu-real"
+      id="toc-por-qué-es-pedagógicamente-superior-a-una-gpu-real">¿Por
+      qué es pedagógicamente superior a una GPU real?</a></li>
+      </ul></li>
+      <li><a href="#repositorio-del-lab"
+      id="toc-repositorio-del-lab">Repositorio del lab</a>
+      <ul>
+      <li><a href="#estructura" id="toc-estructura">Estructura</a></li>
+      </ul></li>
+      <li><a href="#setup" id="toc-setup">Setup</a>
+      <ul>
+      <li><a href="#requisitos" id="toc-requisitos">Requisitos</a></li>
+      <li><a href="#primera-vez" id="toc-primera-vez">Primera
+      vez</a></li>
+      <li><a href="#día-a-día" id="toc-día-a-día">Día a día</a></li>
+      </ul></li>
+      <li><a href="#los-4-ejercicios" id="toc-los-4-ejercicios">Los 4
+      ejercicios</a>
+      <ul>
+      <li><a href="#progresión-pedagógica"
+      id="toc-progresión-pedagógica">Progresión pedagógica</a></li>
+      </ul></li>
+      <li><a href="#cómo-se-entrega-cada-ejercicio"
+      id="toc-cómo-se-entrega-cada-ejercicio">Cómo se entrega cada
+      ejercicio</a></li>
+      <li><a href="#migración-a-gpu-real-cuando-llegue-el-cluster"
+      id="toc-migración-a-gpu-real-cuando-llegue-el-cluster">Migración a
+      GPU real (cuando llegue el cluster)</a></li>
+      <li><a href="#relación-con-el-resto-de-la-cursada"
+      id="toc-relación-con-el-resto-de-la-cursada">Relación con el resto
+      de la cursada</a></li>
+      <li><a href="#recursos" id="toc-recursos">Recursos</a>
+      <ul>
+      <li><a href="#lectura-obligatoria"
+      id="toc-lectura-obligatoria">Lectura obligatoria</a></li>
+      <li><a href="#documentación-oficial"
+      id="toc-documentación-oficial">Documentación oficial</a></li>
+      <li><a href="#comunidad" id="toc-comunidad">Comunidad</a></li>
+      </ul></li>
+      <li><a href="#troubleshooting-rápido"
+      id="toc-troubleshooting-rápido">Troubleshooting rápido</a></li>
+      </ul></li>
+      </ul>
+      <div class="toc-controls">
+        <button type="button" class="toc-btn" data-action="expand-all">Expandir todo</button>
+        <button type="button" class="toc-btn" data-action="collapse-all">Colapsar todo</button>
+      </div>
+    </details>
+
+<h1 id="lab-cuda--simulador-gpu-sin-placa-física">Lab CUDA — Simulador
+GPU sin placa física</h1>
+<blockquote>
+<p><strong>Para qué es este lab</strong>: aprender a programar para GPUs
+<strong>sin tener una placa NVIDIA</strong>. Empaquetamos un simulador
+de GPU en Docker que corre en cualquier laptop. Es la base para el TP4
+y, especialmente, el TP Integrador (minero blockchain con CUDA).</p>
+</blockquote>
+<hr />
+<h2 id="qué-es-este-lab-y-por-qué-existe">¿Qué es este lab y por qué
+existe?</h2>
+<p>Para correr código CUDA tradicionalmente necesitan una placa de video
+NVIDIA. No todos la tienen, y el cluster Kubernetes con GPUs físicas
+para la cátedra todavía no está disponible. Este lab resuelve el
+problema usando un <strong>simulador</strong>.</p>
+<h3 id="el-simulador-gpgpu-sim">El simulador: GPGPU-Sim</h3>
+<p><a
+href="https://github.com/gpgpu-sim/gpgpu-sim_distribution">GPGPU-Sim</a>
+es un simulador <em>cycle-accurate</em> de GPUs NVIDIA desarrollado en
+la University of British Columbia. Es <strong>el</strong> simulador que
+se usa en investigación de arquitectura de GPUs hace más de 15 años
+(citado en cientos de papers).</p>
+<p>Usamos la <strong>versión 4.2.1 (febrero 2025)</strong>, la más
+reciente. Soporta arquitecturas modernas: Volta (Tesla V100), Turing
+(RTX 2060), Pascal (Titan X). Por defecto simulamos una <strong>Tesla
+V100</strong>, una GPU de gama alta de 2017 con Tensor Cores.</p>
+<h3 id="qué-hace-exactamente">Qué hace exactamente</h3>
+<p>Ustedes escriben código CUDA normal en <code>.cu</code>, lo compilan
+con <code>nvcc</code>, y al ejecutar el binario el simulador
+<strong>intercepta cada llamada a la API CUDA</strong> y las ejecuta
+sobre una GPU virtual ciclo a ciclo.</p>
+<p>A cambio reciben <strong>métricas detalladas</strong> que en una GPU
+real están escondidas detrás del driver:</p>
+<ul>
+<li>Ciclos totales y instrucciones por ciclo (IPC)</li>
+<li>Ocupancia de los SMs (Streaming Multiprocessors)</li>
+<li>Hits y misses de cache L1/L2 con tasas exactas</li>
+<li>Cantidad de loads/stores a memoria global</li>
+<li>Divergencia de warps en cada kernel</li>
+</ul>
+<blockquote>
+<p><strong>Limitación importante</strong>: el simulador es
+<strong>lento</strong>. Un kernel que en GPU real tarda 1ms acá puede
+tardar varios minutos. Por eso los ejercicios usan tamaños chicos
+(N=1024). No es para entrenar redes ni procesar datasets grandes — es
+para <strong>aprender CUDA y entender la arquitectura GPU</strong>.</p>
+</blockquote>
+<h3 id="por-qué-es-pedagógicamente-superior-a-una-gpu-real">¿Por qué es
+pedagógicamente superior a una GPU real?</h3>
+<table>
+<thead>
+<tr>
+<th>GPU real</th>
+<th>Simulador</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>El kernel “anda y ya”.</td>
+<td>Vemos <em>por qué</em> anda mejor o peor.</td>
+</tr>
+<tr>
+<td>Las métricas dependen del hardware concreto.</td>
+<td>Todos corren la misma “GPU” — resultados reproducibles.</td>
+</tr>
+<tr>
+<td>Las features están escondidas en el driver.</td>
+<td>Toda la microarquitectura es observable.</td>
+</tr>
+<tr>
+<td>Necesitan hardware específico.</td>
+<td>Cualquier laptop con Docker.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="repositorio-del-lab">Repositorio del lab</h2>
+<p>Todo el código vive acá:</p>
+<p><strong>👉 <a
+href="https://github.com/dpetrocelli/cuda-sim"><code>github.com/dpetrocelli/cuda-sim</code></a></strong></p>
+<blockquote>
+<p><em>El repo se publica con el commit inicial. Si recién están
+entrando, hagan <code>git clone</code> y arranquen.</em></p>
+</blockquote>
+<h3 id="estructura">Estructura</h3>
+<pre><code>cuda-sim/
+├── Dockerfile              ← Imagen con GPGPU-Sim 4.2.1 + CUDA 11.7
+├── docker-compose.yml      ← Servicio listo (un comando y andan)
+├── docs/GUIA.md            ← Guía completa del estudiante
+├── examples/
+│   ├── 01-vector-add/      ← RESUELTO. Léanlo de referencia.
+│   ├── 02-saxpy/           ← A COMPLETAR.
+│   ├── 03-matrix-mul/      ← A COMPLETAR.
+│   └── 04-reduction/       ← A COMPLETAR.
+└── README.md</code></pre>
+<hr />
+<h2 id="setup">Setup</h2>
+<h3 id="requisitos">Requisitos</h3>
+<ul>
+<li>Docker + Docker Compose instalado (cualquier OS).</li>
+<li>~3 GB de disco libre.</li>
+<li>Conexión la primera vez (descarga la imagen base de NVIDIA).</li>
+</ul>
+<h3 id="primera-vez">Primera vez</h3>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/dpetrocelli/cuda-sim.git</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> cuda-sim</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose build</span></code></pre></div>
+<p>El build tarda <strong>10–15 minutos</strong> la primera vez porque
+compila GPGPU-Sim desde fuente. Una vez hecho queda en caché.</p>
+<h3 id="día-a-día">Día a día</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> compose run <span class="at">--rm</span> cuda-sim</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Adentro del container:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> 01-vector-add</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run</span></code></pre></div>
+<p><code>make run</code> compila con <code>nvcc</code>, copia la config
+de la GPU simulada, y ejecuta el binario. La simulación arranca y al
+final imprime las métricas.</p>
+<hr />
+<h2 id="los-4-ejercicios">Los 4 ejercicios</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ejercicio</th>
+<th>Concepto principal</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>01</strong></td>
+<td>Suma de vectores</td>
+<td>Indexado 1D, hello world de CUDA</td>
+<td>✅ Resuelto (referencia)</td>
+</tr>
+<tr>
+<td><strong>02</strong></td>
+<td>SAXPY (<code>Y = aX + Y</code>)</td>
+<td>Pasaje de escalares al kernel</td>
+<td>📝 A completar</td>
+</tr>
+<tr>
+<td><strong>03</strong></td>
+<td>Multiplicación de matrices</td>
+<td>Grid 2D, coalescing, reuso de datos</td>
+<td>📝 A completar</td>
+</tr>
+<tr>
+<td><strong>04</strong></td>
+<td>Reducción paralela</td>
+<td>Shared memory, sincronización, divergencia de warps</td>
+<td>📝 A completar</td>
+</tr>
+</tbody>
+</table>
+<p>Cada ejercicio tiene su <code>CONSIGNA.md</code> con:</p>
+<ul>
+<li>Objetivos pedagógicos</li>
+<li>Pasos a seguir</li>
+<li>Tabla de métricas que tienen que reportar</li>
+<li>Pistas para no quedarse trabados</li>
+<li>Bibliografía sugerida</li>
+</ul>
+<h3 id="progresión-pedagógica">Progresión pedagógica</h3>
+<p>Los ejercicios están diseñados para ir agregando un concepto nuevo
+cada vez:</p>
+<ol type="1">
+<li><strong>01 → 02</strong>: del kernel más simple posible a uno con
+más operaciones por thread.</li>
+<li><strong>02 → 03</strong>: del indexado 1D al 2D, y aparece el costo
+del patrón de acceso a memoria (coalescing).</li>
+<li><strong>03 → 04</strong>: aparece la <strong>shared memory</strong>
+y la <strong>sincronización entre threads de un mismo bloque</strong>.
+Es el ejercicio más difícil — pero también el que les abre la puerta al
+resto del mundo CUDA.</li>
+</ol>
+<hr />
+<h2 id="cómo-se-entrega-cada-ejercicio">Cómo se entrega cada
+ejercicio</h2>
+<p>Para cada ejercicio resuelto:</p>
+<ul>
+<li>El <code>.cu</code> completo y funcionando en su repo del
+grupo.</li>
+<li>Un <code>RESULTADOS.md</code> con:
+<ul>
+<li>Tabla de métricas extraídas del log de GPGPU-Sim.</li>
+<li>Capturas de pantalla del log como evidencia.</li>
+<li>Análisis: por qué ven esos números mirando el código.</li>
+</ul></li>
+<li>Comparación con el ejercicio anterior (¿más ciclos? ¿peor IPC? ¿por
+qué?).</li>
+</ul>
+<p>La guía completa con detalles de cómo interpretar el log está en <a
+href="https://github.com/dpetrocelli/cuda-sim/blob/main/docs/GUIA.md"><code>docs/GUIA.md</code></a>
+del repo.</p>
+<hr />
+<h2 id="migración-a-gpu-real-cuando-llegue-el-cluster">Migración a GPU
+real (cuando llegue el cluster)</h2>
+<p>Cuando tengamos el cluster Kubernetes con GPUs físicas:</p>
+<ol type="1">
+<li><strong>El mismo <code>.cu</code> corre tal cual</strong>. No cambia
+ni una línea.</li>
+<li>En el <code>docker-compose.yml</code> descomentamos la sección
+<code>deploy.resources</code> para nvidia.</li>
+<li>El <code>Dockerfile</code> se reduce a la base oficial de NVIDIA
+(sin compilar GPGPU-Sim).</li>
+<li>Comparamos las métricas reales vs. las simuladas. Ahí ven la
+<strong>precisión del simulador</strong> (suele estar dentro del 10–20%
+para arquitecturas soportadas).</li>
+</ol>
+<hr />
+<h2 id="relación-con-el-resto-de-la-cursada">Relación con el resto de la
+cursada</h2>
+<p>Este lab no es un TP independiente — es <strong>infraestructura
+compartida</strong>:</p>
+<ul>
+<li><strong>TP 4 (Programación Paralela)</strong>: el TP4 trabaja con
+shaders en WebGL, que son conceptualmente el primer paso. Este lab es el
+segundo: del SIMD gráfico al <strong>GPGPU</strong> (<em>General Purpose
+GPU computing</em>) con CUDA.</li>
+<li><strong>TP Integrador (Blockchain + CUDA)</strong>: el integrador
+les pide implementar un minero blockchain con CUDA. Los 4 ejercicios de
+este lab son la <strong>preparación directa</strong> para ese TP — sin
+haber hecho los 4 no van a saber cómo escribir un minero eficiente.</li>
+<li><strong>SIP 2026</strong>: el seminario también usa este mismo
+entorno. Misma imagen Docker, mismos ejercicios.</li>
+</ul>
+<hr />
+<h2 id="recursos">Recursos</h2>
+<h3 id="lectura-obligatoria">Lectura obligatoria</h3>
+<ul>
+<li><strong>Kirk &amp; Hwu</strong>, <em>Programming Massively Parallel
+Processors</em> (3ra ed.) — el libro de cabecera de CUDA.</li>
+<li>Mark Harris, <em>Optimizing Parallel Reduction in CUDA</em> (NVIDIA
+whitepaper) — muestra 7 versiones progresivamente optimizadas del kernel
+del ejercicio 04. Lectura <strong>obligatoria</strong> antes de hacer el
+04.</li>
+</ul>
+<h3 id="documentación-oficial">Documentación oficial</h3>
+<ul>
+<li><a href="http://www.gpgpu-sim.org/manual/index.php/Main_Page">Manual
+de GPGPU-Sim</a></li>
+<li><a
+href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/">CUDA C
+Programming Guide</a></li>
+<li><a href="https://github.com/gpgpu-sim/gpgpu-sim_distribution">Repo
+GPGPU-Sim</a></li>
+</ul>
+<h3 id="comunidad">Comunidad</h3>
+<ul>
+<li>Stack Overflow tag <a
+href="https://stackoverflow.com/questions/tagged/cuda"><code>cuda</code></a></li>
+<li><a href="https://forums.developer.nvidia.com/">NVIDIA Developer
+Forum</a></li>
+</ul>
+<hr />
+<h2 id="troubleshooting-rápido">Troubleshooting rápido</h2>
+<table>
+<thead>
+<tr>
+<th>Problema</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docker compose build</code> falla en el <code>make</code> de
+GPGPU-Sim</td>
+<td>Verificar Ubuntu 20.04 + CUDA 11.7. Otras combinaciones tienen
+problemas.</td>
+</tr>
+<tr>
+<td>El binario “no hace nada”</td>
+<td>Olvidaron <code>gpgpusim.config</code> en el cwd.
+<code>make run</code> lo copia automáticamente.</td>
+</tr>
+<tr>
+<td>Lentitud extrema</td>
+<td>Reducir <code>N</code>. Es esperable que sea lento — son ciclos
+simulados.</td>
+</tr>
+<tr>
+<td><code>nvcc: command not found</code></td>
+<td>No están adentro del container. Ejecutar
+<code>docker compose run --rm cuda-sim</code> primero.</td>
+</tr>
+<tr>
+<td>Cambios al <code>.cu</code> no se ven</td>
+<td>Verificar el volume mount: <code>ls /workspace</code> dentro del
+container debe listar los archivos.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Buena suerte 🚀</strong></p>
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+<script>
+// Sidebar show/hide toggle (preference persisted in localStorage)
+(function () {
+  const sidebar = document.getElementById('toc-sidebar');
+  const layout = document.querySelector('.layout');
+  const hideBtn = document.getElementById('sidebar-hide');
+  const showBtn = document.getElementById('sidebar-show');
+  if (!sidebar || !layout || !hideBtn || !showBtn) return;
+
+  const KEY = 'unlu.dcb.sidebar.hidden';
+
+  function apply(hidden) {
+    layout.classList.toggle('sidebar-hidden', hidden);
+    showBtn.classList.toggle('visible', hidden);
+  }
+
+  apply(localStorage.getItem(KEY) === '1');
+
+  hideBtn.addEventListener('click', () => {
+    localStorage.setItem(KEY, '1');
+    apply(true);
+  });
+  showBtn.addEventListener('click', () => {
+    localStorage.removeItem(KEY);
+    apply(false);
+  });
+})();
+
+// Wrap each H2 (and its following content until the next H2) in a <details open>
+// element so users can collapse/expand sections.
+(function () {
+  const main = document.querySelector('main.content');
+  if (!main) return;
+
+  // Collect direct-child H2 headings so we don't touch nested ones (e.g., inside details we'll create)
+  const headings = Array.from(main.children).filter(el => el.tagName === 'H2');
+
+  headings.forEach(h2 => {
+    const details = document.createElement('details');
+    details.open = true;
+    details.className = 'section-collapsible';
+
+    const summary = document.createElement('summary');
+    // Move heading content (incl. anchor) into the summary so anchors keep working
+    summary.innerHTML = h2.innerHTML;
+    if (h2.id) summary.id = h2.id;
+    details.appendChild(summary);
+
+    // Move siblings until next H2 into details
+    const parent = h2.parentNode;
+    let next = h2.nextSibling;
+    parent.replaceChild(details, h2);
+    while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
+      const node = next;
+      next = next.nextSibling;
+      details.appendChild(node);
+    }
+  });
+
+  // If there's a hash in the URL, ensure the target's <details> is open
+  function openDetailsForHash(hash) {
+    if (!hash) return;
+    const target = document.getElementById(hash.replace(/^#/, ''));
+    if (!target) return;
+    let p = target.closest('details');
+    while (p) { p.open = true; p = p.parentElement && p.parentElement.closest('details'); }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  openDetailsForHash(window.location.hash);
+  window.addEventListener('hashchange', () => openDetailsForHash(window.location.hash));
+
+  // Wire up "Expand all" / "Collapse all" controls in the inline TOC
+  document.querySelectorAll('.toc-controls [data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const action = btn.getAttribute('data-action');
+      const open = action === 'expand-all';
+      document.querySelectorAll('details.section-collapsible').forEach(d => { d.open = open; });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
