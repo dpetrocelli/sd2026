@@ -116,7 +116,7 @@ el binario. La simulación arranca y al final imprime las métricas.
 
 ---
 
-## Los 4 ejercicios
+## Los 5 ejercicios
 
 | # | Ejercicio | Concepto principal | Estado |
 |---|-----------|---------------------|--------|
@@ -124,6 +124,12 @@ el binario. La simulación arranca y al final imprime las métricas.
 | **02** | SAXPY (`Y = aX + Y`) | Pasaje de escalares al kernel | 📝 A completar |
 | **03** | Multiplicación de matrices | Grid 2D, coalescing, reuso de datos | 📝 A completar |
 | **04** | Reducción paralela | Shared memory, sincronización, divergencia de warps | 📝 A completar |
+| **05** | Accel-Sim sobre traza SASS | Simulación trace-driven (versión moderna) | 🔬 Comparativo |
+
+> Los ejercicios 01–04 usan **GPGPU-Sim** (execution-driven: escriben el `.cu`,
+> el simulador intercepta cada llamada CUDA). El ejercicio 05 usa **Accel-Sim**
+> (trace-driven: NVIDIA NVBit grabó la ejecución sobre una GPU real, el
+> simulador consume esa traza). Mismo kernel, dos simuladores — comparen.
 
 Cada ejercicio tiene su `CONSIGNA.md` con:
 
