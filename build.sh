@@ -123,6 +123,14 @@ render "$TMP4" \
   "Práctica IV — Programación Paralela (Shaders)" \
   "TP 4"
 
+# --- Lab CUDA — Simulador GPU ---
+TMP_LAB="$TMPDIR/lab_cuda.md"
+rewrite_inline_imgs "LAB_CUDA.md" "$TMP_LAB"
+render "$TMP_LAB" \
+  "lab-cuda.html" \
+  "Lab CUDA — Simulador GPU sin placa física" \
+  "LAB CUDA"
+
 # --- Autograder — Guía para alumnos ---
 TMP_AG="$TMPDIR/autograder.md"
 rewrite_inline_imgs "Autograder.md" "$TMP_AG"

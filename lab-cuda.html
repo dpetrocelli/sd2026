@@ -126,7 +126,7 @@ code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warni
     <li><a href="#primera-vez" id="toc-primera-vez">Primera vez</a></li>
     <li><a href="#día-a-día" id="toc-día-a-día">Día a día</a></li>
     </ul></li>
-    <li><a href="#los-4-ejercicios" id="toc-los-4-ejercicios">Los 4
+    <li><a href="#los-5-ejercicios" id="toc-los-5-ejercicios">Los 5
     ejercicios</a>
     <ul>
     <li><a href="#progresión-pedagógica"
@@ -193,7 +193,7 @@ CUDA</div>
       vez</a></li>
       <li><a href="#día-a-día" id="toc-día-a-día">Día a día</a></li>
       </ul></li>
-      <li><a href="#los-4-ejercicios" id="toc-los-4-ejercicios">Los 4
+      <li><a href="#los-5-ejercicios" id="toc-los-5-ejercicios">Los 5
       ejercicios</a>
       <ul>
       <li><a href="#progresión-pedagógica"
@@ -346,7 +346,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 de la GPU simulada, y ejecuta el binario. La simulación arranca y al
 final imprime las métricas.</p>
 <hr />
-<h2 id="los-4-ejercicios">Los 4 ejercicios</h2>
+<h2 id="los-5-ejercicios">Los 5 ejercicios</h2>
 <table>
 <thead>
 <tr>
@@ -381,8 +381,22 @@ final imprime las métricas.</p>
 <td>Shared memory, sincronización, divergencia de warps</td>
 <td>📝 A completar</td>
 </tr>
+<tr>
+<td><strong>05</strong></td>
+<td>Accel-Sim sobre traza SASS</td>
+<td>Simulación trace-driven (versión moderna)</td>
+<td>🔬 Comparativo</td>
+</tr>
 </tbody>
 </table>
+<blockquote>
+<p>Los ejercicios 01–04 usan <strong>GPGPU-Sim</strong>
+(execution-driven: escriben el <code>.cu</code>, el simulador intercepta
+cada llamada CUDA). El ejercicio 05 usa <strong>Accel-Sim</strong>
+(trace-driven: NVIDIA NVBit grabó la ejecución sobre una GPU real, el
+simulador consume esa traza). Mismo kernel, dos simuladores —
+comparen.</p>
+</blockquote>
 <p>Cada ejercicio tiene su <code>CONSIGNA.md</code> con:</p>
 <ul>
 <li>Objetivos pedagógicos</li>
@@ -452,8 +466,6 @@ GPU computing</em>) con CUDA.</li>
 les pide implementar un minero blockchain con CUDA. Los 4 ejercicios de
 este lab son la <strong>preparación directa</strong> para ese TP — sin
 haber hecho los 4 no van a saber cómo escribir un minero eficiente.</li>
-<li><strong>SIP 2026</strong>: el seminario también usa este mismo
-entorno. Misma imagen Docker, mismos ejercicios.</li>
 </ul>
 <hr />
 <h2 id="recursos">Recursos</h2>
