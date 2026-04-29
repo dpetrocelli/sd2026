@@ -238,10 +238,13 @@ Accel-Sim → ejecutan en GPU de verdad y comparan.
 
 ### Acceso — paso a paso
 
-1. **Abrir la planilla de alumnos** (link compartido por la cátedra en
-   Discord / aula virtual): `[PLANILLA — pendiente de publicar]`.
-2. Buscar su fila por legajo y descargar el archivo `kubeconfig-<usuario>.yaml`
-   asociado.
+> **El link a la planilla de credenciales no se publica acá.** Se comparte
+> de forma privada por Discord / aula virtual. Si no la recibieron,
+> escriban a la cátedra.
+
+1. **Abrir la planilla de alumnos** que les compartió la cátedra y buscar
+   su fila por legajo.
+2. Descargar el archivo `kubeconfig-<usuario>.yaml` asociado.
 3. Guardarlo en `~/.kube/sd2026.yaml` y exportar la variable de entorno:
    ```bash
    export KUBECONFIG=~/.kube/sd2026.yaml
