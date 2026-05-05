@@ -83,13 +83,45 @@ chmod +x install.sh
 
     <h2>Autenticación</h2>
 
-    <h3>1. Login interactivo</h3>
-<pre><code>gcloud auth login
-gcloud config set project &lt;TU_PROJECT_ID&gt;</code></pre>
+    <p>Tenés dos caminos. Para los alumnos del curso, usar la <strong>opción A</strong> (SA key JSON
+    que provee la cátedra). La <strong>opción B</strong> (ADC con tu propia cuenta) es para quien
+    quiera levantar todo en un proyecto GCP propio.</p>
 
-    <h3>2. Application Default Credentials</h3>
-    <p>Estas son las credenciales que usa el provider de Google de OpenTofu:</p>
-<pre><code>gcloud auth application-default login
+    <h3>Opción A — SA key JSON (recomendado para alumnos)</h3>
+    <p>La cátedra distribuye un archivo <code>sd2026-students-key.json</code> por canal cerrado
+    (Discord/aula virtual). Es una service account con todos los permisos que el lab necesita,
+    apuntando al proyecto compartido del curso.</p>
+
+<pre><code># 1) Guardar el JSON en cualquier path local (no committearlo a git)
+export GOOGLE_APPLICATION_CREDENTIALS=/path/a/sd2026-students-key.json
+
+# 2) Verificar / activar
+gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+gcloud config set project project-2d4443a6-8e9c-4216-862
+
+# 3) OpenTofu ahora lee el JSON automáticamente vía GOOGLE_APPLICATION_CREDENTIALS
+cd 01-vm-basica
+tofu init &amp;&amp; tofu plan</code></pre>
+
+    <blockquote>
+      <strong>⚠ Reglas con el JSON</strong>
+      <ul style="margin: 6px 0 0 0;">
+        <li><strong>Nunca</strong> committearlo a un repo (público ni privado). Agregalo al <code>.gitignore</code>.</li>
+        <li><strong>Nunca</strong> compartirlo fuera del grupo del curso.</li>
+        <li>Si sospechás que se filtró, avisar a la cátedra para revocar la key.</li>
+        <li>El proyecto tiene budget cap — si revientan el límite, se apaga el billing y nadie puede seguir.</li>
+      </ul>
+    </blockquote>
+
+    <h3>Opción B — Application Default Credentials (proyecto propio)</h3>
+    <p>Si vas a usar tu propio proyecto GCP en lugar del compartido:</p>
+
+<pre><code># Login interactivo (usado por gcloud)
+gcloud auth login
+gcloud config set project &lt;TU_PROJECT_ID&gt;
+
+# Application Default Credentials (usado por OpenTofu)
+gcloud auth application-default login
 gcloud auth application-default set-quota-project &lt;TU_PROJECT_ID&gt;</code></pre>
 
     <blockquote>
