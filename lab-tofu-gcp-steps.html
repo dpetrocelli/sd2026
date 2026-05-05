@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pasos a seguir — Lab OpenTofu sobre GCP · SD 2026</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="unlu-header">
+  <div class="brand">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </div>
+  <div class="course-bar">
+    <span class="course">Sistemas Distribuidos · Lab OpenTofu sobre GCP</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </div>
+</header>
+
+<div class="layout" style="grid-template-columns: 1fr;">
+  <main class="content" style="max-width: 1100px; margin: 0 auto; padding: 48px 56px 80px;">
+
+    <p class="page-breadcrumb">
+      <a href="index.html">Inicio</a>
+      <span class="sep">/</span>
+      <a href="lab-tofu-gcp-prerequisites.html">Lab OpenTofu · GCP</a>
+      <span class="sep">/</span>
+      <span class="current">Pasos a seguir</span>
+    </p>
+
+    <h1 style="border-bottom: none; padding-bottom: 0; margin-bottom: 6px;">Pasos a seguir</h1>
+    <p style="color: var(--gray); margin: 0 0 8px; font-size: 15px;">
+      Lab OpenTofu sobre Google Cloud · 2026.
+    </p>
+    <p style="color: var(--dark-gray); margin: 0 0 24px; font-size: 14px; max-width: 900px; line-height: 1.5;">
+      Guía operativa: del primer <code>tofu init</code> al <code>tofu destroy</code> final.
+      Antes de arrancar revisá <a href="lab-tofu-gcp-prerequisites.html">Prerequisitos</a> — si todos los checks pasan,
+      podés empezar con la Fase 0.
+    </p>
+
+    <div class="flow-diagram" aria-label="Fases del despliegue">
+      <a href="#fase-0" class="flow-step open">
+        <div class="step-num">Fase 0</div>
+        <div class="step-name">Preparación inicial</div>
+        <div class="step-status">🔧 Una vez</div>
+      </a>
+      <span class="flow-arrow" aria-hidden="true">→</span>
+      <a href="#fase-1" class="flow-step open">
+        <div class="step-num">Fase 1</div>
+        <div class="step-name">Ejecutar los labs</div>
+        <div class="step-status">🚀 06 etapas</div>
+      </a>
+      <span class="flow-arrow" aria-hidden="true">→</span>
+      <a href="#fase-2" class="flow-step open">
+        <div class="step-num">Fase 2</div>
+        <div class="step-name">Verificar despliegue</div>
+        <div class="step-status">✅ Probar</div>
+      </a>
+      <span class="flow-arrow flow-arrow-strong" aria-hidden="true">⇒</span>
+      <a href="#fase-3" class="flow-step flow-step-tpc">
+        <div class="step-num">Fase 3</div>
+        <div class="step-name">Limpieza obligatoria</div>
+        <div class="step-status">🧹 tofu destroy</div>
+      </a>
+    </div>
+
+    <h2 id="fase-0" style="margin-top: 32px;">Fase 0 — Preparación inicial</h2>
+    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
+      Configuración que se hace una sola vez por máquina y por proyecto GCP.
+    </p>
+
+    <h3>1. Clonar el repositorio</h3>
+<pre><code>git clone &lt;url-del-repo&gt;
+cd labs/tofu-gcp</code></pre>
+
+    <h3>2. Autenticarse en GCP</h3>
+    <p>Dos logins distintos: el de <code>gcloud</code> (uso interactivo) y el de Application Default Credentials (lo que usa OpenTofu).</p>
+<pre><code>gcloud auth login
+gcloud config set project &lt;TU_PROJECT_ID&gt;
+
+gcloud auth application-default login
+gcloud auth application-default set-quota-project &lt;TU_PROJECT_ID&gt;</code></pre>
+
+    <h3>3. Verificar identidad y proyecto</h3>
+<pre><code>gcloud auth list
+gcloud config get-value project
+ls ~/.config/gcloud/application_default_credentials.json</code></pre>
+
+    <h3>4. Bootstrap: APIs + bucket de estado</h3>
+    <p>El lab <code>00-bootstrap</code> habilita las APIs necesarias y crea el bucket GCS para guardar el estado remoto:</p>
+<pre><code>cd 00-bootstrap
+cp terraform.tfvars.example terraform.tfvars
+# Editar terraform.tfvars:
+#   project_id        = "tu-project-id"
+#   region            = "us-central1"
+#   state_bucket_name = "tfstate-sd2026-&lt;tu-id-unico&gt;"   # nombre global, único
+
+tofu init
+tofu plan
+tofu apply</code></pre>
+
+    <blockquote>
+      <strong>⚠ Nombres globales.</strong> El nombre del bucket GCS es global en todo Google Cloud.
+      Si el apply falla con <code>bucket already exists</code>, cambiá <code>state_bucket_name</code>
+      a algo más único (ej. agregá tu legajo o iniciales).
+    </blockquote>
+
+    <h2 id="fase-1" style="margin-top: 48px;">Fase 1 — Ejecutar los labs en orden</h2>
+    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
+      Cada lab es independiente. Patrón común: <code>init → plan → apply → probar → destroy</code>.
+    </p>
+
+    <div class="tp-grid">
+      <a href="01-vm-basica/" class="tp-card">
+        <span class="tp-num">LAB 01</span>
+        <h3>VM básica</h3>
+        <p class="tp-desc">
+          Una VM pública con SSH usando <code>google_compute_instance</code>. Punto de partida más simple.
+        </p>
+        <div class="tp-meta">
+          <span>Carpeta: <strong>01-vm-basica</strong></span>
+          <span>free tier</span>
+        </div>
+      </a>
+
+      <a href="02-vm-web/" class="tp-card">
+        <span class="tp-num">LAB 02</span>
+        <h3>VM web con nginx</h3>
+        <p class="tp-desc">
+          VM + firewall + nginx vía <code>startup-script</code>. Primer servicio expuesto a internet.
+        </p>
+        <div class="tp-meta">
+          <span>Carpeta: <strong>02-vm-web</strong></span>
+          <span>free tier</span>
+        </div>
+      </a>
+
+      <a href="03-vpc-nat/" class="tp-card">
+        <span class="tp-num">LAB 03</span>
+        <h3>VPC custom + Cloud NAT</h3>
+        <p class="tp-desc">
+          VPC propia + Cloud NAT + VM privada (acceso por IAP tunneling). Networking real.
+        </p>
+        <div class="tp-meta">
+          <span>Carpeta: <strong>03-vpc-nat</strong></span>
+          <span>NAT factura</span>
+        </div>
+      </a>
+
+      <a href="04-mig-lb/" class="tp-card">
+        <span class="tp-num">LAB 04</span>
+        <h3>MIG + Load Balancer HTTP</h3>
+        <p class="tp-desc">
+          Managed Instance Group con autoescalado tras un Load Balancer global HTTP.
+        </p>
+        <div class="tp-meta">
+          <span>Carpeta: <strong>04-mig-lb</strong></span>
+          <span>LB factura</span>
+        </div>
+      </a>
+
+      <a href="05-gke-autopilot/" class="tp-card">
+        <span class="tp-num">LAB 05</span>
+        <h3>GKE Autopilot</h3>
+        <p class="tp-desc">
+          Cluster GKE Autopilot mínimo. Control plane facturado por hora — destruir apenas se termine.
+        </p>
+        <div class="tp-meta">
+          <span>Carpeta: <strong>05-gke-autopilot</strong></span>
+          <span>~$0.10/h</span>
+        </div>
+      </a>
+
+      <a href="06-gke-standard-app/" class="tp-card">
+        <span class="tp-num">LAB 06</span>
+        <h3>GKE Standard + app</h3>
+        <p class="tp-desc">
+          GKE Standard + node pool + aplicación desplegada vía provider <code>kubernetes</code>.
+        </p>
+        <div class="tp-meta">
+          <span>Carpeta: <strong>06-gke-standard-app</strong></span>
+          <span>nodos VM</span>
+        </div>
+      </a>
+    </div>
+
+    <h3>Patrón estándar por lab</h3>
+<pre><code>cd 0X-nombre-lab
+cp terraform.tfvars.example terraform.tfvars
+# editar project_id (y otras vars si aplica)
+
+tofu init       # descarga providers
+tofu plan       # muestra qué va a crear
+tofu apply      # crea los recursos (confirmar con "yes")
+
+# ... probar el recurso (SSH a la VM, curl al LB, kubectl, etc.) ...
+
+tofu destroy    # ¡IMPORTANTE! limpia todo</code></pre>
+
+    <h2 id="fase-2" style="margin-top: 48px;">Fase 2 — Comandos de verificación</h2>
+    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
+      Cómo probar lo que cada lab desplegó.
+    </p>
+
+    <h3>Para VMs (labs 01–04)</h3>
+<pre><code># Listar VMs creadas
+gcloud compute instances list
+
+# SSH a una VM pública
+gcloud compute ssh &lt;nombre-vm&gt; --zone=&lt;zona&gt;
+
+# Probar nginx (lab 02)
+curl http://&lt;EXTERNAL_IP&gt;
+
+# IAP a VM privada (lab 03)
+gcloud compute ssh &lt;nombre-vm&gt; --tunnel-through-iap --zone=&lt;zona&gt;</code></pre>
+
+    <h3>Para el Load Balancer (lab 04)</h3>
+<pre><code># Ver IP del LB (sale en outputs)
+tofu output lb_ip
+
+# Curl repetido para ver round-robin entre instancias
+for i in {1..10}; do curl http://&lt;LB_IP&gt;; done</code></pre>
+
+    <h3>Para GKE (labs 05–06)</h3>
+<pre><code># Conectarse al cluster
+gcloud container clusters get-credentials &lt;cluster-name&gt; --region=us-central1
+
+kubectl get nodes
+kubectl get pods -A
+
+# Lab 06: ver la app desplegada
+kubectl get svc
+kubectl get deploy</code></pre>
+
+    <h2 id="fase-3" style="margin-top: 48px;">Fase 3 — Limpieza obligatoria</h2>
+    <p style="margin-top: 4px; color: var(--gray); font-size: 14px;">
+      No olvidar el <code>tofu destroy</code>. En GCP varios recursos facturan por hora aunque no haya tráfico.
+    </p>
+
+    <blockquote>
+      <strong>⚠ Recursos que facturan continuamente:</strong>
+      <ul style="margin: 6px 0 0 0;">
+        <li>GKE Autopilot — el control plane factura aunque no haya pods.</li>
+        <li>Load Balancer HTTP — la forwarding rule factura por hora.</li>
+        <li>Cloud NAT — gateway-hour + procesamiento de datos.</li>
+        <li>VMs <code>e2-micro</code> entran en free tier, pero solo una a la vez.</li>
+      </ul>
+    </blockquote>
+
+<pre><code># Destruir un lab puntual
+cd 0X-nombre-lab
+tofu destroy
+
+# Cuando termines TODO el curso, también el bootstrap:
+cd 00-bootstrap
+tofu destroy   # borra el bucket de estado (force_destroy = true)</code></pre>
+
+    <h3>Verificación de cuenta limpia</h3>
+    <p>Que no quede ningún recurso vivo después de destruir:</p>
+<pre><code>gcloud compute instances list
+gcloud compute forwarding-rules list
+gcloud compute routers list
+gcloud container clusters list
+gcloud storage buckets list
+
+# Salida esperada: vacío o "Listed 0 items."</code></pre>
+
+    <h2 style="margin-top: 48px;">Errores comunes durante el flujo</h2>
+    <table>
+      <thead><tr><th>Cuándo aparece</th><th>Mensaje</th><th>Solución</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>tofu init</code></td>
+          <td><code>Failed to query available provider packages</code></td>
+          <td>Sin internet o detrás de proxy. Configurar <code>HTTPS_PROXY</code>.</td>
+        </tr>
+        <tr>
+          <td><code>tofu plan</code></td>
+          <td><code>could not find default credentials</code></td>
+          <td><code>gcloud auth application-default login</code></td>
+        </tr>
+        <tr>
+          <td><code>tofu apply</code></td>
+          <td><code>API [...] not enabled</code></td>
+          <td>Volver a correr <code>00-bootstrap</code> o habilitar manual.</td>
+        </tr>
+        <tr>
+          <td><code>tofu apply</code></td>
+          <td><code>Quota 'CPUS' exceeded</code></td>
+          <td>Destruir labs anteriores. Free tier permite pocas VMs simultáneas.</td>
+        </tr>
+        <tr>
+          <td><code>tofu destroy</code></td>
+          <td><code>resource has lifecycle.prevent_destroy</code></td>
+          <td>Editar el <code>.tf</code>, sacar el bloque, re-apply, después destroy.</td>
+        </tr>
+        <tr>
+          <td>GKE labs</td>
+          <td><code>kubectl: connection refused</code></td>
+          <td><code>gcloud container clusters get-credentials ...</code> antes de <code>kubectl</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 style="margin-top: 48px;">Activar backend remoto (opcional)</h2>
+    <p>
+      Cada lab tiene un bloque <code>backend "gcs"</code> comentado. Una vez que <code>00-bootstrap</code>
+      creó el bucket, podés activarlo en cada lab para guardar el estado remoto:
+    </p>
+<pre><code>terraform {
+  backend "gcs" {
+    bucket = "tfstate-sd2026-&lt;tu-id&gt;"
+    prefix = "01-vm-basica"
+  }
+}</code></pre>
+    <p>Luego correr <code>tofu init -migrate-state</code> para subir el estado local al bucket.</p>
+
+    <div class="page-prev-next">
+      <a href="lab-tofu-gcp-prerequisites.html" class="prev-link">
+        <span class="arrow">←</span>
+        <span class="nav-meta">
+          <span class="nav-label">Anterior</span>
+          <span class="nav-title">Prerequisitos</span>
+        </span>
+      </a>
+      <a href="index.html" class="next-link">
+        <span class="nav-meta">
+          <span class="nav-label">Siguiente</span>
+          <span class="nav-title">Inicio</span>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+</body>
+</html>

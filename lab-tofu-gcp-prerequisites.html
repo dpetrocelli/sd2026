@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prerequisitos — Lab OpenTofu sobre GCP · SD 2026</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="unlu-header">
+  <div class="brand">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </div>
+  <div class="course-bar">
+    <span class="course">Sistemas Distribuidos · Lab OpenTofu sobre GCP</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </div>
+</header>
+
+<div class="layout" style="grid-template-columns: 1fr;">
+  <main class="content" style="max-width: 1100px; margin: 0 auto; padding: 48px 56px 80px;">
+
+    <p class="page-breadcrumb">
+      <a href="index.html">Inicio</a>
+      <span class="sep">/</span>
+      <span class="current">Lab OpenTofu · GCP</span>
+      <span class="sep">/</span>
+      <span class="current">Prerequisitos</span>
+    </p>
+
+    <h1 style="border-bottom: none; padding-bottom: 0; margin-bottom: 6px;">Prerequisitos</h1>
+    <p style="color: var(--gray); margin: 0 0 8px; font-size: 15px;">
+      Lab OpenTofu sobre Google Cloud · 2026.
+    </p>
+    <p style="color: var(--dark-gray); margin: 0 0 24px; font-size: 14px; max-width: 900px; line-height: 1.5;">
+      Lo que necesitás en tu máquina para desplegar los labs <code>00-bootstrap</code> a <code>06-gke-standard-app</code>.
+      Una sola configuración inicial — después cada lab corre con <code>tofu init &amp;&amp; tofu apply</code>.
+    </p>
+
+    <h2>Herramientas locales</h2>
+    <p style="margin-top:4px;color:var(--gray);font-size:14px">
+      Verificá que cada herramienta esté instalada y en una versión compatible.
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Herramienta</th><th>Versión mínima</th><th>Verificar</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>OpenTofu</strong></td><td>≥ 1.6</td><td><code>tofu version</code></td></tr>
+        <tr><td><strong>gcloud SDK</strong></td><td>cualquiera reciente</td><td><code>gcloud version</code></td></tr>
+        <tr><td><strong>kubectl</strong> (labs 05–06)</td><td>≥ 1.27</td><td><code>kubectl version --client</code></td></tr>
+        <tr><td><strong>git</strong></td><td>cualquiera</td><td><code>git --version</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Instalar OpenTofu (Linux)</h3>
+<pre><code>curl -fsSL https://get.opentofu.org/install-opentofu.sh -o install.sh
+chmod +x install.sh
+./install.sh --install-method standalone</code></pre>
+    <p style="font-size:14px;color:var(--gray)">
+      Más detalles en <a href="https://opentofu.org/docs/intro/install/">opentofu.org/docs/intro/install</a>.
+    </p>
+
+    <h2>Cuenta de Google Cloud</h2>
+    <ul>
+      <li>Cuenta de GCP con <strong>billing habilitado</strong>.</li>
+      <li>Un <strong>proyecto</strong> creado donde tengas rol <code>Owner</code> o <code>Editor</code>.</li>
+      <li>Idealmente, créditos del free tier o una alerta de budget configurada.</li>
+    </ul>
+
+    <blockquote>
+      <strong>⚠ Atención costos.</strong> GKE Autopilot (lab 05) factura por hora aunque no haya cargas.
+      Siempre correr <code>tofu destroy</code> al terminar cada lab.
+    </blockquote>
+
+    <h2>Autenticación</h2>
+
+    <h3>1. Login interactivo</h3>
+<pre><code>gcloud auth login
+gcloud config set project &lt;TU_PROJECT_ID&gt;</code></pre>
+
+    <h3>2. Application Default Credentials</h3>
+    <p>Estas son las credenciales que usa el provider de Google de OpenTofu:</p>
+<pre><code>gcloud auth application-default login
+gcloud auth application-default set-quota-project &lt;TU_PROJECT_ID&gt;</code></pre>
+
+    <blockquote>
+      <strong>Importante:</strong> el provider de Google en OpenTofu lee
+      <code>~/.config/gcloud/application_default_credentials.json</code>, <em>no</em> las credenciales
+      de <code>gcloud auth login</code>. Son dos cosas distintas — necesitás las dos.
+    </blockquote>
+
+    <h2>Permisos IAM en el proyecto</h2>
+    <p>Tu usuario (o la service account que uses) necesita estos roles:</p>
+    <table>
+      <thead><tr><th>Rol</th><th>Para qué</th></tr></thead>
+      <tbody>
+        <tr><td><code>roles/serviceusage.serviceUsageAdmin</code></td><td>Habilitar APIs (lab 00)</td></tr>
+        <tr><td><code>roles/storage.admin</code></td><td>Bucket de estado remoto (lab 00)</td></tr>
+        <tr><td><code>roles/compute.admin</code></td><td>VMs, redes, LBs (labs 01–04)</td></tr>
+        <tr><td><code>roles/container.admin</code></td><td>Clusters GKE (labs 05–06)</td></tr>
+        <tr><td><code>roles/iam.serviceAccountUser</code></td><td>Adjuntar SAs a VMs y GKE</td></tr>
+      </tbody>
+    </table>
+
+    <h2>APIs a habilitar</h2>
+    <p>El lab <code>00-bootstrap</code> las habilita declarativamente. Para hacerlo manual:</p>
+<pre><code>gcloud services enable \
+  compute.googleapis.com \
+  container.googleapis.com \
+  iam.googleapis.com \
+  storage.googleapis.com \
+  serviceusage.googleapis.com</code></pre>
+
+    <h2>Configuración recomendada</h2>
+
+    <div class="tp-grid">
+      <div class="tp-card">
+        <span class="tp-num">REGIÓN</span>
+        <h3>us-central1</h3>
+        <p class="tp-desc">
+          Más barata y cerca del free tier de GCP. Toda la práctica está pensada para esta región.
+        </p>
+        <div class="tp-meta">
+          <span>Variable: <strong><code>region</code></strong></span>
+        </div>
+      </div>
+
+      <div class="tp-card">
+        <span class="tp-num">MÁQUINA</span>
+        <h3>e2-micro</h3>
+        <p class="tp-desc">
+          Tipo de instancia cubierto por el free tier para mantener los labs 01–04 sin costo significativo.
+        </p>
+        <div class="tp-meta">
+          <span>Variable: <strong><code>machine_type</code></strong></span>
+        </div>
+      </div>
+    </div>
+
+    <h2>Checklist final antes de empezar</h2>
+    <p>Todos estos comandos deben funcionar antes de pasar a los <a href="lab-tofu-gcp-steps.html">pasos a seguir</a>:</p>
+
+    <table>
+      <thead><tr><th>Verificación</th><th>Comando</th></tr></thead>
+      <tbody>
+        <tr><td>OpenTofu instalado</td><td><code>tofu version</code> ≥ 1.6</td></tr>
+        <tr><td>gcloud autenticado</td><td><code>gcloud auth list</code> muestra ACTIVE</td></tr>
+        <tr><td>ADC presentes</td><td><code>ls ~/.config/gcloud/application_default_credentials.json</code></td></tr>
+        <tr><td>Proyecto seteado</td><td><code>gcloud config get-value project</code></td></tr>
+        <tr><td>Proyecto accesible</td><td><code>gcloud projects describe $(gcloud config get-value project)</code></td></tr>
+        <tr><td>Roles IAM correctos</td><td>Owner/Editor o los listados arriba</td></tr>
+        <tr><td>Billing habilitado</td><td><code>gcloud beta billing projects describe &lt;ID&gt;</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Troubleshooting rápido</h2>
+    <table>
+      <thead><tr><th>Error</th><th>Causa probable</th><th>Solución</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>could not find default credentials</code></td>
+          <td>Falta ADC</td>
+          <td><code>gcloud auth application-default login</code></td>
+        </tr>
+        <tr>
+          <td><code>API [...] not enabled</code></td>
+          <td>API deshabilitada</td>
+          <td>Correr <code>00-bootstrap</code> o <code>gcloud services enable</code></td>
+        </tr>
+        <tr>
+          <td><code>Permission denied</code></td>
+          <td>Falta rol IAM</td>
+          <td>Pedir al Owner que agregue los roles de la sección de permisos</td>
+        </tr>
+        <tr>
+          <td><code>quota project ... is invalid</code></td>
+          <td>Quota project mal configurado</td>
+          <td><code>gcloud auth application-default set-quota-project &lt;ID&gt;</code></td>
+        </tr>
+        <tr>
+          <td><code>bucket already exists</code></td>
+          <td>Nombre de bucket global ya tomado</td>
+          <td>Cambiar <code>state_bucket_name</code> en <code>terraform.tfvars</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-prev-next">
+      <a href="index.html" class="prev-link">
+        <span class="arrow">←</span>
+        <span class="nav-meta">
+          <span class="nav-label">Volver</span>
+          <span class="nav-title">Inicio</span>
+        </span>
+      </a>
+      <a href="lab-tofu-gcp-steps.html" class="next-link">
+        <span class="nav-meta">
+          <span class="nav-label">Siguiente</span>
+          <span class="nav-title">Pasos a seguir</span>
+        </span>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+</body>
+</html>
