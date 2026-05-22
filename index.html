@@ -5,6 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistemas Distribuidos y Programación Paralela 2026 — UNLu DCB</title>
   <link rel="stylesheet" href="assets/style.css">
+  <script>
+  // Apply saved theme (or OS preference) before first paint to avoid a flash.
+  (function () {
+    try {
+      var saved = localStorage.getItem('unlu.dcb.theme');
+      var dark = saved ? saved === 'dark'
+                       : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+    } catch (e) {}
+  })();
+  </script>
 </head>
 <body>
 
@@ -22,6 +33,12 @@
     <span class="year">2026</span>
     <span class="instructor">Dr. David Petrocelli</span>
   </div>
+  <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Cambiar entre tema claro y oscuro" title="Cambiar tema claro/oscuro">
+    <span class="theme-toggle-icon label-to-dark" aria-hidden="true">☾</span>
+    <span class="theme-toggle-icon label-to-light" aria-hidden="true">☀</span>
+    <span class="theme-toggle-text label-to-dark">Oscuro</span>
+    <span class="theme-toggle-text label-to-light">Claro</span>
+  </button>
 </header>
 
 <div class="layout" style="grid-template-columns: 1fr;">
@@ -258,6 +275,26 @@
     · Dr. David Petrocelli
   </div>
 </footer>
+
+<script>
+  // Theme toggle: flip light/dark, persist the choice in localStorage.
+  (function () {
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    var root = document.documentElement;
+    var KEY = 'unlu.dcb.theme';
+    function sync() {
+      btn.setAttribute('aria-pressed', root.getAttribute('data-theme') === 'dark' ? 'true' : 'false');
+    }
+    sync();
+    btn.addEventListener('click', function () {
+      var dark = root.getAttribute('data-theme') === 'dark';
+      if (dark) { root.removeAttribute('data-theme'); localStorage.setItem(KEY, 'light'); }
+      else { root.setAttribute('data-theme', 'dark'); localStorage.setItem(KEY, 'dark'); }
+      sync();
+    });
+  })();
+</script>
 
 </body>
 </html>

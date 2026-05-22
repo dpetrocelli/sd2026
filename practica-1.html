@@ -7,6 +7,17 @@
   <title>Práctica I — Conceptos básicos para la construcción de Sistemas
 Distribuidos — UNLu DCB</title>
   <link rel="stylesheet" href="assets/style.css">
+  <script>
+  // Apply saved theme (or OS preference) before first paint to avoid a flash.
+  (function () {
+    try {
+      var saved = localStorage.getItem('unlu.dcb.theme');
+      var dark = saved ? saved === 'dark'
+                       : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+    } catch (e) {}
+  })();
+  </script>
 </head>
 <body>
 
@@ -24,6 +35,12 @@ Distribuidos — UNLu DCB</title>
     <span class="year">2026</span>
     <span class="instructor">Dr. David Petrocelli</span>
   </a>
+  <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Cambiar entre tema claro y oscuro" title="Cambiar tema claro/oscuro">
+    <span class="theme-toggle-icon label-to-dark" aria-hidden="true">☾</span>
+    <span class="theme-toggle-icon label-to-light" aria-hidden="true">☀</span>
+    <span class="theme-toggle-text label-to-dark">Oscuro</span>
+    <span class="theme-toggle-text label-to-light">Claro</span>
+  </button>
 </header>
 
 <button type="button" id="sidebar-show" class="sidebar-toggle-btn sidebar-show" aria-label="Mostrar índice lateral" title="Mostrar índice lateral">☰</button>
@@ -356,6 +373,24 @@ href="https://scholar.harvard.edu/waldo/publications/note-distributed-computing"
 </footer>
 
 <script>
+// Theme toggle: flip light/dark, persist the choice in localStorage.
+(function () {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  const root = document.documentElement;
+  const KEY = 'unlu.dcb.theme';
+  function sync() {
+    btn.setAttribute('aria-pressed', root.getAttribute('data-theme') === 'dark' ? 'true' : 'false');
+  }
+  sync();
+  btn.addEventListener('click', () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    if (dark) { root.removeAttribute('data-theme'); localStorage.setItem(KEY, 'light'); }
+    else { root.setAttribute('data-theme', 'dark'); localStorage.setItem(KEY, 'dark'); }
+    sync();
+  });
+})();
+
 // Sidebar show/hide toggle (preference persisted in localStorage)
 (function () {
   const sidebar = document.getElementById('toc-sidebar');

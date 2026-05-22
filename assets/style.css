@@ -699,3 +699,150 @@ details.section-collapsible > p:first-of-type {
   details.section-collapsible > summary { list-style: none; pointer-events: none; }
   details.section-collapsible > summary::after { display: none; }
 }
+
+
+/* ==========================================================
+   DARK THEME
+   Toggleable via the ☀/☾ button in the header; persisted in
+   localStorage, falling back to the OS preference.
+
+   Design note: the brand variables (--white, --navy, --light-blue…)
+   are used with TWO different roles in this stylesheet — as text
+   colour ON a coloured surface (e.g. white text on the navy header)
+   AND as a surface background (white cards). We therefore must NOT
+   remap those variables, or the header text would turn dark. Instead
+   we keep the palette intact and override only the surface/text rules
+   by selector under [data-theme="dark"].
+   ========================================================== */
+
+:root[data-theme="dark"] {
+  --d-page:      #0D1117;   /* page background */
+  --d-surface:   #161B22;   /* cards, sidebar, content panel */
+  --d-surface-2: #1C2230;   /* nested / alt-row surface */
+  --d-text:      #C9D4E0;   /* body text */
+  --d-text-muted:#8B97A6;   /* secondary text */
+  --d-border:    #2A3340;   /* borders / dividers */
+  --d-tint:      #1B2D44;   /* hover / highlight tint (replaces pale blue) */
+  --d-link:      #6FB4F2;   /* links — brighter blue for dark bg */
+}
+
+/* Smooth the flip between themes */
+body, .content, .toc-sidebar, .tp-card, .flow-step, table, td, th,
+.sidebar-toggle-btn, pre, blockquote, details.toc-inline {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* ----- Surfaces & text ----- */
+:root[data-theme="dark"] body { background: var(--d-page); color: var(--d-text); }
+:root[data-theme="dark"] .content,
+:root[data-theme="dark"] .toc-sidebar { background: var(--d-surface); color: var(--d-text); }
+:root[data-theme="dark"] .toc-sidebar { border-right-color: var(--d-border); }
+
+/* Headings & body text */
+:root[data-theme="dark"] h1,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3,
+:root[data-theme="dark"] h4,
+:root[data-theme="dark"] summary { color: #E6EDF3; }
+:root[data-theme="dark"] .content p,
+:root[data-theme="dark"] .content li,
+:root[data-theme="dark"] .content td { color: var(--d-text); }
+
+/* Borders that used --light-gray */
+:root[data-theme="dark"] .content > h1:first-child,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] table,
+:root[data-theme="dark"] td,
+:root[data-theme="dark"] th,
+:root[data-theme="dark"] .toc-inline,
+:root[data-theme="dark"] .page-prev-next a,
+:root[data-theme="dark"] hr { border-color: var(--d-border) !important; }
+
+/* The inline TOC card + collapsible section cards */
+:root[data-theme="dark"] details.toc-inline,
+:root[data-theme="dark"] .tp-card,
+:root[data-theme="dark"] .flow-step { background: var(--d-surface-2); }
+
+/* Tables */
+:root[data-theme="dark"] table { background: var(--d-surface); }
+:root[data-theme="dark"] tr:nth-child(even) td { background: var(--d-surface-2); }
+:root[data-theme="dark"] tr:hover td { background: var(--d-tint); }
+:root[data-theme="dark"] th { background: var(--d-tint); color: #E6EDF3; }
+
+/* Inline code & blockquotes (the <pre> code blocks are already dark) */
+:root[data-theme="dark"] :not(pre) > code {
+  background: var(--d-surface-2);
+  color: #E6EDF3;
+  border-color: var(--d-border);
+}
+:root[data-theme="dark"] blockquote {
+  background: var(--d-surface-2);
+  border-left-color: var(--mid-blue);
+  color: var(--d-text);
+}
+
+/* Links inside content */
+:root[data-theme="dark"] .content a:not(.back-to-menu):not(.banner-pill) { color: var(--d-link); }
+
+/* Muted/secondary text bits */
+:root[data-theme="dark"] .page-breadcrumb,
+:root[data-theme="dark"] .nav-label,
+:root[data-theme="dark"] .toc-sidebar a { color: var(--d-text-muted); }
+
+/* Sidebar show/hide button (hardcoded white background) */
+:root[data-theme="dark"] .sidebar-toggle-btn {
+  background: var(--d-surface-2);
+  color: var(--d-text-muted);
+  border-color: var(--d-border);
+}
+
+/* Soften the light-tuned shadows */
+:root[data-theme="dark"] .unlu-header { box-shadow: 0 2px 12px rgba(0, 0, 0, 0.55); }
+:root[data-theme="dark"] .tp-card,
+:root[data-theme="dark"] .flow-step,
+:root[data-theme="dark"] details.toc-inline { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45); }
+
+/* ============ THEME TOGGLE BUTTON ============ */
+.theme-toggle {
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  position: absolute;
+  top: 14px;
+  right: 24px;
+  z-index: 110;
+  padding: 4px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.10);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.20);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--mid-blue);
+  outline-offset: 2px;
+}
+.theme-toggle .theme-toggle-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+/* Show the icon for the theme you'll switch TO */
+.theme-toggle .label-to-dark { display: inline; }
+.theme-toggle .label-to-light { display: none; }
+:root[data-theme="dark"] .theme-toggle .label-to-dark { display: none; }
+:root[data-theme="dark"] .theme-toggle .label-to-light { display: inline; }
+
+@media (max-width: 600px) {
+  .theme-toggle .theme-toggle-text { display: none; }
+  .theme-toggle { padding: 4px 9px; }
+}
