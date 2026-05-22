@@ -763,6 +763,17 @@ body, .content, .toc-sidebar, .tp-card, .flow-step, table, td, th,
 :root[data-theme="dark"] .tp-card,
 :root[data-theme="dark"] .flow-step { background: var(--d-surface-2); }
 
+/* Card text: titles and body used --navy / --gray, both too dark on a dark
+   surface. Lift them to readable light tones. */
+:root[data-theme="dark"] .tp-card h3,
+:root[data-theme="dark"] .flow-step .step-name { color: #E6EDF3; }
+:root[data-theme="dark"] .tp-card .tp-desc,
+:root[data-theme="dark"] .tp-card .tp-meta,
+:root[data-theme="dark"] .flow-step .step-num,
+:root[data-theme="dark"] .flow-step .step-status { color: #B6C2D0; }
+:root[data-theme="dark"] .tp-card .tp-meta strong { color: var(--d-link); }
+:root[data-theme="dark"] .tp-card .tp-meta { border-top-color: var(--d-border); }
+
 /* Tables */
 :root[data-theme="dark"] table { background: var(--d-surface); }
 :root[data-theme="dark"] tr:nth-child(even) td { background: var(--d-surface-2); }
