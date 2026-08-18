@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0">
+  <meta name="generator" content="pandoc + UNLu/DCB template">
+  <title>Semana 1 — Setup, lectura y foro (Mercedes 2C 2026) — UNLu
+DCB</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+  // Apply saved theme (or OS preference) before first paint to avoid a flash.
+  (function () {
+    try {
+      var saved = localStorage.getItem('unlu.dcb.theme');
+      var dark = saved ? saved === 'dark'
+                       : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (dark) document.documentElement.setAttribute('data-theme', 'dark');
+    } catch (e) {}
+  })();
+  </script>
+</head>
+<body>
+
+<header class="unlu-header">
+  <a href="index.html" class="brand brand-link" title="Volver al índice">
+    <img src="assets/unlu_escudo.png" alt="Universidad Nacional de Luján" class="logo unlu">
+    <div class="brand-text">
+      <div class="institution">Universidad Nacional de Luján</div>
+      <div class="department">Departamento de Ciencias Básicas</div>
+    </div>
+    <img src="assets/logo_dcb.png" alt="Departamento de Ciencias Básicas" class="logo dcb">
+  </a>
+  <a href="index.html" class="course-bar course-bar-link" title="Volver al índice">
+    <span class="course">Sistemas Distribuidos y Programación Paralela</span>
+    <span class="year">2026</span>
+    <span class="instructor">Dr. David Petrocelli</span>
+  </a>
+  <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Cambiar entre tema claro y oscuro" title="Cambiar tema claro/oscuro">
+    <span class="theme-toggle-icon label-to-dark" aria-hidden="true">☾</span>
+    <span class="theme-toggle-icon label-to-light" aria-hidden="true">☀</span>
+    <span class="theme-toggle-text label-to-dark">Oscuro</span>
+    <span class="theme-toggle-text label-to-light">Claro</span>
+  </button>
+</header>
+
+<button type="button" id="sidebar-show" class="sidebar-toggle-btn sidebar-show" aria-label="Mostrar índice lateral" title="Mostrar índice lateral">☰</button>
+
+<div class="layout">
+  <aside class="toc-sidebar" id="toc-sidebar">
+    <div class="toc-header">
+      <div class="toc-title">Contenidos</div>
+      <button type="button" id="sidebar-hide" class="sidebar-toggle-btn sidebar-hide" aria-label="Ocultar índice lateral" title="Ocultar índice lateral">×</button>
+    </div>
+    <ul>
+    <li><a href="#semana-1-qué-hacer-entre-hoy-y-el-viernes-218"
+    id="toc-semana-1-qué-hacer-entre-hoy-y-el-viernes-218">Semana 1: qué
+    hacer entre hoy y el viernes 21/8</a>
+    <ul>
+    <li><a
+    href="#a-antes-del-viernes-218-setup-grupos-y-primer-contacto-con-el-tp1"
+    id="toc-a-antes-del-viernes-218-setup-grupos-y-primer-contacto-con-el-tp1">A.
+    Antes del viernes 21/8: setup, grupos y primer contacto con el
+    TP1</a></li>
+    <li><a href="#b-lectura-recomendada-unidad-1"
+    id="toc-b-lectura-recomendada-unidad-1">B. Lectura recomendada
+    (Unidad 1)</a></li>
+    <li><a
+    href="#c-foro-semana-1-qué-es-y-qué-no-es-un-sistema-distribuido"
+    id="toc-c-foro-semana-1-qué-es-y-qué-no-es-un-sistema-distribuido">C.
+    Foro semana 1: ¿qué es (y qué no es) un sistema
+    distribuido?</a></li>
+    </ul></li>
+    </ul>
+    <div style="margin-top:24px;padding-top:14px;border-top:1px solid var(--light-gray);font-size:12px;">
+      <a href="index.html" style="color:var(--gray);">← Volver al índice</a>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div style="display:inline-block;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:12px;letter-spacing:0.6px;margin-bottom:14px;">SEMANA
+1</div>
+
+    <details class="toc-inline" open>
+      <summary>📑 Índice del documento</summary>
+      <ul>
+      <li><a href="#semana-1-qué-hacer-entre-hoy-y-el-viernes-218"
+      id="toc-semana-1-qué-hacer-entre-hoy-y-el-viernes-218">Semana 1:
+      qué hacer entre hoy y el viernes 21/8</a>
+      <ul>
+      <li><a
+      href="#a-antes-del-viernes-218-setup-grupos-y-primer-contacto-con-el-tp1"
+      id="toc-a-antes-del-viernes-218-setup-grupos-y-primer-contacto-con-el-tp1">A.
+      Antes del viernes 21/8: setup, grupos y primer contacto con el
+      TP1</a></li>
+      <li><a href="#b-lectura-recomendada-unidad-1"
+      id="toc-b-lectura-recomendada-unidad-1">B. Lectura recomendada
+      (Unidad 1)</a></li>
+      <li><a
+      href="#c-foro-semana-1-qué-es-y-qué-no-es-un-sistema-distribuido"
+      id="toc-c-foro-semana-1-qué-es-y-qué-no-es-un-sistema-distribuido">C.
+      Foro semana 1: ¿qué es (y qué no es) un sistema
+      distribuido?</a></li>
+      </ul></li>
+      </ul>
+      <div class="toc-controls">
+        <button type="button" class="toc-btn" data-action="expand-all">Expandir todo</button>
+        <button type="button" class="toc-btn" data-action="collapse-all">Colapsar todo</button>
+      </div>
+    </details>
+
+<h1 id="semana-1-qué-hacer-entre-hoy-y-el-viernes-218">Semana 1: qué
+hacer entre hoy y el viernes 21/8</h1>
+<p>Comisión Mercedes, 2C 2026. Esta página junta las tareas previas a la
+primera clase en vivo, la lectura recomendada de la Unidad 1 y las
+preguntas del foro de la semana.</p>
+<h2
+id="a-antes-del-viernes-218-setup-grupos-y-primer-contacto-con-el-tp1">A.
+Antes del viernes 21/8: setup, grupos y primer contacto con el TP1</h2>
+<p>Hola a todos. Ya están subidas las presentaciones de las clases 1 a
+3. Para que el viernes (clase en vivo) arranquemos directo con Git,
+GitHub Actions y sockets TCP, necesito que lleguen con esto
+resuelto:</p>
+<p><strong>1. Entorno instalado y verificado</strong> (30 a 60
+minutos)</p>
+<table>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Cómo verificar</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Git</td>
+<td><code>git --version</code></td>
+</tr>
+<tr>
+<td>Cuenta de GitHub + invitación a la org <code>unlu-sd2026</code>
+aceptada</td>
+<td>entrar a <a
+href="https://github.com/unlu-sd2026">https://github.com/unlu-sd2026</a>
+y ver los repos</td>
+</tr>
+<tr>
+<td>Python 3.12 (o Java 17 si van por Spring Boot)</td>
+<td><code>python3 --version</code> / <code>java -version</code></td>
+</tr>
+<tr>
+<td>Docker funcionando</td>
+<td><code>docker run hello-world</code></td>
+</tr>
+<tr>
+<td>VS Code (o el editor que usen)</td>
+<td>abrir una carpeta y una terminal integrada</td>
+</tr>
+<tr>
+<td>Windows: WSL2 con Ubuntu</td>
+<td><code>wsl -l -v</code> muestra VERSION 2</td>
+</tr>
+</tbody>
+</table>
+<p>Si algo no anda, escriban en el foro de dudas con el error completo
+(texto, no captura) y el sistema operativo. Lo resolvemos antes del
+viernes y no en clase.</p>
+<p><strong>2. Grupos del TP1</strong> (grupal, vence 4/9) Armar el
+grupo, elegir un nombre y crear el repositorio del TP1 en GitHub con un
+README que tenga: nombre del grupo, integrantes y qué lenguaje van a
+usar. Cargar el nombre del grupo y el link del repo en la
+planilla/formulario de la cátedra. El viernes hacemos el primer commit
+con CI ahí mismo.</p>
+<p><strong>3. Leer el enunciado del TP1</strong> (<a
+href="https://dpetrocelli.github.io/sd2026/practica-1.html">https://dpetrocelli.github.io/sd2026/practica-1.html</a>),
+en particular Hits 1 a 4. No hay que resolver nada todavía; sí llegar
+sabiendo qué se pide y con al menos una pregunta.</p>
+<p><strong>4. Leer cómo funcionan los ejercicios autocorregidos</strong>
+(<a
+href="https://dpetrocelli.github.io/sd2026/autograder.html">https://dpetrocelli.github.io/sd2026/autograder.html</a>).
+Es el mecanismo que van a usar todo el cuatrimestre.</p>
+<p><strong>5. Opcional (calentamiento, no se entrega):</strong> un
+servidor TCP “echo” y un cliente en el lenguaje del grupo. Menos de 40
+líneas cada uno. El viernes partimos desde ahí; quien lo trajo hecho, va
+a entender la clase mucho más rápido.</p>
+<hr />
+<h2 id="b-lectura-recomendada-unidad-1">B. Lectura recomendada (Unidad
+1)</h2>
+<p>Elegí material corto y que se cruce con lo que van a hacer en el
+TP1:</p>
+<ol type="1">
+<li><p><strong>Waldo, Wyant, Wollrath, Kendall. “A Note on Distributed
+Computing” (Sun Microsystems Technical Report, 1994).</strong> Paper
+clásico y corto (unas 15 páginas). Argumenta por qué un sistema
+distribuido no puede tratarse como un programa local “transparente”:
+latencia, acceso a memoria, concurrencia y fallas parciales. Es
+exactamente la discusión de transparencia y modelo cliente/servidor de
+la Unidad 1, y es lo que van a sufrir en carne propia cuando el servidor
+del Hit 3 se caiga y el cliente quede colgado. PDF: <a
+href="https://github.com/papers-we-love/papers-we-love/blob/main/distributed_systems/a-note-on-distributed-computing.pdf">https://github.com/papers-we-love/papers-we-love/blob/main/distributed_systems/a-note-on-distributed-computing.pdf</a></p></li>
+<li><p><strong>“Fallacies of Distributed Computing Explained”
+(Rotem-Gal-Oz), sobre las 8 falacias de Peter Deutsch.</strong>
+Whitepaper de lectura liviana. PDF: <a
+href="https://arnon.me/wp-content/uploads/Files/fallacies.pdf">https://arnon.me/wp-content/uploads/Files/fallacies.pdf</a>
+Cada falacia (“la red es confiable”, “la latencia es cero”, “la
+topología no cambia”…) aparece en algún Hit del TP1 o del TP2.</p></li>
+<li><p><strong>Tanenbaum y van Steen, “Distributed Systems”, capítulo 1
+(Introducción).</strong> La 3ra edición se descarga gratis desde el
+sitio de los autores: <a
+href="https://www.distributed-systems.net/index.php/books/ds3/">https://www.distributed-systems.net/index.php/books/ds3/</a>
+Es la bibliografía base de la materia; el capítulo 1 cubre definiciones,
+objetivos (transparencia, apertura, escalabilidad) y tipos de sistemas
+distribuidos.</p></li>
+</ol>
+<p>Sugerencia de orden: primero Waldo (es el que abre la cabeza),
+después las falacias, y el capítulo 1 como referencia.</p>
+<hr />
+<h2 id="c-foro-semana-1-qué-es-y-qué-no-es-un-sistema-distribuido">C.
+Foro semana 1: ¿qué es (y qué no es) un sistema distribuido?</h2>
+<p>Consigna: respondé al menos una de estas preguntas con tu propia
+opinión (5 a 10 líneas, sin copiar de un LLM; quiero leer lo que pensás
+vos) y comentá la respuesta de al menos un compañero antes del martes
+25/8. La participación cuenta como actividad de la cursada.</p>
+<ol type="1">
+<li><p>Waldo y otros dicen que la “transparencia” (hacer que una llamada
+remota parezca local) es un objetivo peligroso. Después de leer el
+paper, ¿estás de acuerdo? Dá un ejemplo concreto de algo que uses todos
+los días (WhatsApp, un juego online, Mercado Pago, Google Drive) donde
+esa transparencia se rompe y el usuario se da cuenta.</p></li>
+<li><p>Elegí una de las 8 falacias de la computación distribuida y contá
+una situación real (propia, del trabajo, o una noticia) donde alguien la
+asumió y salió mal.</p></li>
+<li><p>En el TP1 van a construir un cliente y un servidor que se hablan
+por sockets TCP. Si el servidor se cae en el medio de una petición, ¿qué
+debería hacer el cliente? ¿Reintentar? ¿Cuántas veces? ¿Cómo sabe si la
+operación se ejecutó o no? No hay respuesta única; me interesa el
+razonamiento.</p></li>
+<li><p>¿Cuál es la diferencia entre un sistema “distribuido” y un
+sistema “descentralizado”? ¿Un blockchain es lo uno, lo otro, o ambos?
+(Adelanto: el TP Integrador es una blockchain distribuida, así que esta
+pregunta les vuelve en diciembre.)</p></li>
+<li><p>Pregunta libre: contá qué sistema distribuido te parece más
+impresionante en cuanto a ingeniería y por qué. Vale cualquier cosa:
+DNS, BitTorrent, Netflix, Bitcoin, el sistema de reservas de una
+aerolínea.</p></li>
+</ol>
+<p>Como cierre, el viernes tomo 10 minutos de la clase para discutir las
+respuestas más interesantes.</p>
+  </main>
+</div>
+
+<footer class="unlu-footer">
+  <div>
+    UNLu · Departamento de Ciencias Básicas · Sistemas Distribuidos y Programación Paralela <strong>2026</strong>
+    · Dr. David Petrocelli
+  </div>
+</footer>
+
+<script>
+// Theme toggle: flip light/dark, persist the choice in localStorage.
+(function () {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  const root = document.documentElement;
+  const KEY = 'unlu.dcb.theme';
+  function sync() {
+    btn.setAttribute('aria-pressed', root.getAttribute('data-theme') === 'dark' ? 'true' : 'false');
+  }
+  sync();
+  btn.addEventListener('click', () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    if (dark) { root.removeAttribute('data-theme'); localStorage.setItem(KEY, 'light'); }
+    else { root.setAttribute('data-theme', 'dark'); localStorage.setItem(KEY, 'dark'); }
+    sync();
+  });
+})();
+
+// Sidebar show/hide toggle (preference persisted in localStorage)
+(function () {
+  const sidebar = document.getElementById('toc-sidebar');
+  const layout = document.querySelector('.layout');
+  const hideBtn = document.getElementById('sidebar-hide');
+  const showBtn = document.getElementById('sidebar-show');
+  if (!sidebar || !layout || !hideBtn || !showBtn) return;
+
+  const KEY = 'unlu.dcb.sidebar.hidden';
+
+  function apply(hidden) {
+    layout.classList.toggle('sidebar-hidden', hidden);
+    showBtn.classList.toggle('visible', hidden);
+  }
+
+  apply(localStorage.getItem(KEY) === '1');
+
+  hideBtn.addEventListener('click', () => {
+    localStorage.setItem(KEY, '1');
+    apply(true);
+  });
+  showBtn.addEventListener('click', () => {
+    localStorage.removeItem(KEY);
+    apply(false);
+  });
+})();
+
+// Wrap each H2 (and its following content until the next H2) in a <details open>
+// element so users can collapse/expand sections.
+(function () {
+  const main = document.querySelector('main.content');
+  if (!main) return;
+
+  // Collect direct-child H2 headings so we don't touch nested ones (e.g., inside details we'll create)
+  const headings = Array.from(main.children).filter(el => el.tagName === 'H2');
+
+  headings.forEach(h2 => {
+    const details = document.createElement('details');
+    details.open = true;
+    details.className = 'section-collapsible';
+
+    const summary = document.createElement('summary');
+    // Move heading content (incl. anchor) into the summary so anchors keep working
+    summary.innerHTML = h2.innerHTML;
+    if (h2.id) summary.id = h2.id;
+    details.appendChild(summary);
+
+    // Move siblings until next H2 into details
+    const parent = h2.parentNode;
+    let next = h2.nextSibling;
+    parent.replaceChild(details, h2);
+    while (next && !(next.nodeType === 1 && next.tagName === 'H2')) {
+      const node = next;
+      next = next.nextSibling;
+      details.appendChild(node);
+    }
+  });
+
+  // If there's a hash in the URL, ensure the target's <details> is open
+  function openDetailsForHash(hash) {
+    if (!hash) return;
+    const target = document.getElementById(hash.replace(/^#/, ''));
+    if (!target) return;
+    let p = target.closest('details');
+    while (p) { p.open = true; p = p.parentElement && p.parentElement.closest('details'); }
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  openDetailsForHash(window.location.hash);
+  window.addEventListener('hashchange', () => openDetailsForHash(window.location.hash));
+
+  // Wire up "Expand all" / "Collapse all" controls in the inline TOC
+  document.querySelectorAll('.toc-controls [data-action]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const action = btn.getAttribute('data-action');
+      const open = action === 'expand-all';
+      document.querySelectorAll('details.section-collapsible').forEach(d => { d.open = open; });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

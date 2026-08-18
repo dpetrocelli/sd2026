@@ -155,6 +155,14 @@ render "$TMPI" \
   "TP Integrador — Blockchain Distribuida y CUDA" \
   "TP INTEGRADOR"
 
+# --- Semana 1 — Antes del viernes (Mercedes 2C 2026) ---
+TMP_S1="$TMPDIR/semana1.md"
+rewrite_inline_imgs "SEMANA1.md" "$TMP_S1"
+render "$TMP_S1" \
+  "semana-1.html" \
+  "Semana 1 — Setup, lectura y foro (Mercedes 2C 2026)" \
+  "SEMANA 1"
+
 echo ""
 echo "Done. Open with:"
 echo "  xdg-open $DIR/index.html"
