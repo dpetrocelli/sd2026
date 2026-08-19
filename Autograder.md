@@ -1,6 +1,6 @@
 # Autograder — Cronograma de actividades
 
-> **Corrección automática por ejercicio.** Cada lunes, una (o dos) actividades nuevas con corrección instantánea. Forkeás → codeás → pusheás → en ~1 min recibís ✅/❌ con el detalle. **Cierre del programa: lunes 15/06/2026.**
+> **Corrección automática por ejercicio.** Una actividad nueva por semana, con corrección instantánea. Forkeás → codeás → pusheás → en ~1 min recibís ✅/❌ con el detalle. Entregas los **domingos a las 23:59**. **Arranca el dom 30/08/2026 · cierre del programa: domingo 08/11/2026.**
 
 ---
 
@@ -74,139 +74,149 @@ Para ver tu nota: comentario en el commit del fork · planilla de Google · lead
 
 ---
 
-## Cronograma — 9 actividades, 6 semanas
+## Cronograma — 10 actividades, una por semana
 
-> Cada actividad **refuerza el TP** que están viendo esa semana. No es carga extra — es práctica con corrección automática del concepto que ya están dando.
+> Cada actividad **refuerza el TP** que están viendo esa semana. No es carga extra — es práctica con corrección automática del concepto que ya están dando. La entrega es siempre **domingo 23:59**.
 
-### Clase 1 — Lunes 05/05/2026
+### Actividad 1 — entrega dom 30/08/2026
 
 #### `01-node-registry` — Registro de nodos por sockets
 
 Servicio que registra nodos remotos vía sockets/HTTP, con health-check y persistencia simple. Calentamiento — refuerza lo de **TP 1** (registro de contactos + cliente/servidor) ahora con corrección automática.
 
 - **Refuerza:** TP 1 — Conceptos básicos de SD
-- **Entrega:** Lun **05/05/2026**
+- **Entrega:** Dom **30/08/2026**
 - **Repo:** [unlu-sd2026/exercise-01-node-registry](https://github.com/unlu-sd2026/exercise-01-node-registry)
 
 ---
 
-### Clase 2 — Lunes 12/05/2026 · semana doble
-
-#### `02-dashboard` — Dashboard de estado de nodos
-
-API + UI mínima que muestra qué nodos están vivos, latencia, último heartbeat. Sirve de base para observabilidad.
-
-- **Refuerza:** TP 2 — SD y Concurrencia
-- **Repo:** [unlu-sd2026/exercise-02-dashboard](https://github.com/unlu-sd2026/exercise-02-dashboard)
-
-#### `03-rabbitmq` — Patrones con RabbitMQ
-
-Implementar producer/consumer, DLQ, retry con backoff. **Es exactamente el Hit #0 del TP 3** con corrección automática.
-
-- **Refuerza:** TP 3 · Parte 1 (Hit #0)
-- **Repo:** [unlu-sd2026/exercise-03-rabbitmq](https://github.com/unlu-sd2026/exercise-03-rabbitmq)
-
-- **Entrega ambos:** Lun **12/05/2026**
-
----
-
-### Clase 3 — Lunes 19/05/2026 · semana doble
-
-#### `05-observability` — Prometheus + Grafana sidecar
-
-Instrumentar un servicio con `/metrics`, scraping de Prometheus, dashboard de Grafana versionado en repo.
-
-- **Refuerza:** TP 3 · Parte 2 (Hit #4 — observabilidad)
-- **Repo:** [unlu-sd2026/exercise-05-observability](https://github.com/unlu-sd2026/exercise-05-observability)
-
-#### `06-cicd` — Pipeline GitHub Actions + ghcr.io
-
-Workflow que buildea, testea y pushea imagen Docker a `ghcr.io` con tags por SHA y `latest`. Gate de gitleaks obligatorio.
-
-- **Refuerza:** Requisitos de CI/CD del TP 3
-- **Repo:** [unlu-sd2026/exercise-06-cicd](https://github.com/unlu-sd2026/exercise-06-cicd)
-
-- **Entrega ambos:** Lun **19/05/2026**
-
----
-
-### Clase 4 — Lunes 26/05/2026 · semana doble
-
-#### `07-hpa` — Horizontal Pod Autoscaler
-
-Configurar HPA contra una métrica custom (CPU, RPS o queue depth), demostrar que escala bajo carga sintética.
-
-- **Refuerza:** TP 3 · Parte 2 (Hit #3 — escalado)
-- **Repo:** [unlu-sd2026/exercise-07-hpa](https://github.com/unlu-sd2026/exercise-07-hpa)
+### Actividad 2 — entrega dom 06/09/2026
 
 #### `08-grpc` — Servicio gRPC + Protobuf
 
 Definir un `.proto`, generar stubs, exponer un servicio gRPC con health-check y reflection.
 
-- **Refuerza:** TP 1 · Parte 2 (gRPC + Protobuf)
+- **Refuerza:** TP 1 (Hit #8 — gRPC + Protobuf)
+- **Entrega:** Dom **06/09/2026**
 - **Repo:** [unlu-sd2026/exercise-08-grpc](https://github.com/unlu-sd2026/exercise-08-grpc)
-
-- **Entrega ambos:** Lun **26/05/2026**
 
 ---
 
-### Clase 5 — Lunes 02/06/2026
+> **Semana del 08/09 — sin actividad nueva.** Semana de Docker intensivo y arranque del TP 2: usalá para ponerte al día si venís atrasado.
+
+---
+
+### Actividad 3 — entrega dom 20/09/2026
 
 #### `09-leader-election` — Algoritmo de Bully
 
 Implementar elección de líder Bully en N nodos, simular caída del líder y recuperación.
 
 - **Refuerza:** TP 2 — Bully
-- **Entrega:** Lun **02/06/2026**
+- **Entrega:** Dom **20/09/2026**
 - **Repo:** [unlu-sd2026/exercise-09-leader-election](https://github.com/unlu-sd2026/exercise-09-leader-election)
 
 ---
 
-### Clase 6 — Lunes 09/06/2026 · cierre
+### Actividad 4 — entrega dom 27/09/2026
+
+#### `03-rabbitmq` — Patrones con RabbitMQ
+
+Implementar producer/consumer, DLQ, retry con backoff. **Es exactamente el Hit #0 del TP 3** con corrección automática.
+
+- **Refuerza:** TP 3 · Parte 1 (Hit #0)
+- **Entrega:** Dom **27/09/2026**
+- **Repo:** [unlu-sd2026/exercise-03-rabbitmq](https://github.com/unlu-sd2026/exercise-03-rabbitmq)
+
+---
+
+### Actividad 5 — entrega dom 04/10/2026
+
+#### `02-dashboard` — Dashboard de estado de nodos
+
+API + UI mínima que muestra qué nodos están vivos, latencia, último heartbeat. Sirve de base para observabilidad.
+
+- **Refuerza:** TP 2 — SD y Concurrencia
+- **Entrega:** Dom **04/10/2026**
+- **Repo:** [unlu-sd2026/exercise-02-dashboard](https://github.com/unlu-sd2026/exercise-02-dashboard)
+
+---
+
+### Actividad 6 — entrega dom 11/10/2026
+
+#### `04-kubernetes` — Workloads en Kubernetes
+
+Desplegar una app real sobre el cluster: Deployment, Service, ConfigMap, Secret y Job, con manifiestos declarativos verificados por el grader.
+
+- **Refuerza:** TP 3 · Parte 1 (Hit #1 — Sobel sobre k8s) y [Parte 0](practica-0.html)
+- **Entrega:** Dom **11/10/2026**
+- **Repo:** [unlu-sd2026/exercise-04-kubernetes](https://github.com/unlu-sd2026/exercise-04-kubernetes)
+
+---
+
+### Actividad 7 — entrega dom 18/10/2026
+
+#### `05-observability` — Prometheus + Grafana sidecar
+
+Instrumentar un servicio con `/metrics`, scraping de Prometheus, dashboard de Grafana versionado en repo.
+
+- **Refuerza:** TP 3 · Parte 2 (Hit #4 — observabilidad)
+- **Entrega:** Dom **18/10/2026**
+- **Repo:** [unlu-sd2026/exercise-05-observability](https://github.com/unlu-sd2026/exercise-05-observability)
+
+---
+
+### Actividad 8 — entrega dom 25/10/2026
+
+#### `06-cicd` — Pipeline GitHub Actions + ghcr.io
+
+Workflow que buildea, testea y pushea imagen Docker a `ghcr.io` con tags por SHA y `latest`. Gate de gitleaks obligatorio.
+
+- **Refuerza:** Requisitos de CI/CD del TP 3
+- **Entrega:** Dom **25/10/2026**
+- **Repo:** [unlu-sd2026/exercise-06-cicd](https://github.com/unlu-sd2026/exercise-06-cicd)
+
+---
+
+### Actividad 9 — entrega dom 01/11/2026
+
+#### `07-hpa` — Horizontal Pod Autoscaler
+
+Configurar HPA contra una métrica custom (CPU, RPS o queue depth), demostrar que escala bajo carga sintética.
+
+- **Refuerza:** TP 3 · Parte 2 (Hit #3 — escalado)
+- **Entrega:** Dom **01/11/2026**
+- **Repo:** [unlu-sd2026/exercise-07-hpa](https://github.com/unlu-sd2026/exercise-07-hpa)
+
+---
+
+### Actividad 10 — entrega dom 08/11/2026 · cierre
 
 #### `10-gke` — Deploy a Google Kubernetes Engine
 
 Provisión de GKE con Terraform, deploy del Sobel distribuido del TP 3, health checks públicos. **Cierre del programa de autograder.**
 
 - **Refuerza:** TP 3 · Parte 2 (Hit #2 — cloud)
-- **Entrega final:** Domingo **15/06/2026**
+- **Entrega final:** Domingo **08/11/2026**
 - **Repo:** [unlu-sd2026/exercise-10-gke](https://github.com/unlu-sd2026/exercise-10-gke)
 
 ---
 
 ## Resumen del cronograma
 
-| Clase | Fecha | Ejercicios | Refuerza |
+| # | Entrega | Ejercicio | Refuerza |
 |:---:|:---:|---|---|
-| 1 | **Lun 05/05** | `01-node-registry` | TP 1 |
-| 2 | **Lun 12/05** | `02-dashboard` · `03-rabbitmq` | TP 2 · TP 3 P1 Hit #0 |
-| 3 | **Lun 19/05** | `05-observability` · `06-cicd` | TP 3 P2 Hit #4 · CI/CD |
-| 4 | **Lun 26/05** | `07-hpa` · `08-grpc` | TP 3 P2 Hit #3 · TP 1 P2 |
-| 5 | **Lun 02/06** | `09-leader-election` | TP 2 |
-| 6 | **Lun 09/06** | `10-gke` | TP 3 P2 Hit #2 |
-| — | **Dom 15/06** | **Cierre del programa** | — |
+| 1 | **Dom 30/08** | `01-node-registry` | TP 1 |
+| 2 | **Dom 06/09** | `08-grpc` | TP 1 (Hit #8) |
+| — | *(semana 08/09)* | *sin actividad — Docker / arranque TP 2* | — |
+| 3 | **Dom 20/09** | `09-leader-election` | TP 2 — Bully |
+| 4 | **Dom 27/09** | `03-rabbitmq` | TP 3 P1 Hit #0 |
+| 5 | **Dom 04/10** | `02-dashboard` | TP 2 |
+| 6 | **Dom 11/10** | `04-kubernetes` | TP 3 P1 Hit #1 |
+| 7 | **Dom 18/10** | `05-observability` | TP 3 P2 Hit #4 |
+| 8 | **Dom 25/10** | `06-cicd` | CI/CD del TP 3 |
+| 9 | **Dom 01/11** | `07-hpa` | TP 3 P2 Hit #3 |
+| 10 | **Dom 08/11** | `10-gke` | TP 3 P2 Hit #2 |
+| — | **Dom 08/11** | **Cierre del programa** | — |
 
-> **Nota:** sacamos `04-kubernetes` del listado original — es redundante con [TP 3 · Parte 0](practica-0.html) (bootstrap del cluster) + Hit #1 (Sobel sobre k8s), que ya cubren ese contenido.
-
----
-
-## Arquitectura (para los curiosos)
-
-```
-┌────────────────────┐   push    ┌─────────────────────┐  POST   ┌──────────────────┐
-│  Tu fork           │─────────→│  Sanity Workflow     │────────→│  Cloudflare      │
-│  TU_USUARIO/       │          │  (GitHub Actions)    │         │  Worker          │
-│  exercise-XX-...   │          │  corre tests visibles│         │  (webhook)       │
-└────────────────────┘          └─────────────────────┘         └────────┬─────────┘
-                                                                         │ dispara
-                                                                         ▼
-┌────────────────────┐          ┌─────────────────────┐         ┌──────────────────┐
-│  Planilla Google   │◀─────────│  Grader             │────────→│  Discord         │
-│  (resultados)      │  reporta │  (GitHub Actions)   │ avisa   │  (#grading)      │
-└────────────────────┘          │                     │         └──────────────────┘
-                                │  1. Clona tu fork   │
-┌────────────────────┐          │  2. Clona tests     │         ┌──────────────────┐
-│  Comment commit    │◀─────────│  3. Corre pytest    │         │  Email           │
-│  ✅ 24/24 (100%)   │  comenta │  4. Reporta         │         │  (si ❌)         │
-└────────────────────┘          └─────────────────────┘         └──────────────────┘
-```
+> **Cronograma 2C 2026 (comisión Mercedes).** Respecto del 1C se reordenaron los ejercicios para que cada uno caiga en la semana en que se ve el tema, y se reincorporó `04-kubernetes` como práctica previa al Hit #1 del TP 3.
