@@ -43,7 +43,11 @@ Elegí material corto y que se cruce con lo que van a hacer en el TP1:
 
 3. **Tanenbaum y van Steen, "Distributed Systems", capítulo 1 (Introducción).** La 3ra edición se descarga gratis desde el sitio de los autores: https://www.distributed-systems.net/index.php/books/ds3/ Es la bibliografía base de la materia; el capítulo 1 cubre definiciones, objetivos (transparencia, apertura, escalabilidad) y tipos de sistemas distribuidos.
 
-Sugerencia de orden: primero Waldo (es el que abre la cabeza), después las falacias, y el capítulo 1 como referencia.
+4. **Birrell y Nelson, "Implementing Remote Procedure Calls" (Xerox PARC, ACM TOCS, 1984).**
+   El paper que definió cómo se implementa una llamada a procedimiento remoto: stubs, binding, transporte, y qué pasa cuando falla el cliente, el servidor o la red (punto 1.8 del programa). Cuando en el Hit #8 del TP1 generen los stubs de gRPC desde un `.proto`, van a estar usando exactamente la arquitectura que describe este paper, 40 años después.
+   PDF: https://www.cs.princeton.edu/courses/archive/fall03/cs518/papers/rpc.pdf
+
+Sugerencia de orden: primero Waldo (es el que abre la cabeza), después las falacias, Birrell y Nelson cuando lleguen al Hit #8 de gRPC, y el capítulo 1 de Tanenbaum como referencia permanente.
 
 ---
 
