@@ -2,7 +2,7 @@
 
 ## Blockchain Distribuida y CUDA
 
-**Fecha de entrega:** 23/06/2026
+**Fecha de entrega:** 04/12/2026
 
 ---
 

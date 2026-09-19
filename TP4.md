@@ -2,7 +2,7 @@
 
 ## Programación Paralela (Shaders)
 
-**Fecha de entrega:** 15/05/2026
+**Fecha de entrega:** 06/11/2026
 
 ---
 
