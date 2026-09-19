@@ -748,6 +748,16 @@ body, .content, .toc-sidebar, .tp-card, .flow-step, table, td, th,
 :root[data-theme="dark"] .content li,
 :root[data-theme="dark"] .content td { color: var(--d-text); }
 
+/* Bold text: --navy (#1E3A5F) is a brand colour tuned for a white page and
+   drops to ~1.4:1 against the dark surface. Emphasis on a dark background
+   reads through weight + brightness, not hue — same call as theme-oscuro.css. */
+:root[data-theme="dark"] strong,
+:root[data-theme="dark"] b { color: #E6EDF3; }
+
+/* List markers also used the light-page blues */
+:root[data-theme="dark"] ul li::marker,
+:root[data-theme="dark"] ol li::marker { color: var(--d-link); }
+
 /* Borders that used --light-gray */
 :root[data-theme="dark"] .content > h1:first-child,
 :root[data-theme="dark"] h2,
