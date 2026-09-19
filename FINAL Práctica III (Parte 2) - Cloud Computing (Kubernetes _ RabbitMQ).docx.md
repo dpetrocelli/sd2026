@@ -2,7 +2,7 @@
 
 ## Computación en la Nube (Kubernetes / RabbitMQ)
 
-**Fecha de entrega:** 20/05/2026 — todos los puntos.
+**Fecha de entrega:** 23/10/2026 — todos los puntos.
 
 > **Continuidad con la Parte 1.** Esta entrega asume los ejercicios del Hit #0 (patrones de mensajería [RMQ]) y el Hit #1 (Sobel distribuido sobre Docker [SOB68]) ya resueltos. Los requisitos generales de entrega (informe, repositorio público, CI/CD, gitleaks, video, health-check) y la lista de **Contenidos del programa relacionados** son los mismos que los declarados en la Parte 1 — no se repiten acá.
 

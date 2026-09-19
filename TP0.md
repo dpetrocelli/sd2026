@@ -2,7 +2,7 @@
 
 ## Instalación de k3s y primeros pasos con Kubernetes
 
-**Prerrequisito obligatorio del TP 3 — Parte 1 (entrega 05/05/2026)**
+**Prerrequisito obligatorio del TP 3 — Parte 1 (entrega 23/10/2026)**
 
 > Esta es la **Parte 0** del TP 3: el bootstrap del cluster que vas a usar en las Partes 1 y 2. Sin haber completado esta parte (cluster k3s/k3d funcional + checklist de validación al final), no se acepta la entrega del Hit #1 (Sobel distribuido sobre Kubernetes).
 

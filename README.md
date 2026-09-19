@@ -10,12 +10,13 @@ Sitio público:
 
 | TP | Tema | Entrega |
 |----|------|---------|
-| 1 | Conceptos básicos de SD (sockets TCP, JSON, gRPC) | 17/03/2026 |
-| 2 | SD y Concurrencia (Docker, mutex, Bully) | 31/03/2026 |
-| 3 · Parte 1 | Patrones RabbitMQ + Sobel distribuido | 05/05/2026 |
-| 3 · Parte 2 | Cloud Computing — Kubernetes / GKE | 20/05/2026 |
-| 4 | Programación paralela (shaders / GPU) | 15/05/2026 |
-| Integrador | Blockchain distribuida + CUDA | 23/06/2026 |
+| 1 | Conceptos básicos de SD (sockets TCP, JSON, gRPC) | 04/09/2026 |
+| 2 | SD y Concurrencia (Docker, mutex, Bully) | 05/10/2026 |
+| 3 · Parte 0 | Bootstrap del cluster (k3s / k3d) — prerrequisito | antes del 23/10/2026 |
+| 3 · Parte 1 | Patrones RabbitMQ + Sobel distribuido | 23/10/2026 |
+| 3 · Parte 2 | Cloud Computing — Kubernetes / GKE | 23/10/2026 |
+| 4 | Programación paralela (shaders / GPU) | 06/11/2026 |
+| Integrador | Blockchain distribuida + CUDA | 04/12/2026 |
 
 ## Estructura
 

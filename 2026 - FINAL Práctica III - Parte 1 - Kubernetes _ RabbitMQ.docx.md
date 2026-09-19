@@ -2,7 +2,7 @@
 
 ## Computación Distribuida (Kubernetes / RabbitMQ)
 
-**Fecha de entrega:** 05/05/2026 — todos los puntos.
+**Fecha de entrega:** 23/10/2026 — todos los puntos.
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Conceptos básicos para la construcción de Sistemas Distribuidos
 
-**Fecha de entrega:** 17/03/2026
+**Fecha de entrega:** 04/09/2026
 
 ---
 

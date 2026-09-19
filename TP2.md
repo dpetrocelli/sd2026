@@ -2,7 +2,7 @@
 
 ## Sistemas Distribuidos y Concurrencia
 
-**Fecha de entrega:** 31/03/2026
+**Fecha de entrega:** 05/10/2026
 
 ---
 
