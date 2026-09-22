@@ -1,0 +1,537 @@
+<title>Lab k3s desde cero</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --ground:#EEF1F6; --surface:#FFFFFF; --surface-2:#E4E9F2; --line:#CDD6E4;
+  --ink:#171E29; --ink-soft:#4A566A; --ink-faint:#7A869C;
+  --navy:#1E3A5F; --accent:#2B6CB0; --accent-soft:#DCE9F7;
+  --ok:#2F855A; --ok-soft:#D7EEE0; --warn:#B7791F; --bad:#C53030; --bad-soft:#FBE0E0;
+  --term-bg:#12141F; --term-line:#252A3A; --term-txt:#D6DBE8; --term-dim:#8791A8;
+  --term-prompt:#5BE58B; --term-cmd:#8FC6F5; --term-hi:#F0B429; --term-bad:#F87171;
+  --shadow:0 1px 2px rgba(23,30,41,.06),0 8px 24px -12px rgba(23,30,41,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ground:#0E1119; --surface:#161B26; --surface-2:#1E2432; --line:#2C3445;
+  --ink:#E8ECF4; --ink-soft:#A3AEC2; --ink-faint:#7B879C;
+  --navy:#1E3A5F; --accent:#63A4E0; --accent-soft:#1B2C41;
+  --ok:#5CC98D; --ok-soft:#14301F; --warn:#E0A33A; --bad:#F08A8A; --bad-soft:#341A1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}}
+:root[data-theme="dark"]{
+  --ground:#0E1119; --surface:#161B26; --surface-2:#1E2432; --line:#2C3445;
+  --ink:#E8ECF4; --ink-soft:#A3AEC2; --ink-faint:#7B879C;
+  --navy:#1E3A5F; --accent:#63A4E0; --accent-soft:#1B2C41;
+  --ok:#5CC98D; --ok-soft:#14301F; --warn:#E0A33A; --bad:#F08A8A; --bad-soft:#341A1A;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+code,kbd{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
+h1,h2,h3{text-wrap:balance;margin:0}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ---- barra superior ---- */
+.top{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;
+  border-bottom:3px solid var(--accent)}
+.top-in{max-width:1180px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.marca{font-size:12.5px;letter-spacing:.09em;text-transform:uppercase;color:#B8D0E8;font-weight:600}
+.marca b{color:#fff;font-weight:600}
+.avance{margin-left:auto;display:flex;align-items:center;gap:11px;font-family:"IBM Plex Mono";font-size:12.5px;color:#B8D0E8}
+.barra{width:132px;height:6px;border-radius:3px;background:rgba(255,255,255,.18);overflow:hidden}
+.barra i{display:block;height:100%;width:0;background:#5BE58B;transition:width .45s cubic-bezier(.4,0,.2,1)}
+
+/* ---- estructura ---- */
+.wrap{max-width:1180px;margin:0 auto;padding:26px 22px 96px;display:grid;
+  grid-template-columns:186px minmax(0,1fr);gap:34px;align-items:start}
+@media (max-width:900px){.wrap{grid-template-columns:1fr;gap:20px}.spine{display:none}}
+
+/* ---- espina de secciones ---- */
+.spine{position:sticky;top:78px;display:flex;flex-direction:column;gap:2px}
+.spine-t{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+  font-weight:600;margin-bottom:9px}
+.sec{display:grid;grid-template-columns:22px 1fr;gap:9px;align-items:baseline;padding:7px 0;
+  font-size:13.5px;color:var(--ink-faint);border-left:2px solid var(--line);padding-left:13px;
+  transition:color .2s,border-color .2s}
+.sec .n{font-family:"IBM Plex Mono";font-size:12px;font-weight:600}
+.sec.hecha{color:var(--ink-soft);border-left-color:var(--ok)}
+.sec.viva{color:var(--ink);border-left-color:var(--accent);font-weight:600}
+
+/* ---- pasos ---- */
+.paso{margin-bottom:20px;scroll-margin-top:86px}
+.paso[hidden]{display:none}
+.transcripcion{font-size:17px;line-height:1.72;color:var(--ink);max-width:66ch;margin:0 0 16px}
+.transcripcion .w{opacity:0;animation:aparece .38s ease forwards}
+@keyframes aparece{to{opacity:1}}
+
+/* ---- tarjeta de sección ---- */
+.tarjeta{background:var(--navy);color:#fff;border-radius:11px;padding:28px 32px;margin-bottom:18px;
+  box-shadow:var(--shadow)}
+.tarjeta .et{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#93B4D4;font-weight:600}
+.tarjeta h2{font-size:29px;font-weight:700;letter-spacing:-.02em;margin:5px 0 17px;line-height:1.2}
+.tarjeta ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.tarjeta li{display:grid;grid-template-columns:16px 1fr;gap:11px;align-items:baseline;
+  font-size:15.5px;color:#DCE7F3}
+.tarjeta li::before{content:"";width:5px;height:5px;border-radius:50%;background:#5BE58B;
+  transform:translateY(-3px)}
+
+/* ---- terminal ---- */
+.term{background:var(--term-bg);border-radius:11px;overflow:hidden;box-shadow:var(--shadow);
+  border:1px solid var(--term-line)}
+.term-bar{background:#1B1F2E;padding:9px 15px;display:flex;align-items:center;gap:7px;
+  border-bottom:1px solid var(--term-line)}
+.term-bar i{width:11px;height:11px;border-radius:50%;display:block}
+.term-bar .t{margin-left:11px;font-family:"IBM Plex Mono";font-size:12px;color:var(--term-dim)}
+.term-body{padding:16px 18px;font-family:"IBM Plex Mono";font-size:13.5px;line-height:1.58;
+  color:var(--term-txt);overflow-x:auto;min-height:62px}
+.term-body pre{margin:0;white-space:pre;font:inherit}
+.linea-cmd{color:var(--term-cmd)}
+.linea-cmd .p{color:var(--term-prompt)}
+.cursor{display:inline-block;width:8px;height:15px;background:var(--term-prompt);
+  vertical-align:-3px;animation:late 1.05s steps(2) infinite}
+@keyframes late{50%{opacity:0}}
+.out-hi{color:var(--term-hi)}
+.out-bad{color:var(--term-bad)}
+.out-dim{color:var(--term-dim)}
+
+/* ---- botonera ---- */
+.acciones{display:flex;gap:11px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.btn{background:var(--accent);color:#fff;padding:10px 21px;border-radius:7px;font-weight:600;
+  font-size:15px;transition:filter .15s,transform .05s}
+.btn:hover{filter:brightness(1.09)}
+.btn:active{transform:translateY(1px)}
+.btn[disabled]{opacity:.42;cursor:not-allowed;filter:none;transform:none}
+.btn-2{background:transparent;color:var(--ink-soft);border:1px solid var(--line);padding:10px 17px;
+  border-radius:7px;font-size:14.5px}
+.btn-2:hover{border-color:var(--accent);color:var(--accent)}
+.nota{font-size:13.5px;color:var(--ink-faint);font-family:"IBM Plex Mono"}
+
+/* ---- gate ---- */
+.gate{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);
+  border-radius:10px;padding:23px 26px;margin-top:16px;box-shadow:var(--shadow)}
+.gate.ok{border-left-color:var(--ok)}
+.gate .et{font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;font-weight:600;
+  color:var(--warn);display:flex;align-items:center;gap:8px}
+.gate.ok .et{color:var(--ok)}
+.gate .q{font-size:17px;font-weight:600;margin:11px 0 16px;line-height:1.48;max-width:62ch}
+.gate code{background:var(--surface-2);padding:1px 6px;border-radius:4px;font-size:.88em}
+.ops{display:flex;flex-direction:column;gap:8px}
+.op{display:grid;grid-template-columns:26px 1fr;gap:11px;align-items:baseline;text-align:left;
+  padding:12px 15px;border:1px solid var(--line);border-radius:8px;background:var(--surface);
+  font-size:15.3px;line-height:1.5;transition:border-color .15s,background .15s}
+.op:hover:not([disabled]){border-color:var(--accent);background:var(--accent-soft)}
+.op .k{font-family:"IBM Plex Mono";font-size:12.5px;font-weight:600;color:var(--ink-faint)}
+.op.mala{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.op.mala .k{color:var(--bad)}
+.op.buena{border-color:var(--ok);background:var(--ok-soft);color:var(--ok);font-weight:600}
+.op.buena .k{color:var(--ok)}
+.op[disabled]{cursor:default}
+.escribir{display:flex;gap:10px;flex-wrap:wrap}
+.escribir input{flex:1;min-width:270px;padding:12px 15px;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface);color:var(--ink);font-family:"IBM Plex Mono";font-size:14.2px}
+.escribir input:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent}
+.escribir input.mala{border-color:var(--bad)}
+.veredicto{margin-top:14px;padding:13px 16px;border-radius:8px;font-size:14.8px;line-height:1.58;
+  background:var(--ok-soft);color:var(--ok);max-width:64ch}
+.veredicto.no{background:var(--bad-soft);color:var(--bad)}
+.veredicto code{background:rgba(0,0,0,.11);padding:1px 5px;border-radius:4px}
+.candado{display:flex;align-items:center;gap:9px;margin-top:14px;font-size:14px;color:var(--ink-faint);
+  font-family:"IBM Plex Mono"}
+
+/* ---- cierre ---- */
+.final{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:32px;
+  box-shadow:var(--shadow);max-width:none}
+.final h2{font-size:25px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.final p{color:var(--ink-soft);max-width:60ch}
+.ident{display:grid;gap:13px;margin:22px 0;max-width:430px}
+.ident label{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;
+  color:var(--ink-faint);display:block;margin-bottom:5px}
+.ident input{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:8px;
+  background:var(--ground);color:var(--ink);font-family:"IBM Plex Mono";font-size:15px}
+.codigo{background:var(--term-bg);border-radius:10px;padding:22px 24px;margin-top:20px}
+.codigo .et{font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--term-dim);
+  font-weight:600;margin-bottom:9px}
+.codigo .v{font-family:"IBM Plex Mono";font-size:20px;font-weight:600;color:var(--term-prompt);
+  word-break:break-all;letter-spacing:.03em;line-height:1.45}
+.resumen{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:20px}
+.resumen div{background:var(--surface);padding:14px 16px}
+.resumen dt{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);
+  font-weight:600}
+.resumen dd{margin:4px 0 0;font-family:"IBM Plex Mono";font-size:21px;font-weight:600;
+  font-variant-numeric:tabular-nums}
+</style>
+
+<div class="top">
+  <div class="top-in">
+    <span class="marca">Sistemas Distribuidos y Programación Paralela · <b>UNLu Mercedes</b></span>
+    <span class="avance"><span id="cuenta">paso 1 / 18</span><span class="barra"><i id="barra"></i></span></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <nav class="spine" aria-label="Secciones del laboratorio">
+    <div class="spine-t">Recorrido</div>
+    <div id="spine"></div>
+  </nav>
+  <main id="pasos"></main>
+</div>
+
+<script>
+const SESION = [{"slide": ["Video 1: k3s desde cero", "Instalar k3s en una máquina limpia", "Acceder al cluster con kubectl", "Qué trae k3s: CoreDNS, Traefik, storage, métricas", "Correr y diagnosticar el primer pod", "Desinstalar sin dejar rastros"], "narr": "Hola, bienvenidos al primer video de Kubernetes. Hoy vamos a levantar un cluster en la máquina de ustedes, desde cero. Vamos a usar k3s, que es una distribución liviana. Es Kubernetes de verdad, certificado. Pero entra en un solo archivo y corre tranquilo en una notebook. Es lo que van a necesitar para el trabajo práctico número tres. El plan es este. Primero instalamos. Después vemos cómo entrar al cluster. Miramos qué trae adentro. Levantamos nuestro primer contenedor. Y al final desinstalamos todo.", "cmds": []}, {"slide": ["1. Instalación", "Máquina limpia: Ubuntu 24.04, sin Docker ni kubectl", "Una sola línea: curl get.k3s.io", "k3s queda como servicio de systemd"], "narr": "Arranquemos mirando con qué máquina estamos trabajando.", "cmds": [["head -n 2 /etc/os-release", ["PRETTY_NAME=\"Ubuntu 24.04.5 LTS\"", "NAME=\"Ubuntu\""]], ["nproc && free -h | head -n 2", ["24", "               total        used        free      shared  buff/cache   available", "Mem:            29Gi        16Gi       5.1Gi       488Mi       8.8Gi        13Gi"]]]}, {"narr": "Tenemos un Ubuntu limpio, recién instalado. Acá no hay nada todavía. Ni Docker, ni Kubernetes. Fíjense.", "cmds": [["command -v docker kubectl k3s || echo \"no hay nada instalado\"", ["no hay nada instalado"]]]}, {"narr": "Nada. Bien. La instalación entra en un solo renglón. Este script se baja el programa, arma el servicio y lo deja andando. Presten atención a lo que va diciendo mientras corre. Además del programa principal deja dos atajos. Y deja también dos scripts sueltos. Uno sirve para frenar todo de golpe. El otro para desinstalar.", "cmds": [["curl -sfL https://get.k3s.io | sh -", ["[INFO]  Finding release for channel stable", "[INFO]  Using v1.36.4+k3s1 as release", "[INFO]  Downloading hash https://github.com/k3s-io/k3s/releases/download/v1.36.4%2Bk3s1/sha256sum-amd64.txt", "[INFO]  Downloading binary https://github.com/k3s-io/k3s/releases/download/v1.36.4%2Bk3s1/k3s", "[INFO]  Verifying binary download", "[INFO]  Installing k3s to /usr/local/bin/k3s", "[INFO]  Skipping installation of SELinux RPM", "[INFO]  Creating /usr/local/bin/kubectl symlink to k3s", "[INFO]  Creating /usr/local/bin/crictl symlink to k3s", "[INFO]  Creating /usr/local/bin/ctr symlink to k3s", "[INFO]  Creating killall script /usr/local/bin/k3s-killall.sh", "[INFO]  Creating uninstall script /usr/local/bin/k3s-uninstall.sh", "[INFO]  env: Creating environment file /etc/systemd/system/k3s.service.env", "[INFO]  systemd: Creating service file /etc/systemd/system/k3s.service", "[INFO]  systemd: Enabling k3s unit", "[INFO]  systemd: Starting k3s", "Created symlink /etc/systemd/system/multi-user.target.wants/k3s.service → /etc/systemd/system/k3s.service."]]]}, {"narr": "Listo. Eso fue todo. Ahora quedó como un servicio del sistema. Eso significa que si reinician la máquina, el cluster vuelve a arrancar solo. Vamos a verlo.", "cmds": [["sudo systemctl status k3s --no-pager | head -n 5", ["● k3s.service - Lightweight Kubernetes", "     Loaded: loaded (/etc/systemd/system/k3s.service; enabled; preset: enabled)", "     Active: active (running) since Mon 2026-09-21 13:16:24 UTC; 3s ago", "       Docs: https://k3s.io", "    Process: 286 ExecStartPre=/sbin/modprobe br_netfilter (code=exited, status=0/SUCCESS)"]]]}, {"narr": "Ahí está. Activo y corriendo. Ahora la primera pregunta que uno le hace a cualquier cluster. ¿Qué máquinas lo forman? Acá tenemos una sola máquina, que es la nuestra. Y esa misma máquina hace los dos papeles al mismo tiempo. Es la que manda y también la que trabaja.", "cmds": [["sudo k3s kubectl get nodes -o wide", ["NAME        STATUS   ROLES           AGE   VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION             CONTAINER-RUNTIME", "alumno-pc   Ready    control-plane   4s    v1.36.4+k3s1   172.17.0.3    <none>        Ubuntu 24.04.5 LTS   7.0.0-31-generic (amd64)   containerd://2.3.4-k3s1.36"]]]}, {"slide": ["2. Acceso al cluster", "kubeconfig: cluster + usuario + contexto", "Copiar /etc/rancher/k3s/k3s.yaml al home", "kubectl sin sudo"], "narr": "Se habrán dado cuenta de que puse sudo adelante. Eso pasa porque las credenciales del cluster quedaron en un archivo que es del administrador. Para trabajar más cómodos vamos a copiarlo a nuestra carpeta personal. Y le avisamos dónde quedó, con una variable de entorno que dejamos fija.", "cmds": [["mkdir -p ~/.kube && sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config && sudo chown $USER ~/.kube/config", []], ["echo 'export KUBECONFIG=~/.kube/config' >> ~/.bashrc && source ~/.bashrc", []], ["kubectl get nodes", ["NAME        STATUS   ROLES           AGE   VERSION", "alumno-pc   Ready    control-plane   4s    v1.36.4+k3s1"]]]}, {"narr": "Ahí está. Mismo resultado, pero ya sin sudo. Ese archivo guarda tres cosas. La dirección del cluster con su certificado. Un usuario con sus credenciales. Y algo que se llama contexto, que junta a los dos. Más adelante, cuando trabajen contra el cluster de la cátedra, van a tener varios contextos guardados en el mismo lugar. Por eso conviene acostumbrarse desde ahora. Antes de tirar un comando, fijarse en qué cluster estamos trabajando.", "cmds": [["kubectl config current-context", ["default"]], ["kubectl config get-contexts", ["CURRENT   NAME      CLUSTER   AUTHINFO   NAMESPACE", "*         default   default   default"]]]}, {"slide": ["3. Qué trae k3s", "CoreDNS: nombres dentro del cluster", "Traefik: ingress controller", "local-path: volúmenes en disco", "metrics-server: CPU y memoria de los pods"], "narr": "Algo importante. Esto no viene vacío. Trae varias piezas ya instaladas y funcionando. Viven todas juntas en una zona del cluster reservada para el sistema. Vamos a listarlas.", "cmds": [["kubectl get pods -A", ["NAMESPACE     NAME                                      READY   STATUS      RESTARTS      AGE", "kube-system   coredns-54996dc9b4-4jcmj                  1/1     Running     0             43s", "kube-system   helm-install-traefik-crd-2tzxz            0/1     Completed   0             42s", "kube-system   helm-install-traefik-xb6mh                0/1     Completed   2 (23s ago)   43s", "kube-system   local-path-provisioner-77b9867795-ds7kx   1/1     Running     0             43s", "kube-system   metrics-server-6dc596dfb8-vcmfp           1/1     Running     0             43s", "kube-system   svclb-traefik-68d57fcd-n6czl              2/2     Running     0             7s", "kube-system   traefik-59b7647586-vdjt2                  1/1     Running     0             7s"]]]}, {"narr": "Repasemos qué hace cada una. La primera resuelve nombres adentro del cluster. Gracias a ella un servicio puede encontrar a otro llamándolo por su nombre. La segunda se encarga del disco. Es la que da espacio cuando algo necesita guardar datos. La tercera mide cuánto consume cada cosa. Es la que después avisa que hace falta crecer. Y la última es la puerta de entrada. Es la que recibe el tráfico que viene de afuera. Las dos que aparecen como Completed no están fallando. Son tareas que ya hicieron lo suyo y terminaron. Miremos ahora los servicios y el almacenamiento.", "cmds": [["kubectl get svc -A", ["NAMESPACE     NAME             TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE", "default       kubernetes       ClusterIP      10.43.0.1       <none>        443/TCP                      53s", "kube-system   kube-dns         ClusterIP      10.43.0.10      <none>        53/UDP,53/TCP,9153/TCP       46s", "kube-system   metrics-server   ClusterIP      10.43.115.36    <none>        443/TCP                      44s", "kube-system   traefik          LoadBalancer   10.43.212.139   172.17.0.3    80:31717/TCP,443:30465/TCP   8s"]], ["kubectl get storageclass", ["NAME                   PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE", "local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsumer   false                  46s"]]]}, {"narr": "Ahí aparece la puerta de entrada, esperando en el puerto ochenta y en el cuatrocientos cuarenta y tres. Y abajo está el disco, marcado como opción por omisión. O sea que si alguien pide espacio y no aclara nada, le van a dar de ese disco. Todo esto lo vamos a usar en los próximos videos sin instalar nada más.", "cmds": []}, {"slide": ["4. El primer pod", "kubectl run: crear un pod de forma imperativa", "kubectl describe: los eventos cuentan la historia", "kubectl exec: entrar al contenedor"], "narr": "Bueno. Basta de mirar. Vamos a correr algo nuestro. Vamos a crear un pod a mano, dando la orden directa.", "cmds": [["kubectl run hola --image=nginx:1.27-alpine", ["pod/hola created"]], ["kubectl get pods", ["NAME   READY   STATUS    RESTARTS   AGE", "hola   1/1     Running   0          5s"]]]}, {"narr": "Puede que lo agarremos mientras todavía se está bajando la imagen. Esperamos un toque y miramos de nuevo.", "cmds": [["kubectl get pods -o wide", ["NAME   READY   STATUS    RESTARTS   AGE   IP          NODE        NOMINATED NODE   READINESS GATES", "hola   1/1     Running   0          5s    10.42.0.9   alumno-pc   <none>           <none>"]]]}, {"narr": "Ahora sí. Corriendo. Y acá va el comando que más van a usar en toda la materia. Se llama describe. Sirve para entender qué le pasó a algo. Vamos a mirar el final, que es donde está lo interesante.", "cmds": [["kubectl describe pod hola | tail -n 8", ["Events:", "  Type    Reason     Age   From               Message", "  ----    ------     ----  ----               -------", "  Normal  Scheduled  4s    default-scheduler  Successfully assigned default/hola to alumno-pc", "  Normal  Pulling    4s    kubelet            spec.containers{hola}: Pulling image \"nginx:1.27-alpine\"", "  Normal  Pulled     1s    kubelet            spec.containers{hola}: Successfully pulled image \"nginx:1.27-alpine\" in 3.257s (3.257s including waiting). Image size: 20984244 bytes.", "  Normal  Created    1s    kubelet            spec.containers{hola}: Container created", "  Normal  Started    1s    kubelet            spec.containers{hola}: Container started"]]]}, {"narr": "Esa lista de abajo cuenta toda la historia, paso por paso. Primero eligió en qué máquina ponerlo. Después bajó la imagen. Después armó el contenedor. Y al final lo arrancó. Cuando algo falla, esta lista les dice exactamente en qué escalón se cayó. Ahora entremos adentro del pod. Vamos a pedirle una página al servidor web que está corriendo ahí.", "cmds": [["kubectl exec hola -- wget -qO- localhost | head -n 4", ["<!DOCTYPE html>", "<html>", "<head>", "<title>Welcome to nginx!</title>"]]]}, {"narr": "Ahí está. Contestando. Todo esto lo creamos a mano, y nos sirvió para probar. Pero en Kubernetes casi nunca se trabaja así. En el próximo video vamos a ver por qué, y qué se usa en su lugar. Por ahora lo borramos.", "cmds": [["kubectl delete pod hola", ["pod \"hola\" deleted from default namespace"]]]}, {"slide": ["5. Desinstalar", "k3s-uninstall.sh borra todo", "Romper no cuesta nada: desinstalar y volver a instalar"], "narr": "Última cosa. Y para mí es la más importante de todo el video. Esto se desinstala entero con un solo comando. No deja nada dando vueltas. Así que no le tengan miedo. Rompan, prueben, equivóquense. Si algo queda raro, desinstalan y arrancan de nuevo en dos minutos.", "cmds": [["ls /usr/local/bin/k3s*", ["/usr/local/bin/k3s", "/usr/local/bin/k3s-killall.sh", "/usr/local/bin/k3s-uninstall.sh"]], ["sudo k3s-uninstall.sh > /dev/null 2>&1 && echo \"desinstalado\"", ["desinstalado"]], ["command -v kubectl k3s || echo \"máquina limpia otra vez\"", ["máquina limpia otra vez"]]]}, {"narr": "Y quedó igual que al principio. En el próximo video lo levantamos de nuevo y empezamos con lo que de verdad importa. Qué es un pod, qué es un deployment, y cómo se conectan con un servicio. Nos vemos.", "cmds": []}];
+const GATES = {"2": {"tipo": "opcion", "pregunta": "El comando no imprimió ninguna ruta. ¿Qué significa eso?", "opciones": ["Que los tres programas están instalados pero apagados", "Que ninguno de los tres está instalado en esta máquina", "Que faltan permisos para consultarlos", "Que hay que reiniciar para que aparezcan"], "correcta": 1, "porque": "<code>command -v</code> imprime la ruta del ejecutable si existe. Sin salida, el programa no está. Por eso el <code>||</code> disparó el mensaje."}, "3": {"tipo": "escribir", "pregunta": "Escribí la línea que instala k3s bajando el script oficial y pasándoselo a la shell.", "respuesta": "curl -sfL https://get.k3s.io | sh -", "pista": "Empieza con curl, termina con una tubería a sh -", "porque": "Las banderas importan: <code>-s</code> calla la barra de progreso, <code>-f</code> falla ante un error HTTP en vez de bajar una página de error, y <code>-L</code> sigue las redirecciones."}, "5": {"tipo": "opcion", "pregunta": "En la columna ROLES el único nodo dice <code>control-plane</code>. ¿Qué implica en un cluster de una sola máquina?", "opciones": ["Que solo coordina y no puede correr cargas de trabajo", "Que coordina y además ejecuta las cargas, porque no hay otro nodo", "Que le falta unirse a un nodo worker para poder arrancar", "Que está en modo degradado hasta que se sume otra máquina"], "correcta": 1, "porque": "En un cluster de producción el control-plane suele llevar un taint que le impide recibir cargas. k3s de un nodo no lo pone: la misma máquina manda y trabaja."}, "6": {"tipo": "opcion", "pregunta": "Copiamos el kubeconfig al home y lo apuntamos con una variable. ¿Por qué hacía falta <code>sudo</code> antes?", "opciones": ["Porque kubectl siempre necesita privilegios de administrador", "Porque el archivo con las credenciales del cluster es de root", "Porque el puerto del API server es menor a 1024", "Porque el nodo todavía no estaba en estado Ready"], "correcta": 1, "porque": "k3s deja <code>/etc/rancher/k3s/k3s.yaml</code> con dueño root y permisos 600. kubectl no pide privilegios: lo que pedía permisos era leer ese archivo."}, "7": {"tipo": "escribir", "pregunta": "Escribí el comando que muestra contra qué contexto estás trabajando ahora mismo.", "respuesta": "kubectl config current-context", "pista": "Tres palabras después de kubectl.", "porque": "Cuando tengas el cluster de la cátedra cargado junto al local, este comando es la diferencia entre borrar tu pod de prueba y borrar el de otro grupo."}, "9": {"tipo": "opcion", "pregunta": "Dos pods figuran como <code>Completed</code> y cero contenedores listos. ¿Están fallando?", "opciones": ["Sí, se quedaron sin arrancar y hay que borrarlos", "No, son tareas que terminaron su trabajo y salieron con éxito", "Sí, están esperando que se libere memoria en el nodo", "No, pero van a reiniciarse en cuanto pase el intervalo"], "correcta": 1, "porque": "Son los Jobs que instalaron Traefik con Helm. Un Job termina y no vuelve a correr: <code>Completed</code> es su final feliz, no un error."}, "10": {"tipo": "opcion", "pregunta": "En la lista de storage class, <code>local-path</code> dice <code>(default)</code>. ¿Qué pasa si un pod pide disco sin nombrar ninguna?", "opciones": ["Queda en Pending hasta que alguien elija una a mano", "Se le asigna local-path automáticamente", "Falla con un error de validación al crearse", "Usa memoria del nodo en lugar de disco"], "correcta": 1, "porque": "La clase marcada como default absorbe todo PersistentVolumeClaim que no especifique <code>storageClassName</code>. Con local-path, el volumen queda en el disco del nodo, y eso ata el pod a esa máquina."}, "11": {"tipo": "escribir", "pregunta": "Creá un pod llamado <code>hola</code> con la imagen <code>nginx:1.27-alpine</code>, de forma imperativa.", "respuesta": "kubectl run hola --image=nginx:1.27-alpine", "pista": "El verbo es run, y la imagen va como bandera larga.", "porque": "Esto es la forma imperativa: una orden suelta. A partir del próximo video vas a declarar lo mismo en un archivo YAML, que es lo que se usa de verdad."}, "14": {"tipo": "opcion", "pregunta": "Los eventos del pod van Scheduled, Pulling, Pulled, Created, Started. Si un pod queda en <code>ImagePullBackOff</code>, ¿en qué escalón se cayó?", "opciones": ["En Scheduled: ningún nodo lo aceptó", "Entre Pulling y Pulled: no pudo bajar la imagen", "En Created: el contenedor se armó mal", "En Started: el proceso arrancó y murió"], "correcta": 1, "porque": "Llegó a asignarse a un nodo y empezó a bajar la imagen, pero nunca terminó. Nombre mal escrito, tag inexistente o registry sin credenciales."}, "16": {"tipo": "opcion", "pregunta": "Antes de desinstalar, ¿qué hace exactamente <code>kubectl exec hola -- wget -qO- localhost</code>?", "opciones": ["Pide la página desde tu máquina al pod por la red del cluster", "Corre wget adentro del contenedor, que se pide la página a sí mismo", "Copia el index.html del pod a tu carpeta actual", "Abre una shell interactiva dentro del contenedor"], "correcta": 1, "porque": "Todo lo que va después de <code>--</code> se ejecuta adentro del contenedor. Por eso <code>localhost</code> es el propio nginx y no hizo falta exponer ningún puerto."}};
+const LAB = "SD1";
+const CLAVE = "k3s-mercedes-2026";
+const UMBRAL = 0.9;  // aciertos a la primera sobre el total; por debajo no hay código
+
+const $ = (s, r = document) => r.querySelector(s);
+const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c; if (x !== undefined) n.innerHTML = x; return n; };
+const estado = { paso: 0, hechos: [], resultados: {} };
+
+/* ---------- pintar la salida del comando con la paleta de la terminal ---------- */
+function coloreaSalida(linea) {
+  const esc = linea.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  if (/\b(Error|error|Failed|no hay nada)\b/.test(linea)) return `<span class="out-bad">${esc}</span>`;
+  if (/\bReady\b|\bRunning\b|\bCompleted\b|\[INFO\]|limpia otra vez|desinstalado|Active: active|created|deleted/.test(linea))
+    return `<span class="out-hi">${esc}</span>`;
+  if (/^(NAME|NAMESPACE|Type\s+Reason|\s+Type\s+Reason)/.test(linea)) return `<span class="out-dim">${esc}</span>`;
+  return esc;
+}
+
+/* ---------- tipeo del comando y volcado de su salida real ---------- */
+function correr(cuerpo, cmds, alTerminar) {
+  cuerpo.innerHTML = "";
+  let i = 0;
+  const siguiente = () => {
+    if (i >= cmds.length) { alTerminar && alTerminar(); return; }
+    const [cmd, salida] = cmds[i++];
+    const linea = el("pre", "linea-cmd");
+    linea.innerHTML = '<span class="p">$</span> ';
+    cuerpo.appendChild(linea);
+    const base = linea.innerHTML;
+    let k = 0;
+    const tipea = () => {
+      k += 2;
+      const txt = cmd.slice(0, k).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      linea.innerHTML = base + txt + (k < cmd.length ? '<span class="cursor"></span>' : "");
+      cuerpo.scrollTop = cuerpo.scrollHeight;
+      if (k < cmd.length) return setTimeout(tipea, 17);
+      setTimeout(() => {
+        if (salida.length) {
+          const out = el("pre");
+          out.innerHTML = salida.map(coloreaSalida).join("\n");
+          cuerpo.appendChild(out);
+        }
+        const sep = el("pre"); sep.textContent = " "; cuerpo.appendChild(sep);
+        cuerpo.scrollTop = cuerpo.scrollHeight;
+        setTimeout(siguiente, 260);
+      }, 190);
+    };
+    tipea();
+  };
+  siguiente();
+}
+
+/* ---------- transcripción: aparece por palabras, no por letras ---------- */
+function transcribe(nodo, texto) {
+  nodo.innerHTML = "";
+  texto.split(/(\s+)/).forEach((p, i) => {
+    if (!p.trim()) { nodo.appendChild(document.createTextNode(p)); return; }
+    const s = el("span", "w"); s.textContent = p;
+    s.style.animationDelay = Math.min(i * 16, 1400) + "ms";
+    nodo.appendChild(s);
+  });
+}
+
+/* ---------- construir un paso ---------- */
+function construir(idx) {
+  const b = SESION[idx];
+  const gate = GATES[String(idx)];
+  const paso = el("section", "paso");
+  paso.id = "paso" + idx;
+
+  if (b.slide) {
+    const t = el("div", "tarjeta");
+    const num = (b.slide[0].match(/^(\d+)\./) || [])[1];
+    t.appendChild(el("div", "et", num ? "Sección " + num + " de 5" : "Laboratorio 1 de 7 · Kubernetes local"));
+    t.appendChild(el("h2", null, b.slide[0]));
+    const ul = el("ul");
+    b.slide.slice(1).forEach(x => ul.appendChild(el("li", null, "<span>" + x + "</span>")));
+    t.appendChild(ul);
+    paso.appendChild(t);
+  }
+
+  if (b.narr) {
+    const p = el("p", "transcripcion");
+    paso.appendChild(p);
+    transcribe(p, b.narr);
+  }
+
+  let cuerpo = null;
+  if (b.cmds.length) {
+    const term = el("div", "term");
+    const bar = el("div", "term-bar");
+    ["#FF5F56", "#FFBD2E", "#27C93F"].forEach(c => { const i = el("i"); i.style.background = c; bar.appendChild(i); });
+    bar.appendChild(el("span", "t", "alumno@alumno-pc: ~"));
+    term.appendChild(bar);
+    cuerpo = el("div", "term-body");
+    cuerpo.appendChild(el("pre", "out-dim", "esperando…"));
+    term.appendChild(cuerpo);
+    paso.appendChild(term);
+  }
+
+  const acciones = el("div", "acciones");
+  paso.appendChild(acciones);
+
+  const avanzar = () => {
+    if (!estado.hechos.includes(idx)) estado.hechos.push(idx);
+    guardar();
+    if (idx + 1 < SESION.length) mostrar(idx + 1);
+    else cerrar();
+  };
+
+  const armarSiguiente = () => {
+    acciones.innerHTML = "";
+    if (gate) {
+      paso.appendChild(hacerGate(idx, gate, avanzar));
+    } else {
+      const btn = el("button", "btn", idx + 1 < SESION.length ? "Seguir" : "Terminar");
+      btn.onclick = avanzar;
+      acciones.appendChild(btn);
+    }
+  };
+
+  if (cuerpo) {
+    const ejec = el("button", "btn", "Ejecutar");
+    ejec.onclick = () => {
+      ejec.disabled = true;
+      ejec.textContent = "Corriendo…";
+      correr(cuerpo, b.cmds, () => { ejec.textContent = "Listo"; armarSiguiente(); });
+    };
+    acciones.appendChild(ejec);
+    acciones.appendChild(el("span", "nota", b.cmds.length + (b.cmds.length === 1 ? " comando" : " comandos") + " · salida real capturada"));
+  } else {
+    armarSiguiente();
+  }
+  return paso;
+}
+
+/* ---------- gate: sin responder bien, no se abre el paso siguiente ---------- */
+function hacerGate(idx, g, avanzar) {
+  const caja = el("div", "gate");
+  caja.appendChild(el("div", "et", "◆ Para seguir, respondé · cuenta el primer intento"));
+  caja.appendChild(el("div", "q", g.pregunta));
+  let intentos = 0;
+
+  const resolver = (bien) => {
+    intentos++;
+    estado.resultados[idx] = { bien: true, intentos };
+    caja.classList.add("ok");
+    $(".et", caja).innerHTML = "✓ Correcto" + (intentos > 1 ? " · " + intentos + " intentos" : " a la primera");
+    const v = el("div", "veredicto", g.porque);
+    caja.appendChild(v);
+    const btn = el("button", "btn", idx + 1 < SESION.length ? "Seguir" : "Terminar");
+    btn.style.marginTop = "15px";
+    btn.onclick = avanzar;
+    caja.appendChild(btn);
+    btn.focus();
+    guardar();
+  };
+  const fallar = (msg) => {
+    intentos++;
+    let v = $(".veredicto", caja);
+    if (!v) { v = el("div", "veredicto no"); caja.appendChild(v); }
+    v.className = "veredicto no";
+    v.innerHTML = msg;
+  };
+
+  if (g.tipo === "opcion") {
+    const ops = el("div", "ops");
+    g.opciones.forEach((txt, i) => {
+      const b = el("button", "op", '<span class="k">' + "ABCD"[i] + "</span><span>" + txt + "</span>");
+      b.onclick = () => {
+        if (i === g.correcta) {
+          [...ops.children].forEach(x => x.disabled = true);
+          b.classList.add("buena");
+          resolver(true);
+        } else {
+          b.classList.add("mala");
+          b.disabled = true;
+          fallar("Esa no. Mirá de nuevo la salida del comando de arriba y probá otra.");
+        }
+      };
+      ops.appendChild(b);
+    });
+    caja.appendChild(ops);
+  } else {
+    const fila = el("div", "escribir");
+    const inp = el("input");
+    inp.type = "text";
+    inp.placeholder = "escribí el comando…";
+    inp.spellcheck = false;
+    inp.autocapitalize = "off";
+    const ok = el("button", "btn", "Comprobar");
+    const pista = el("button", "btn-2", "Pista");
+    const norm = s => s.trim().replace(/\s+/g, " ").replace(/["']/g, "");
+    ok.onclick = () => {
+      if (norm(inp.value) === norm(g.respuesta)) {
+        inp.disabled = true; ok.disabled = true; pista.disabled = true;
+        inp.classList.remove("mala");
+        resolver(true);
+      } else {
+        inp.classList.add("mala");
+        fallar("Todavía no. Fijate en el orden de las palabras y en las banderas.");
+      }
+    };
+    pista.onclick = () => fallar("Pista: " + g.pista);
+    inp.onkeydown = e => { if (e.key === "Enter") ok.click(); };
+    fila.append(inp, ok, pista);
+    caja.appendChild(fila);
+    setTimeout(() => inp.focus(), 90);
+  }
+  return caja;
+}
+
+/* ---------- navegación ---------- */
+function mostrar(idx) {
+  estado.paso = idx;
+  const cont = $("#pasos");
+  if (!$("#paso" + idx)) cont.appendChild(construir(idx));
+  const n = $("#paso" + idx);
+  n.hidden = false;
+  [...cont.children].forEach(c => { if (c !== n) c.hidden = true; });
+  $("#cuenta").textContent = "paso " + (idx + 1) + " / " + SESION.length;
+  $("#barra").style.width = (estado.hechos.length / SESION.length * 100) + "%";
+  pintarSpine();
+  guardar();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function pintarSpine() {
+  const s = $("#spine");
+  s.innerHTML = "";
+  SESION.forEach((b, i) => {
+    if (!b.slide) return;
+    const d = el("div", "sec");
+    const viva = i <= estado.paso && (SESION.findIndex((x, j) => j > i && x.slide) > estado.paso || SESION.findIndex((x, j) => j > i && x.slide) === -1);
+    if (estado.hechos.includes(i)) d.classList.add("hecha");
+    if (viva) d.classList.add("viva");
+    d.innerHTML = '<span class="n">' + (b.slide[0].match(/^\d+/) || ["·"])[0] + "</span><span>" + b.slide[0].replace(/^\d+\.\s*/, "") + "</span>";
+    s.appendChild(d);
+  });
+}
+
+/* ---------- persistencia local del avance ---------- */
+function guardar() {
+  try { localStorage.setItem("lab-" + LAB, JSON.stringify(estado)); } catch (e) { /* modo privado */ }
+}
+function recuperar() {
+  try {
+    const x = JSON.parse(localStorage.getItem("lab-" + LAB) || "null");
+    if (x && Array.isArray(x.hechos)) Object.assign(estado, x);
+  } catch (e) { /* sin datos */ }
+}
+
+/* ---------- código de finalización verificable ---------- */
+function codigo(legajo) {
+  const idxs = Object.keys(GATES).map(Number).sort((a, b) => a - b);
+  const alPrimero = idxs.map(i => (estado.resultados[i] && estado.resultados[i].intentos === 1) ? 1 : 0);
+  const bits = parseInt(alPrimero.join("") || "0", 2).toString(36).toUpperCase();
+  const dia = new Date().toISOString().slice(2, 10).replace(/-/g, "");
+  const cuerpo = LAB + "-" + legajo + "-" + dia + "-" + bits;
+  let h = 7;
+  for (const c of cuerpo + CLAVE) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  return cuerpo + "-" + h.toString(36).toUpperCase().slice(-4).padStart(4, "0");
+}
+
+function reiniciar() {
+  estado.paso = 0; estado.hechos = []; estado.resultados = {};
+  guardar();
+  $("#pasos").innerHTML = "";
+  mostrar(0);
+}
+
+function cerrar() {
+  const cont = $("#pasos");
+  [...cont.children].forEach(c => c.hidden = true);
+  const idxs = Object.keys(GATES).map(Number);
+  const primeras = idxs.filter(i => estado.resultados[i] && estado.resultados[i].intentos === 1).length;
+  const total = idxs.reduce((a, i) => a + ((estado.resultados[i] || {}).intentos || 0), 0);
+  const nota = primeras / idxs.length;
+  const aprobado = nota >= UMBRAL;
+
+  const f = el("section", "final");
+  f.appendChild(el("h2", null, aprobado ? "Laboratorio aprobado" : "No alcanzó"));
+  f.appendChild(el("p", null, aprobado
+    ? "Instalaste k3s, entraste al cluster, reconociste lo que trae adentro, corriste y diagnosticaste un pod, y lo desinstalaste todo. Para que quede registrada la entrega, pegá el código de abajo en el campus."
+    : "Para aprobar hay que acertar a la primera al menos el " + Math.round(UMBRAL * 100) + "% de las preguntas. Volvé a hacer el laboratorio: los comandos son los mismos, las preguntas también, y ahora ya sabés dónde mirar."));
+
+  const res = el("dl", "resumen");
+  [["Preguntas", idxs.length], ["A la primera", primeras], ["Intentos", total], ["Nota", Math.round(nota * 100) + "%"]].forEach(([k, v]) => {
+    const d = el("div"); d.appendChild(el("dt", null, k));
+    const dd = el("dd", null, String(v));
+    if (k === "Nota") dd.style.color = aprobado ? "var(--ok)" : "var(--bad)";
+    d.appendChild(dd); res.appendChild(d);
+  });
+  f.appendChild(res);
+
+  if (!aprobado) {
+    const de = el("button", "btn", "Volver a empezar");
+    de.style.marginTop = "22px";
+    de.onclick = reiniciar;
+    f.appendChild(de);
+    cont.appendChild(f);
+    $("#barra").style.width = "100%";
+    $("#cuenta").textContent = "sin aprobar";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+
+  const id = el("div", "ident");
+  const w = el("div");
+  w.appendChild(el("label", null, "Tu número de legajo"));
+  const inp = el("input"); inp.type = "text"; inp.placeholder = "por ejemplo 12345"; inp.inputMode = "numeric";
+  w.appendChild(inp); id.appendChild(w);
+  const gen = el("button", "btn", "Generar mi código");
+  id.appendChild(gen);
+  f.appendChild(id);
+
+  const caja = el("div", "codigo");
+  caja.hidden = true;
+  caja.appendChild(el("div", "et", "Código de entrega"));
+  const val = el("div", "v");
+  caja.appendChild(val);
+  f.appendChild(caja);
+
+  const copiar = el("button", "btn-2", "Copiar código");
+  copiar.hidden = true;
+  copiar.style.marginTop = "14px";
+  f.appendChild(copiar);
+
+  gen.onclick = () => {
+    const l = inp.value.trim().replace(/[^0-9A-Za-z]/g, "");
+    if (!l) { inp.focus(); return; }
+    val.textContent = codigo(l);
+    caja.hidden = false;
+    copiar.hidden = false;
+  };
+  inp.onkeydown = e => { if (e.key === "Enter") gen.click(); };
+  copiar.onclick = async () => {
+    try { await navigator.clipboard.writeText(val.textContent); copiar.textContent = "Copiado"; }
+    catch (e) { copiar.textContent = "Copialo a mano"; }
+    setTimeout(() => copiar.textContent = "Copiar código", 1800);
+  };
+
+  cont.appendChild(f);
+  $("#barra").style.width = "100%";
+  $("#cuenta").textContent = "aprobado";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+recuperar();
+mostrar(Math.min(estado.paso, SESION.length - 1));
+</script>
