@@ -64,6 +64,34 @@ DCB</title>
     <li><a href="#contenidos-del-programa-relacionados"
     id="toc-contenidos-del-programa-relacionados">Contenidos del
     programa relacionados</a></li>
+    <li><a
+    href="#requisitos-obligatorios-nuevos-aplican-a-todos-los-hits"
+    id="toc-requisitos-obligatorios-nuevos-aplican-a-todos-los-hits">Requisitos
+    obligatorios nuevos (aplican a todos los Hits)</a>
+    <ul>
+    <li><a href="#r1---imágenes-privadas-y-credenciales"
+    id="toc-r1---imágenes-privadas-y-credenciales">R1 - Imágenes
+    privadas y credenciales</a></li>
+    <li><a
+    href="#r2---imágenes-válidas-por-parámetro-detección-dinámica"
+    id="toc-r2---imágenes-válidas-por-parámetro-detección-dinámica">R2 -
+    Imágenes válidas por parámetro (detección dinámica)</a></li>
+    <li><a href="#r3---contrato-de-ida-y-vuelta"
+    id="toc-r3---contrato-de-ida-y-vuelta">R3 - Contrato de ida y
+    vuelta</a></li>
+    <li><a
+    href="#r4---servidor-stateless-con-autenticación-por-request-adminstats"
+    id="toc-r4---servidor-stateless-con-autenticación-por-request-adminstats">R4
+    - Servidor stateless con autenticación por request
+    (admin/stats)</a></li>
+    <li><a
+    href="#r5---pruebas-con-tareas-diversas-y-matriz-de-parámetros"
+    id="toc-r5---pruebas-con-tareas-diversas-y-matriz-de-parámetros">R5
+    - Pruebas con tareas diversas y matriz de parámetros</a></li>
+    <li><a href="#entregables-de-esta-sección-checklist"
+    id="toc-entregables-de-esta-sección-checklist">Entregables de esta
+    sección (checklist)</a></li>
+    </ul></li>
     <li><a href="#práctica" id="toc-práctica">Práctica</a>
     <ul>
     <li><a href="#hit-1--tareas-remotas-en-contenedores"
@@ -105,6 +133,34 @@ DCB</title>
       <li><a href="#contenidos-del-programa-relacionados"
       id="toc-contenidos-del-programa-relacionados">Contenidos del
       programa relacionados</a></li>
+      <li><a
+      href="#requisitos-obligatorios-nuevos-aplican-a-todos-los-hits"
+      id="toc-requisitos-obligatorios-nuevos-aplican-a-todos-los-hits">Requisitos
+      obligatorios nuevos (aplican a todos los Hits)</a>
+      <ul>
+      <li><a href="#r1---imágenes-privadas-y-credenciales"
+      id="toc-r1---imágenes-privadas-y-credenciales">R1 - Imágenes
+      privadas y credenciales</a></li>
+      <li><a
+      href="#r2---imágenes-válidas-por-parámetro-detección-dinámica"
+      id="toc-r2---imágenes-válidas-por-parámetro-detección-dinámica">R2
+      - Imágenes válidas por parámetro (detección dinámica)</a></li>
+      <li><a href="#r3---contrato-de-ida-y-vuelta"
+      id="toc-r3---contrato-de-ida-y-vuelta">R3 - Contrato de ida y
+      vuelta</a></li>
+      <li><a
+      href="#r4---servidor-stateless-con-autenticación-por-request-adminstats"
+      id="toc-r4---servidor-stateless-con-autenticación-por-request-adminstats">R4
+      - Servidor stateless con autenticación por request
+      (admin/stats)</a></li>
+      <li><a
+      href="#r5---pruebas-con-tareas-diversas-y-matriz-de-parámetros"
+      id="toc-r5---pruebas-con-tareas-diversas-y-matriz-de-parámetros">R5
+      - Pruebas con tareas diversas y matriz de parámetros</a></li>
+      <li><a href="#entregables-de-esta-sección-checklist"
+      id="toc-entregables-de-esta-sección-checklist">Entregables de esta
+      sección (checklist)</a></li>
+      </ul></li>
       <li><a href="#práctica" id="toc-práctica">Práctica</a>
       <ul>
       <li><a href="#hit-1--tareas-remotas-en-contenedores"
@@ -211,6 +267,149 @@ prevención.</li>
 de hilos.</li>
 <li><strong>U4.3</strong> Contenedores Docker: imágenes, Dockerfile,
 Docker Hub.</li>
+</ul>
+<hr />
+<h2
+id="requisitos-obligatorios-nuevos-aplican-a-todos-los-hits">Requisitos
+obligatorios nuevos (aplican a todos los Hits)</h2>
+<blockquote>
+<p><strong>Nuevo obligatorio.</strong> Estos puntos no son opcionales ni
+“deseables”. Que la demo funcione no alcanza: si falta alguno de los
+entregables de esta sección, el TP vuelve <strong>a
+rehacer</strong>.</p>
+</blockquote>
+<h3 id="r1---imágenes-privadas-y-credenciales">R1 - Imágenes privadas y
+credenciales</h3>
+<ul>
+<li>Las imágenes del “servicio tarea” se publican en un <strong>registry
+privado del equipo</strong> (Docker Hub privado, GHCR, Artifact
+Registry, etc.). No se aceptan imágenes públicas.</li>
+<li>El servidor se autentica contra el registry <strong>sin recibir
+credenciales en el request</strong> (ver “Importante (Seguridad)” del
+Hit #1).</li>
+<li><strong>Evidencia obligatoria:</strong> un pull de la imagen privada
+<strong>sin</strong> credencial que falla y el mismo pull
+<strong>con</strong> la credencial configurada en el servidor que
+funciona (comandos y salida en el README).</li>
+</ul>
+<h3 id="r2---imágenes-válidas-por-parámetro-detección-dinámica">R2 -
+Imágenes válidas por parámetro (detección dinámica)</h3>
+<ul>
+<li>La imagen a ejecutar llega <strong>por parámetro</strong> en el
+request. No puede estar fija en el código del servidor.</li>
+<li>El servidor <strong>valida la imagen antes de ejecutarla</strong>:
+lista de imágenes/registries permitidos (configurable, no fija en el
+código), verificación de que la imagen existe y, como deseable, que
+coincida con un digest (<code>@sha256:...</code>).</li>
+<li>Una imagen inexistente, no permitida o mal formada devuelve un
+<strong>error claro</strong> (código HTTP y mensaje). No puede terminar
+en un 500 genérico ni en un contenedor colgado.</li>
+</ul>
+<h3 id="r3---contrato-de-ida-y-vuelta">R3 - Contrato de ida y
+vuelta</h3>
+<p>Entregar <code>contrato.md</code> u <code>openapi.yaml</code>
+con:</p>
+<ol type="1">
+<li><strong>Request:</strong> todos los campos, tipos, cuáles son
+obligatorios y valores por defecto.</li>
+<li><strong>Response OK:</strong> resultado y metadata mínima:
+<code>task_id</code>, imagen y digest ejecutados, worker/contenedor que
+la atendió, tiempos (en cola, ejecución, total), timestamp de Lamport
+(Hit #2).</li>
+<li><strong>Errores:</strong> tabla con cada código HTTP posible (400,
+401, 403, 404, 408/504, 409, 429, 500, 503), cuándo ocurre y el cuerpo
+que devuelve.</li>
+<li><strong>Lo que falta:</strong> una sección “datos que no devolvemos
+y podríamos devolver” (logs del contenedor, uso de CPU y memoria,
+intentos, posición en la cola, etc.), con la justificación de por qué
+quedan afuera.</li>
+</ol>
+<h3
+id="r4---servidor-stateless-con-autenticación-por-request-adminstats">R4
+- Servidor stateless con autenticación por request (admin/stats)</h3>
+<p>El servidor conoce el contexto de cada petición mientras la atiende,
+pero <strong>no guarda sesión</strong>. Por eso la identidad y el rol
+tienen que <strong>viajar en cada request</strong> (token, API key o
+hash firmado) y validarse en cada llamada.</p>
+<ul>
+<li>Al menos dos roles: <strong>usuario</strong> (ejecuta tareas) y
+<strong>admin</strong> (accede a <code>/stats</code> y a operaciones de
+administración).</li>
+<li>Endpoint <code>/stats</code> (o equivalente) con, como mínimo:
+tareas ejecutadas, tareas fallidas, tareas por imagen, latencia promedio
+y p95, tareas en cola y workers ocupados.</li>
+<li>Las credenciales de usuario y admin <strong>no se commitean</strong>
+(variables de entorno o secret manager).</li>
+<li><strong>Evidencia obligatoria</strong> (script o colección
+reproducible):
+<ul>
+<li>sin token → <code>401</code></li>
+<li>token de usuario en <code>/stats</code> → <code>403</code></li>
+<li>token de admin en <code>/stats</code> → <code>200</code></li>
+<li>token inválido o vencido → <code>401</code></li>
+</ul></li>
+</ul>
+<h3 id="r5---pruebas-con-tareas-diversas-y-matriz-de-parámetros">R5 -
+Pruebas con tareas diversas y matriz de parámetros</h3>
+<ul>
+<li>Al menos <strong>3 imágenes/tareas distintas</strong> (por ejemplo:
+una CPU-bound, una que procese archivos de entrada y una que falle a
+propósito o exceda el timeout).</li>
+<li>Cada tarea se prueba con <strong>varias combinaciones de
+parámetros</strong>: valores válidos, límite e inválidos.</li>
+<li><strong>Matriz obligatoria.</strong> Variables a combinar:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Valores mínimos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>V1 - Cantidad de archivos de entrada</td>
+<td>1, 10, 100</td>
+</tr>
+<tr>
+<td>V2 - Cantidad de acciones sobre esa entrada</td>
+<td>1, 3, N (definido por el equipo)</td>
+</tr>
+<tr>
+<td>V3 - Usuarios/bots concurrentes haciendo peticiones</td>
+<td>1, 10, 50</td>
+</tr>
+</tbody>
+</table>
+<p>La combinatoria V1 × V2 × V3 se presenta en una tabla. En cada celda:
+latencia p50/p95, throughput (tareas/min), tasa de error y observaciones
+(cuello de botella detectado). Si alguna combinación no se corre, se
+justifica por qué.</p>
+<ul>
+<li>La carga se genera con un <strong>script reproducible</strong>
+incluido en el repo (k6, Locust, <code>hey</code> o un script propio con
+concurrencia real). No se aceptan pruebas manuales con Postman como
+evidencia de concurrencia.</li>
+<li>Las corridas con usuarios concurrentes se hacen
+<strong>autenticadas</strong> (R4): mezclar usuarios y al menos un bot
+sin token, y reportar cuántas peticiones rechazó el servidor.</li>
+</ul>
+<h3 id="entregables-de-esta-sección-checklist">Entregables de esta
+sección (checklist)</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />Imagen en registry privado y
+evidencia del pull con y sin credencial (R1)</label></li>
+<li><label><input type="checkbox" />Validación de la imagen por
+parámetro, con sus casos de error documentados (R2)</label></li>
+<li><label><input type="checkbox" /><code>contrato.md</code> /
+<code>openapi.yaml</code> con request, response, tabla de errores y “lo
+que falta” (R3)</label></li>
+<li><label><input type="checkbox" />Roles usuario/admin,
+<code>/stats</code> y script de evidencia 401/403/200 (R4)</label></li>
+<li><label><input type="checkbox" />3+ tareas distintas, matriz V1 × V2
+× V3 completa y script de carga (R5)</label></li>
+<li><label><input type="checkbox" />En el video: mostrar R2, R4 y una
+corrida de R5 en vivo</label></li>
 </ul>
 <hr />
 <h2 id="práctica">Práctica</h2>

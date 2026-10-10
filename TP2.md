@@ -40,6 +40,71 @@
 
 ---
 
+## Requisitos obligatorios nuevos (aplican a todos los Hits)
+
+> **Nuevo obligatorio.** Estos puntos no son opcionales ni "deseables". Que la demo funcione no alcanza: si falta alguno de los entregables de esta sección, el TP vuelve **a rehacer**.
+
+### R1 - Imágenes privadas y credenciales
+
+- Las imágenes del "servicio tarea" se publican en un **registry privado del equipo** (Docker Hub privado, GHCR, Artifact Registry, etc.). No se aceptan imágenes públicas.
+- El servidor se autentica contra el registry **sin recibir credenciales en el request** (ver "Importante (Seguridad)" del Hit #1).
+- **Evidencia obligatoria:** un pull de la imagen privada **sin** credencial que falla y el mismo pull **con** la credencial configurada en el servidor que funciona (comandos y salida en el README).
+
+### R2 - Imágenes válidas por parámetro (detección dinámica)
+
+- La imagen a ejecutar llega **por parámetro** en el request. No puede estar fija en el código del servidor.
+- El servidor **valida la imagen antes de ejecutarla**: lista de imágenes/registries permitidos (configurable, no fija en el código), verificación de que la imagen existe y, como deseable, que coincida con un digest (`@sha256:...`).
+- Una imagen inexistente, no permitida o mal formada devuelve un **error claro** (código HTTP y mensaje). No puede terminar en un 500 genérico ni en un contenedor colgado.
+
+### R3 - Contrato de ida y vuelta
+
+Entregar `contrato.md` u `openapi.yaml` con:
+
+1. **Request:** todos los campos, tipos, cuáles son obligatorios y valores por defecto.
+2. **Response OK:** resultado y metadata mínima: `task_id`, imagen y digest ejecutados, worker/contenedor que la atendió, tiempos (en cola, ejecución, total), timestamp de Lamport (Hit #2).
+3. **Errores:** tabla con cada código HTTP posible (400, 401, 403, 404, 408/504, 409, 429, 500, 503), cuándo ocurre y el cuerpo que devuelve.
+4. **Lo que falta:** una sección "datos que no devolvemos y podríamos devolver" (logs del contenedor, uso de CPU y memoria, intentos, posición en la cola, etc.), con la justificación de por qué quedan afuera.
+
+### R4 - Servidor stateless con autenticación por request (admin/stats)
+
+El servidor conoce el contexto de cada petición mientras la atiende, pero **no guarda sesión**. Por eso la identidad y el rol tienen que **viajar en cada request** (token, API key o hash firmado) y validarse en cada llamada.
+
+- Al menos dos roles: **usuario** (ejecuta tareas) y **admin** (accede a `/stats` y a operaciones de administración).
+- Endpoint `/stats` (o equivalente) con, como mínimo: tareas ejecutadas, tareas fallidas, tareas por imagen, latencia promedio y p95, tareas en cola y workers ocupados.
+- Las credenciales de usuario y admin **no se commitean** (variables de entorno o secret manager).
+- **Evidencia obligatoria** (script o colección reproducible):
+  - sin token → `401`
+  - token de usuario en `/stats` → `403`
+  - token de admin en `/stats` → `200`
+  - token inválido o vencido → `401`
+
+### R5 - Pruebas con tareas diversas y matriz de parámetros
+
+- Al menos **3 imágenes/tareas distintas** (por ejemplo: una CPU-bound, una que procese archivos de entrada y una que falle a propósito o exceda el timeout).
+- Cada tarea se prueba con **varias combinaciones de parámetros**: valores válidos, límite e inválidos.
+- **Matriz obligatoria.** Variables a combinar:
+
+| Variable | Valores mínimos |
+|---|---|
+| V1 - Cantidad de archivos de entrada | 1, 10, 100 |
+| V2 - Cantidad de acciones sobre esa entrada | 1, 3, N (definido por el equipo) |
+| V3 - Usuarios/bots concurrentes haciendo peticiones | 1, 10, 50 |
+
+  La combinatoria V1 × V2 × V3 se presenta en una tabla. En cada celda: latencia p50/p95, throughput (tareas/min), tasa de error y observaciones (cuello de botella detectado). Si alguna combinación no se corre, se justifica por qué.
+- La carga se genera con un **script reproducible** incluido en el repo (k6, Locust, `hey` o un script propio con concurrencia real). No se aceptan pruebas manuales con Postman como evidencia de concurrencia.
+- Las corridas con usuarios concurrentes se hacen **autenticadas** (R4): mezclar usuarios y al menos un bot sin token, y reportar cuántas peticiones rechazó el servidor.
+
+### Entregables de esta sección (checklist)
+
+- [ ] Imagen en registry privado y evidencia del pull con y sin credencial (R1)
+- [ ] Validación de la imagen por parámetro, con sus casos de error documentados (R2)
+- [ ] `contrato.md` / `openapi.yaml` con request, response, tabla de errores y "lo que falta" (R3)
+- [ ] Roles usuario/admin, `/stats` y script de evidencia 401/403/200 (R4)
+- [ ] 3+ tareas distintas, matriz V1 × V2 × V3 completa y script de carga (R5)
+- [ ] En el video: mostrar R2, R4 y una corrida de R5 en vivo
+
+---
+
 ## Práctica
 
 ### Hit #1 — Tareas remotas en contenedores

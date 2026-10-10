@@ -59,6 +59,9 @@ RabbitMQ) — UNLu DCB</title>
     <li><a href="#computación-en-la-nube-kubernetes--rabbitmq"
     id="toc-computación-en-la-nube-kubernetes--rabbitmq">Computación en
     la Nube (Kubernetes / RabbitMQ)</a></li>
+    <li><a href="#requisitos-obligatorios-nuevos"
+    id="toc-requisitos-obligatorios-nuevos">Requisitos obligatorios
+    nuevos</a></li>
     <li><a href="#práctica" id="toc-práctica">Práctica</a>
     <ul>
     <li><a href="#hit-2--sobel-con-offloading-en-la-nube"
@@ -112,6 +115,9 @@ RabbitMQ) — UNLu DCB</title>
       <li><a href="#computación-en-la-nube-kubernetes--rabbitmq"
       id="toc-computación-en-la-nube-kubernetes--rabbitmq">Computación
       en la Nube (Kubernetes / RabbitMQ)</a></li>
+      <li><a href="#requisitos-obligatorios-nuevos"
+      id="toc-requisitos-obligatorios-nuevos">Requisitos obligatorios
+      nuevos</a></li>
       <li><a href="#práctica" id="toc-práctica">Práctica</a>
       <ul>
       <li><a href="#hit-2--sobel-con-offloading-en-la-nube"
@@ -165,6 +171,21 @@ de entrega (informe, repositorio público, CI/CD, gitleaks, video,
 health-check) y la lista de <strong>Contenidos del programa
 relacionados</strong> son los mismos que los declarados en la Parte 1 —
 no se repiten acá.</p>
+</blockquote>
+<hr />
+<h2 id="requisitos-obligatorios-nuevos">Requisitos obligatorios
+nuevos</h2>
+<blockquote>
+<p><strong>Nuevo obligatorio.</strong> Los requisitos <strong>R1 a
+R5</strong> de la <a
+href="practica-3-parte-1.html#requisitos-obligatorios-nuevos-aplican-a-parte-1-y-parte-2-hits-1-a-4">Parte
+1</a> (registry privado, imágenes y operaciones por parámetro, contrato
+de ida y vuelta, autenticación por request con admin/stats y matriz de
+pruebas) <strong>aplican también a esta Parte 2</strong>: con
+imagePullSecrets o Workload Identity en GKE, sin claves estáticas en las
+VMs de workers, y con la matriz VA × VB × VC cruzada con las variables
+V1 y V3 del análisis de desempeño del Hit #3. Si falta alguno de los
+entregables, el TP vuelve <strong>a rehacer</strong>.</p>
 </blockquote>
 <hr />
 <h2 id="práctica">Práctica</h2>
