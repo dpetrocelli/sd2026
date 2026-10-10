@@ -8,6 +8,12 @@
 
 ---
 
+## Requisitos obligatorios nuevos
+
+> **Nuevo obligatorio.** Los requisitos **R1 a R5** de la [Parte 1](practica-3-parte-1.html#requisitos-obligatorios-nuevos-aplican-a-parte-1-y-parte-2-hits-1-a-4) (registry privado, imágenes y operaciones por parámetro, contrato de ida y vuelta, autenticación por request con admin/stats y matriz de pruebas) **aplican también a esta Parte 2**: con imagePullSecrets o Workload Identity en GKE, sin claves estáticas en las VMs de workers, y con la matriz VA × VB × VC cruzada con las variables V1 y V3 del análisis de desempeño del Hit #3. Si falta alguno de los entregables, el TP vuelve **a rehacer**.
+
+---
+
 ## Práctica
 
 La definición canónica del **NIST** [NIST800-145] establece cinco características esenciales del Cloud Computing: *on-demand self-service*, *broad network access*, *resource pooling*, *rapid elasticity* y *measured service*. El paper de Berkeley de Armbrust et al. [ARMBRUST10] —"A View of Cloud Computing"— sigue siendo la referencia académica más citada para entender el modelo y sus tradeoffs económicos.

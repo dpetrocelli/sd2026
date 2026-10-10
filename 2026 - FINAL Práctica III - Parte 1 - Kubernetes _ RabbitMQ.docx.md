@@ -57,6 +57,71 @@
 
 ---
 
+## Requisitos obligatorios nuevos (aplican a Parte 1 y Parte 2, Hits #1 a #4)
+
+> **Nuevo obligatorio.** Estos puntos continúan los del TP2 y aplican a la plataforma Sobel. No son opcionales: si falta alguno de los entregables de esta sección, el TP vuelve **a rehacer**.
+
+### R1 - Imágenes privadas y credenciales
+
+- Todas las imágenes propias (frontend, backend, split, joiner, workers) se publican en un **registry privado del equipo** (Artifact Registry, GHCR o Docker Hub privado). No se aceptan imágenes públicas.
+- Kubernetes las descarga con **imagePullSecrets o Workload Identity**. Las VMs de workers (Hit #2 y #3) se autentican sin claves estáticas en `user_data` ni en el repo.
+- **Evidencia obligatoria:** un pod/VM sin acceso al registry que queda en `ImagePullBackOff` o con el pull rechazado, y el mismo despliegue con la identidad correcta funcionando.
+
+### R2 - Imágenes y operaciones válidas por parámetro (detección dinámica)
+
+- La operación a aplicar (Sobel y, como mínimo, una segunda operación sobre la imagen: escala de grises, blur, threshold, etc.) y la imagen de worker que la resuelve se eligen **por parámetro** del request. No pueden estar fijas en el código.
+- El backend **valida antes de encolar**: operación soportada, imagen de worker permitida (lista configurable), formato y tamaño del archivo de entrada.
+- Un parámetro inválido devuelve un **error claro** al cliente y **no llega a RabbitMQ**. Un fallo durante el procesamiento termina en la DLQ (Hit #3) y su estado queda consultable.
+
+### R3 - Contrato de ida y vuelta (API asincrónica)
+
+Entregar `contrato.md` u `openapi.yaml` con:
+
+1. **Envío:** request (archivos, operaciones, parámetros) y respuesta inmediata (`job_id`, estado inicial, URL de consulta).
+2. **Consulta de estado y resultado:** estados posibles (`queued`, `processing`, `done`, `failed`, `dlq`), porcentaje de fragmentos completos, tiempos por etapa (split, cola, procesamiento, join), workers que participaron y reintentos.
+3. **Errores:** tabla con cada código HTTP posible (400, 401, 403, 404, 413, 429, 500, 503), cuándo ocurre y el cuerpo que devuelve.
+4. **Lo que falta:** una sección "datos que no devolvemos y podríamos devolver" (costo estimado, nodo/región, fragmentos reasignados desde la DLQ, etc.), con la justificación de por qué quedan afuera.
+
+### R4 - Servicios stateless con autenticación por request (admin/stats)
+
+Los servicios (backend, split, joiner) atienden cada petición con su contexto pero **no guardan sesión en memoria**. El estado vive en Redis/RabbitMQ y la identidad viaja **en cada request** (token, API key o hash firmado).
+
+- Al menos dos roles: **usuario** (envía y consulta sus propios jobs) y **admin** (`/stats`, ver jobs de todos, reprocesar la DLQ).
+- Un usuario **no puede consultar el `job_id` de otro usuario** (devuelve `403` o `404`).
+- `/stats` incluye como mínimo: jobs por estado, mensajes en cola y en la DLQ, workers activos, latencia p50/p95/p99 y tasa de error. Puede apoyarse en las métricas del Hit #4.
+- Las credenciales van en Kubernetes Secrets o en un secret manager, **nunca en el repo ni en los manifests**.
+- **Evidencia obligatoria** (script reproducible):
+  - sin token → `401`
+  - usuario en `/stats` → `403`
+  - usuario A consultando un job de B → `403`/`404`
+  - admin en `/stats` → `200`
+  - escalar el backend a 3 réplicas y mostrar que la autenticación y la consulta de jobs siguen funcionando sin importar qué réplica atienda
+
+### R5 - Pruebas con tareas diversas y matriz de parámetros
+
+Esto extiende el "Análisis de Desempeño Bajo Carga" del Hit #3. Además de V1 (tamaño), V2 (concurrencia) y V3 (workers), se agregan como **obligatorias**:
+
+| Variable | Valores mínimos |
+|---|---|
+| VA - Cantidad de archivos de entrada por request | 1, 10, 50 |
+| VB - Cantidad de acciones sobre esa entrada (operaciones encadenadas) | 1, 2, 3 |
+| VC - Usuarios/bots concurrentes | 1, 10, 50 (con token; incluir al menos un bot sin token) |
+
+- La combinatoria VA × VB × VC se presenta en una tabla, cruzada al menos con 2 valores de V1 y 2 de V3. En cada celda: latencia p50/p95/p99, throughput, tasa de error, cumplimiento del SLO (sí/no) y cuello de botella observado en Grafana.
+- Incluir casos **inválidos o fallidos** dentro de la carga (operación inexistente, archivo corrupto, worker que muere) y reportar cuántos terminaron en error claro, en la DLQ o reprocesados.
+- Escenarios en k6/Locust **versionados en el repo**, con la configuración (usuarios virtuales, ramp-up y duración) documentada.
+
+### Entregables de esta sección (checklist)
+
+- [ ] Registry privado con imagePullSecrets/Workload Identity y evidencia del pull fallido y exitoso (R1)
+- [ ] Operaciones e imágenes por parámetro con validación previa a encolar (R2)
+- [ ] `contrato.md` / `openapi.yaml` con envío, estados, tabla de errores y "lo que falta" (R3)
+- [ ] Roles, aislamiento entre usuarios, `/stats` y script de evidencia con 3 réplicas (R4)
+- [ ] Matriz VA × VB × VC (× V1, V3) completa con SLO y scripts de carga (R5)
+- [ ] En el video: mostrar R2, R4 y una corrida de R5 con el dashboard de Grafana en vivo
+
+---
+
 > **Ámbito de ejecución:** todos los Hits de esta Parte 1 corren sobre **Kubernetes local** (Microk8s, k3s o similar). El despliegue en la nube es el alcance de la Parte 2.
 
 ### Hit #0 — Patrones de Mensajería con RabbitMQ
